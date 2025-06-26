@@ -14,7 +14,7 @@ A terminal-based Riddle Game built with JavaScript (ES Modules) and Object-Orien
 Build a fully synchronous terminal game that:
 
 - Welcomes the player and asks for their name.
-- Loads all riddles dynamically from external files.
+- Loads all riddles dynamically from external files in the [`riddles/`](riddles/exportRiddles.js) folder.
 - Displays riddles one-by-one, waiting for the correct answer.
 - Measures how long the player takes to solve all riddles.
 - Shows a final report with total and average solving time.
@@ -24,9 +24,14 @@ Build a fully synchronous terminal game that:
 ## Folder Structure
 
 ```
-riddle-game/
+riddleGame/
 ├── app.js               # Main entry point
-├── riddles/             # All riddle files (e.g. r1.js, r2.js, ...)
+├── riddles/
+    ├── r1.js        # All riddle files (each riddle in a new file.)
+    ├── r2.js
+    ├── r3.js
+    ├── r4.js
+    ├── r5.js             
 ├── classes/             # OOP class definitions
 │   ├── Riddle.js
 │   ├── Player.js
@@ -38,8 +43,8 @@ riddle-game/
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/riddle-game.git
-   cd riddle-game
+   git clone https://github.com/Marksalz/RiddleGame.git
+   cd RiddleGame
    ```
 
 2. Install dependencies:

@@ -1,0 +1,24 @@
+{
+  "name": "riddlegame",
+  "version": "1.0.0",
+  "description": "A terminal-based Riddle Game built with JavaScript (ES Modules) and Object-Oriented Programming.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marksalz/RiddleGame.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "module",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marksalz/RiddleGame/issues"
+  },
+  "homepage": "https://github.com/Marksalz/RiddleGame#readme",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}

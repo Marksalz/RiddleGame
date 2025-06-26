@@ -13,7 +13,7 @@ function loadRiddles() {
 }
 
 
-function withTiming(riddle, player) {
+function timedAsk(riddle, player) {
     return function () {
         const start = Date.now();
         riddle.ask();
@@ -29,8 +29,7 @@ function main() {
     const player = new Player(name);
     let riddles = loadRiddles();
     riddles.forEach(riddle => {
-        const timedAsk = withTiming(riddle, player);
-        timedAsk();
+        timedAsk(riddle, player)();
     });
     player.showStats();
 }

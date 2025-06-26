@@ -1,6 +1,6 @@
 export default {
-  id: 1,
-  name: "Easy Math",
-  taskDescription: "What is 5 + 3?",
-  correctAnswer: "8"
+  id: 3,
+  name: "Logic Puzzle",
+  taskDescription: "I speak without a mouth and hear without ears. What am I?",
+  correctAnswer: "Echo"
 }

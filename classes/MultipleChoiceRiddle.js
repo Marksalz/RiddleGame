@@ -13,7 +13,7 @@ export class MultipleChoiceRiddle extends Riddle {
         let usedHint = false;
         const correctIndex = this.findCorrectAnswerIndex();
         while (!flag) {
-            const answer = readline.question('select your answer (1-4)! (type "hint" to get a hint!) ');
+            const answer = readline.question('select your answer (1-4)! (type "hint" to get a hint!): ');
             if (answer.trim().toLowerCase() === "hint") {
                 console.log(this.hint);
                 console.log();

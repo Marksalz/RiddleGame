@@ -32,7 +32,6 @@ function timedAsk(riddle, player) {
             usedHint = riddle.ask();
         }
         const end = Date.now();
-
         player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
     }
 }
@@ -46,6 +45,7 @@ function calculatePenaltyTime(riddle, start, end, usedHint) {
     }
     if (usedHint) {
         penaltyTime += 10;
+        console.log("Penalty! 10 seconds added to recorded time!\n");
     }
     return penaltyTime;
 }

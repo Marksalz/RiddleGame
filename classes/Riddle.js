@@ -16,7 +16,7 @@ export class Riddle {
         let flag = false;
         let usedHint = false;
         while (!flag) {
-            const answer = readline.question('What is your answer? (type "hint" to get a hint!) ');
+            const answer = readline.question('What is your answer? (type "hint" to get a hint!): ');
             if (answer.trim().toLowerCase() === "hint") {
                 console.log(this.hint);
                 console.log();

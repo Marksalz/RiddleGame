@@ -4,5 +4,6 @@ export default {
     taskDescription: "What is the next number in the sequence: 2, 4, 8, 16, ?",
     correctAnswer: "32",
     difficulty: "hard",
-    timeLimit: 30
+    timeLimit: 30,
+    hint: "Each number is double the previous one."
 }

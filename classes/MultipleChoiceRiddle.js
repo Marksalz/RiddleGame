@@ -2,8 +2,8 @@ import { Riddle } from "./Riddle.js";
 import readline from 'readline-sync';
 
 export class MultipleChoiceRiddle extends Riddle {
-    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, choices) {
-        super(id, name, taskDescription, correctAnswer, difficulty, timeLimit);
+    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
+        super(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
         this.choices = choices;
     }
 

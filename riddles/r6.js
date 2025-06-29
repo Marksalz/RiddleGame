@@ -5,5 +5,6 @@ export default {
     correctAnswer: "8",
     choices: ["7", "8", "13", "21"],
     difficulty: "easy",
-    timeLimit: 15
+    timeLimit: 15,
+    hint: "It's the only number divisible by 2."
 };

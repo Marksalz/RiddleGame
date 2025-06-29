@@ -1,6 +1,6 @@
 import allRiddles from './riddles/exportRiddles.js';
-import { Player } from './classes/player.js';
-import { Riddle } from './classes/riddle.js';
+import { Player } from './classes/Player.js';
+import { Riddle } from './classes/Riddle.js';
 import readline from 'readline-sync';
 
 

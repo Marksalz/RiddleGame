@@ -1,5 +1,5 @@
 export default {
-    id: "r7",
+    id: 7,
     name: "Square Root",
     taskDescription: "What is the square root of 49?",
     correctAnswer: "7",

@@ -16,7 +16,8 @@ Build a fully synchronous terminal game that:
 - Welcomes the player and asks for their name.
 - Loads all riddles dynamically from external files in the [`riddles/`](riddles/exportRiddles.js) folder.
 - Displays riddles one-by-one, waiting for the correct answer.
-- Measures how long the player takes to solve all riddles.
+- Supports both open-ended and multiple-choice riddles.
+- Measures how long the player takes to solve all riddles, applying penalties for exceeding time limits.
 - Shows a final report with total and average solving time.
 
 ---
@@ -24,17 +25,24 @@ Build a fully synchronous terminal game that:
 ## Folder Structure
 
 ```
-riddleGame/
-├── app.js               # Main entry point
-├── riddles/
-    ├── r1.js        # All riddle files (each riddle in a new file.)
-    ├── r2.js
-    ├── r3.js
-    ├── r4.js
-    ├── r5.js             
-├── classes/             # OOP class definitions
+RiddleGame/
+├── app.js                   # Main entry point
+├── package.json
+├── .gitignore
+├── README.md
+├── classes/                 # OOP class definitions
 │   ├── Riddle.js
 │   ├── Player.js
+│   └── MultipleChoiceRiddle.js
+├── riddles/                 # All riddle files (each riddle in a new file)
+│   ├── r1.js
+│   ├── r2.js
+│   ├── r3.js
+│   ├── r4.js
+│   ├── r5.js
+│   ├── r6.js
+│   ├── r7.js
+│   └── exportRiddles.js
 ```
 
 ---
@@ -49,7 +57,7 @@ riddleGame/
 
 2. Install dependencies:
    ```bash
-   npm install readline-sync
+   npm install
    ```
 
 3. Run the game:
@@ -69,7 +77,26 @@ export default {
   id: 1,
   name: "Easy Math",
   taskDescription: "What is 5 + 3?",
-  correctAnswer: "8"
+  correctAnswer: "8",
+  difficulty: "easy",
+  timeLimit: 5,
+  hint: "It's a single-digit number greater than 7."
+};
+```
+
+For multiple-choice riddles, add a `choices` array:
+
+```js
+// riddles/r6.js
+export default {
+  id: 6,
+  name: "Even Number",
+  taskDescription: "Which of the following numbers is even?",
+  correctAnswer: "8",
+  choices: ["7", "8", "13", "21"],
+  difficulty: "easy",
+  timeLimit: 15,
+  hint: "It's the only number divisible by 2."
 };
 ```
 
@@ -85,8 +112,20 @@ Represents a single riddle.
   - `name`
   - `taskDescription`
   - `correctAnswer`
+  - `difficulty`
+  - `timeLimit`
+  - `hint`
 - **Methods:**
   - `ask()` — prompts the user until the correct answer is given.
+
+### `MultipleChoiceRiddle`
+Extends `Riddle` for multiple-choice riddles.
+
+- **Properties:**
+  - All `Riddle` properties
+  - `choices`
+- **Methods:**
+  - `askWithOptions()` — prompts the user to select from choices.
 
 ### `Player`
 Tracks player info and timings.
@@ -95,7 +134,7 @@ Tracks player info and timings.
   - `name`
   - `times` — array of time durations per riddle
 - **Methods:**
-  - `recordTime(start, end)`
+  - `recordTime(start, end, penaltyTime)`
   - `showStats()` — displays total and average solving time
 
 ---
@@ -103,20 +142,21 @@ Tracks player info and timings.
 ## Example Output
 
 ```
-Welcome to the Riddle Game!
+Welcome to the Riddle game!
 What is your name? Sarah
 
-Riddle 1: Easy Math
-What is 5 + 3? → 8
-Correct!
+Riddle number: 1
+Name: Easy Math
+Task description: What is 5 + 3?
+Time limit: 5
 
-Riddle 2: Mystery
-I speak without a mouth. What am I? → echo
-Correct!
+What is your answer? (type "hint" to get a hint!) 8
+Correct!!
 
-Great job, Sarah!
+...
+
 Total time: 72 seconds
-Average per riddle: 36 seconds
+Average time per riddle: 36 seconds
 ```
 
 ---
@@ -133,6 +173,28 @@ console.log(`Hello, ${name}!`);
 
 ---
 
-## 📄 License
+## Game Flow
 
-MIT License
+1. **Start the Game:**  
+   Run `node app.js` in your terminal.
+
+2. **Welcome & Name:**  
+   The game welcomes you and asks for your name.
+
+3. **Choose Difficulty:**  
+   Select a difficulty level: `easy`, `medium`, or `hard`.
+
+4. **Riddle Presentation:**  
+   Each riddle is displayed one by one.  
+   - For open-ended riddles, type your answer.
+   - For multiple-choice riddles, select the correct option number.
+
+5. **Hints:**  
+   You can type `"hint"` at any prompt to receive a hint for the current riddle.
+
+6. **Timing & Penalties:**  
+   Your time to solve each riddle is measured.  
+   If you exceed the riddle's time limit, a penalty is applied.
+
+7. **Completion:**  
+   After all riddles are answered, the game shows your total and average solving time.

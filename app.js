@@ -32,22 +32,22 @@ function timedAsk(riddle, player) {
             usedHint = riddle.ask();
         }
         const end = Date.now();
-        if (calculatePenaltyTime(riddle, start, end)) {
-            console.log("Too slow! 5 seconds penalty applied.\n");
-            player.recordTime(start, end, 5);
-        }
-        else {
-            player.recordTime(start, end);
-        }
+
+        player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
     }
 }
 
-function calculatePenaltyTime(riddle, start, end) {
+function calculatePenaltyTime(riddle, start, end, usedHint) {
     const actualTime = (end - start) / 1000;
+    let penaltyTime = 0;
     if (actualTime > riddle.timeLimit) {
-        return true;
+        penaltyTime += 5;
+        console.log("Too slow! 5 seconds penalty applied.\n");
     }
-    return false;
+    if (usedHint) {
+        penaltyTime += 10;
+    }
+    return penaltyTime;
 }
 
 function main() {
@@ -65,4 +65,6 @@ function main() {
 }
 
 main();
+
+// 
 

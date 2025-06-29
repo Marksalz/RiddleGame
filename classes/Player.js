@@ -5,7 +5,7 @@ export class Player {
         this.times = [];
     }
 
-    recordTime(start, end, penaltyTime = 0) {
+    recordTime(start, end, penaltyTime) {
         const time = ((end - start) / 1000) + penaltyTime;
         this.times.push(time);
     }

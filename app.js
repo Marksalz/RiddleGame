@@ -16,7 +16,7 @@ function loadRiddles(level) {
             riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer, riddle.difficulty));
         }
     });
-    const filterdRiddles = riddles.filter((riddle) => { return riddle.difficulty === level });
+    const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level );
     return filterdRiddles;
 }
 

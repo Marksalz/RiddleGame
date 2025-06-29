@@ -15,7 +15,7 @@ export class Player {
         this.times.forEach(time => { sum += time });
         let avg = sum / this.times.length;
 
-        console.log(`Total time: ${sum} seconds`);
-        console.log(`Average time per riddle: ${avg} seconds\n`);
+        console.log(`Total time: ${sum.toFixed(2)} seconds`);
+        console.log(`Average time per riddle: ${avg.toFixed(2)} seconds\n`);
     }
 }

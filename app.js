@@ -22,7 +22,7 @@ function loadRiddles(level) {
 }
 
 function timedAsk(riddle, player) {
-    const usedHint = false;
+    let usedHint = false;
     return function () {
         const start = Date.now();
         if (riddle instanceof MultipleChoiceRiddle) {

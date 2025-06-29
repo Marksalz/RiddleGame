@@ -16,7 +16,7 @@ function loadRiddles(level) {
             riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer, riddle.difficulty));
         }
     });
-    const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level );
+    const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level);
     return filterdRiddles;
 }
 
@@ -30,8 +30,21 @@ function timedAsk(riddle, player) {
             riddle.ask();
         }
         const end = Date.now();
-        player.recordTime(start, end);
+        if (calculatePenaltyTime(riddle, start, end)) {
+            player.recordTime(start, end, 5);
+        }
+        else {
+            player.recordTime(start, end);
+        }
     }
+}
+
+function calculatePenaltyTime(riddle, start, end) {
+    const actualTime = (end - start) / 1000;
+    if (actualTime > riddle.timeLimit) {
+        return true;
+    }
+    return false;
 }
 
 function main() {

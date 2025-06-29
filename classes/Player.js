@@ -5,8 +5,8 @@ export class Player {
         this.times = [];
     }
 
-    recordTime(start, end) {
-        const time = (end - start) / 1000;
+    recordTime(start, end, penaltyTime = 0) {
+        const time = ((end - start) / 1000) + penaltyTime;
         this.times.push(time);
     }
 

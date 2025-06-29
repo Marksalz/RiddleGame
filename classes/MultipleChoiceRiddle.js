@@ -1,8 +1,9 @@
-import { Riddle } from "./Riddle";
+import { Riddle } from "./Riddle.js";
+import readline from 'readline-sync';
 
 export class MultipleChoiceRiddle extends Riddle {
-    constructor(choices) {
-        super();
+    constructor(id, name, taskDescription, correctAnswer, choices) {
+        super(id, name, taskDescription, correctAnswer);
         this.choices = choices;
     }
 
@@ -11,7 +12,7 @@ export class MultipleChoiceRiddle extends Riddle {
         let flag = false;
         const correctIndex = this.findCorrectAnswerIndex();
         while (!flag) {
-            const answer = readline.question('select your answer (1-4)!');
+            const answer = readline.question('select your answer (1-4)! ');
             let isCorrect = false;
             if (Number(answer) === correctIndex) {
                 isCorrect = true;
@@ -29,7 +30,7 @@ export class MultipleChoiceRiddle extends Riddle {
         console.log(`Riddle number: ${this.id}`);
         console.log(`Name: ${this.name}`);
         console.log(`Task description: ${this.taskDescription}\n`);
-        this.choices.array.forEach((choice, index) => {
+        this.choices.forEach((choice, index) => {
             console.log(`${index + 1}. ${choice}`);
         });
     }

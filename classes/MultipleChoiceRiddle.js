@@ -29,7 +29,8 @@ export class MultipleChoiceRiddle extends Riddle {
     printRiddleWithChoices() {
         console.log(`Riddle number: ${this.id}`);
         console.log(`Name: ${this.name}`);
-        console.log(`Task description: ${this.taskDescription}\n`);
+        console.log(`Task description: ${this.taskDescription}`);
+        console.log(`Time limit: ${this.timeLimit}\n`);
         this.choices.forEach((choice, index) => {
             console.log(`${index + 1}. ${choice}`);
         });

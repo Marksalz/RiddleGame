@@ -12,7 +12,6 @@ function loadRiddles() {
     return riddles;
 }
 
-
 function timedAsk(riddle, player) {
     return function () {
         const start = Date.now();

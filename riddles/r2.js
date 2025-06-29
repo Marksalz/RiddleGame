@@ -4,5 +4,6 @@ export default {
   taskDescription: "What has keys but can't open locks?",
   correctAnswer: "Piano",
   difficulty: "easy",
-  timeLimit: 20
+  timeLimit: 20,
+  hint: "It's a musical instrument."
 }

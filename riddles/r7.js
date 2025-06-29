@@ -5,5 +5,6 @@ export default {
     correctAnswer: "7",
     choices: ["6", "7", "8", "9"],
     difficulty: "hard",
-    timeLimit: 20
+    timeLimit: 20,
+    hint: "It's a single-digit number that when multiplied by itself gives 49."
 };

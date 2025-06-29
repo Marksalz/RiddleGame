@@ -12,16 +12,22 @@ export class MultipleChoiceRiddle extends Riddle {
         let flag = false;
         const correctIndex = this.findCorrectAnswerIndex();
         while (!flag) {
-            const answer = readline.question('select your answer (1-4)! ');
-            let isCorrect = false;
-            if (Number(answer) === correctIndex) {
-                isCorrect = true;
+            const answer = readline.question('select your answer (1-4)! (type "hint" to get a hint!) ');
+            if (answer.trim().toLowerCase() === "hint") {
+                console.log(this.hint);
+                console.log();
             }
-            if (isCorrect) {
-                console.log("Correct!!\n");
-                flag = true;
-            } else {
-                console.log("Wrong answer, try again!\n");
+            else {
+                let isCorrect = false;
+                if (Number(answer) === correctIndex) {
+                    isCorrect = true;
+                }
+                if (isCorrect) {
+                    console.log("Correct!!\n");
+                    flag = true;
+                } else {
+                    console.log("Wrong answer, try again!\n");
+                }
             }
         }
     }

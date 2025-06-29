@@ -10,11 +10,11 @@ function loadRiddles(level) {
     allRiddles.forEach(riddle => {
         if ('choices' in riddle) {
             riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.choices));
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices));
         }
         else {
             riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit));
+                riddle.difficulty, riddle.timeLimit, riddle.hint));
         }
     });
     const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level);

@@ -1,6 +1,6 @@
 import { Riddle } from "./Riddle";
 
-class MultipleChoiceRiddle extends Riddle {
+export class MultipleChoiceRiddle extends Riddle {
     constructor(choices) {
         super();
         this.choices = choices;

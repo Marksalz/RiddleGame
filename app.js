@@ -10,10 +10,11 @@ function loadRiddles(level) {
     allRiddles.forEach(riddle => {
         if ('choices' in riddle) {
             riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.choices));
+                riddle.difficulty, riddle.timeLimit, riddle.choices));
         }
         else {
-            riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer, riddle.difficulty));
+            riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit));
         }
     });
     const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level);
@@ -31,6 +32,7 @@ function timedAsk(riddle, player) {
         }
         const end = Date.now();
         if (calculatePenaltyTime(riddle, start, end)) {
+            console.log("Too slow! 5 seconds penalty applied.\n");
             player.recordTime(start, end, 5);
         }
         else {

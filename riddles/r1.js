@@ -4,5 +4,5 @@ export default {
   taskDescription: "What is 5 + 3?",
   correctAnswer: "8",
   difficulty: "easy",
-  timeLimit: 15
+  timeLimit: 5
 }

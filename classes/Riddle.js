@@ -14,21 +14,30 @@ export class Riddle {
     ask() {
         this.printRiddle();
         let flag = false;
+        let usedHint = false;
         while (!flag) {
-            const answer = readline.question('What is your answer? ');
-            let isCorrect = false;
-            if (typeof this.correctAnswer === 'number') {
-                isCorrect = Number(answer.trim()) === this.correctAnswer;
-            } else {
-                isCorrect = answer.trim().toLowerCase() === String(this.correctAnswer).trim().toLowerCase();
+            const answer = readline.question('What is your answer? (type "hint" to get a hint!): ');
+            if (answer.trim().toLowerCase() === "hint") {
+                console.log(this.hint);
+                console.log();
+                usedHint = true;
             }
-            if (isCorrect) {
-                console.log("Correct!!\n");
-                flag = true;
-            } else {
-                console.log("Wrong answer, try again!\n");
+            else {
+                let isCorrect = false;
+                if (typeof this.correctAnswer === 'number') {
+                    isCorrect = Number(answer.trim()) === this.correctAnswer;
+                } else {
+                    isCorrect = answer.trim().toLowerCase() === String(this.correctAnswer).trim().toLowerCase();
+                }
+                if (isCorrect) {
+                    console.log("Correct!!\n");
+                    flag = true;
+                } else {
+                    console.log("Wrong answer, try again!\n");
+                }
             }
         }
+        return usedHint;
     }
 
     printRiddle() {

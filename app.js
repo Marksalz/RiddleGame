@@ -10,11 +10,11 @@ function loadRiddles(level) {
     allRiddles.forEach(riddle => {
         if ('choices' in riddle) {
             riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.choices));
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices));
         }
         else {
             riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit));
+                riddle.difficulty, riddle.timeLimit, riddle.hint));
         }
     });
     const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level);
@@ -22,31 +22,32 @@ function loadRiddles(level) {
 }
 
 function timedAsk(riddle, player) {
+    let usedHint = false;
     return function () {
         const start = Date.now();
         if (riddle instanceof MultipleChoiceRiddle) {
-            riddle.askWithOptions();
+            usedHint = riddle.askWithOptions();
         }
         else {
-            riddle.ask();
+            usedHint = riddle.ask();
         }
         const end = Date.now();
-        if (calculatePenaltyTime(riddle, start, end)) {
-            console.log("Too slow! 5 seconds penalty applied.\n");
-            player.recordTime(start, end, 5);
-        }
-        else {
-            player.recordTime(start, end);
-        }
+        player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
     }
 }
 
-function calculatePenaltyTime(riddle, start, end) {
+function calculatePenaltyTime(riddle, start, end, usedHint) {
     const actualTime = (end - start) / 1000;
+    let penaltyTime = 0;
     if (actualTime > riddle.timeLimit) {
-        return true;
+        penaltyTime += 5;
+        console.log("Too slow! 5 seconds penalty applied.\n");
     }
-    return false;
+    if (usedHint) {
+        penaltyTime += 10;
+        console.log("Penalty! 10 seconds added to recorded time!\n");
+    }
+    return penaltyTime;
 }
 
 function main() {
@@ -64,4 +65,6 @@ function main() {
 }
 
 main();
+
+// 
 

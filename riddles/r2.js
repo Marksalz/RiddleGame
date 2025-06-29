@@ -3,5 +3,6 @@ export default {
   name: "Classic Riddle",
   taskDescription: "What has keys but can't open locks?",
   correctAnswer: "Piano",
-  difficulty: "easy"
+  difficulty: "easy",
+  timeLimit: 20
 }

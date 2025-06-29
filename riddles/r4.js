@@ -3,5 +3,6 @@ export default {
     name: "Word Play",
     taskDescription: "What gets wetter the more it dries?",
     correctAnswer: "Towel",
-    difficulty: "medium"
+    difficulty: "medium",
+    timeLimit: 20
 }

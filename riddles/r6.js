@@ -1,5 +1,5 @@
 export default {
-    id: "r6",
+    id: 6,
     name: "Even Number",
     taskDescription: "Which of the following numbers is even?",
     correctAnswer: "8",

@@ -5,17 +5,19 @@ import { MultipleChoiceRiddle } from './classes/MultipleChoiceRiddle.js'
 import readline from 'readline-sync';
 
 
-function loadRiddles() {
+function loadRiddles(level) {
     let riddles = [];
     allRiddles.forEach(riddle => {
         if ('choices' in riddle) {
-            riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer, riddle.choices));
+            riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.choices));
         }
         else {
-            riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer));
+            riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer, riddle.difficulty));
         }
     });
-    return riddles;
+    const filterdRiddles = riddles.filter((riddle) => { return riddle.difficulty === level });
+    return filterdRiddles;
 }
 
 function timedAsk(riddle, player) {
@@ -37,7 +39,9 @@ function main() {
     const name = readline.question('What is your name? ');
     console.log();
     const player = new Player(name);
-    let riddles = loadRiddles();
+    const level = readline.question('Choose difficulty: easy / medium / hard: ');
+    console.log();
+    let riddles = loadRiddles(level);
     riddles.forEach(riddle => {
         timedAsk(riddle, player)();
     });

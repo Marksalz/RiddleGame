@@ -10,12 +10,14 @@ export class MultipleChoiceRiddle extends Riddle {
     askWithOptions() {
         this.printRiddleWithChoices();
         let flag = false;
+        let usedHint = false;
         const correctIndex = this.findCorrectAnswerIndex();
         while (!flag) {
             const answer = readline.question('select your answer (1-4)! (type "hint" to get a hint!) ');
             if (answer.trim().toLowerCase() === "hint") {
                 console.log(this.hint);
                 console.log();
+                usedHint = true;
             }
             else {
                 let isCorrect = false;
@@ -30,6 +32,7 @@ export class MultipleChoiceRiddle extends Riddle {
                 }
             }
         }
+        return usedHint;
     }
 
     printRiddleWithChoices() {

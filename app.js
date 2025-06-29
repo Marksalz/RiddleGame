@@ -22,13 +22,14 @@ function loadRiddles(level) {
 }
 
 function timedAsk(riddle, player) {
+    const usedHint = false;
     return function () {
         const start = Date.now();
         if (riddle instanceof MultipleChoiceRiddle) {
-            riddle.askWithOptions();
+            usedHint = riddle.askWithOptions();
         }
         else {
-            riddle.ask();
+            usedHint = riddle.ask();
         }
         const end = Date.now();
         if (calculatePenaltyTime(riddle, start, end)) {

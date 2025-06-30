@@ -1,12 +1,30 @@
 import { Riddle } from "./Riddle.js";
 import readline from 'readline-sync';
 
+/**
+ * Represents a multiple-choice riddle.
+ * Extends the Riddle class to include answer choices.
+ */
 export class MultipleChoiceRiddle extends Riddle {
+    /**
+     * @param {number} id - The riddle's unique identifier.
+     * @param {string} name - The name/title of the riddle.
+     * @param {string} taskDescription - The riddle's description/question.
+     * @param {string|number} correctAnswer - The correct answer to the riddle.
+     * @param {string} difficulty - The difficulty level of the riddle.
+     * @param {number} timeLimit - The time limit for solving the riddle.
+     * @param {string} hint - A hint for the riddle.
+     * @param {string[]} choices - The list of answer choices.
+     */
     constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
         super(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
         this.choices = choices;
     }
 
+    /**
+     * Asks the multiple-choice riddle to the user and checks their answer.
+     * @returns {boolean} Whether the hint was used.
+     */
     askWithOptions() {
         this.printRiddleWithChoices();
         let flag = false;
@@ -35,6 +53,9 @@ export class MultipleChoiceRiddle extends Riddle {
         return usedHint;
     }
 
+    /**
+     * Prints the riddle's details and choices to the console.
+     */
     printRiddleWithChoices() {
         console.log(`Riddle number: ${this.id}`);
         console.log(`Name: ${this.name}`);
@@ -45,6 +66,10 @@ export class MultipleChoiceRiddle extends Riddle {
         });
     }
 
+    /**
+     * Finds the index (1-based) of the correct answer in the choices array.
+     * @returns {number} The index of the correct answer.
+     */
     findCorrectAnswerIndex() {
         return this.choices.findIndex(choice => choice === this.correctAnswer) + 1;
     }

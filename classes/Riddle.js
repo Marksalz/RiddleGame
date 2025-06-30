@@ -1,6 +1,18 @@
 import readline from 'readline-sync';
 
+/**
+ * Represents a riddle with a question, answer, and related metadata.
+ */
 export class Riddle {
+    /**
+     * @param {number} id - The riddle's unique identifier.
+     * @param {string} name - The name/title of the riddle.
+     * @param {string} taskDescription - The riddle's description/question.
+     * @param {string|number} correctAnswer - The correct answer to the riddle.
+     * @param {string} difficulty - The difficulty level of the riddle.
+     * @param {number} timeLimit - The time limit for solving the riddle.
+     * @param {string} hint - A hint for the riddle.
+     */
     constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
         this.id = id;
         this.name = name;
@@ -11,6 +23,10 @@ export class Riddle {
         this.hint = hint;
     }
 
+    /**
+     * Asks the riddle to the user and checks their answer.
+     * @returns {boolean} Whether the hint was used.
+     */
     ask() {
         this.printRiddle();
         let flag = false;
@@ -40,6 +56,9 @@ export class Riddle {
         return usedHint;
     }
 
+    /**
+     * Prints the riddle's details to the console.
+     */
     printRiddle() {
         console.log(`Riddle number: ${this.id}`);
         console.log(`Name: ${this.name}`);

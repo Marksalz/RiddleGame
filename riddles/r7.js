@@ -1,3 +1,10 @@
+/**
+ * Riddle 7: Square Root
+ * Task: What is the square root of 49?
+ * Difficulty: hard
+ * Time Limit: 20 seconds
+ * Hint: It's a single-digit number that when multiplied by itself gives 49.
+ */
 export default {
     id: 7,
     name: "Square Root",

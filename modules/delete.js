@@ -1,23 +1,25 @@
 
 import { readFile, writeFile } from "node:fs/promises";
-import { path } from "./create";
+import { path } from "./create.js";
 
 
-export function delete_s(id) {
-    const filePath = 'C:\\JSProjects\\SchoolManagerCRUD\\DB\\DB.txt';
-    return readFilePromise(filePath)
-        .then((data) => {
-            let arrayData = JSON.parse(data);
-            const index = arrayData.findIndex(student => student.Id === id);
-            if (index !== -1) {
-                arrayData.splice(index, 1);
-            }
-            else {
-                throw new Error("Id not found!")
-            }
-            return writeFilePromise(filePath, JSON.stringify(arrayData, null, 2));
-        })
-        .catch(err => {
-            throw new Error("Error deleting student: " + err.message);
-        });
+export async function deleteRiddle(id) {
+    try {
+        let dbArray = JSON.parse(await readFile(path, 'utf8'));
+        const index = dbArray.findIndex(riddle => riddle.id === id);
+        if (index === -1) {
+            throw new Error("Id not found!");
+        }
+        else {
+            dbArray.splice(index, 1);
+        }
+        try {
+            await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
+            console.log("Riddle deleted successfully!");
+        } catch (err) {
+            console.log("Error writing to file", err.message);
+        }
+    } catch (err) {
+        console.error("Error reading riddles:", err.message);
+    }
 }

@@ -1,11 +1,29 @@
+import fs from 'fs';
 import readline from 'readline-sync';
+import { path } from '../modules/create.js';
 
 /**
  * Represents a riddle with a question, answer, and related metadata.
  */
 export class Riddle {
-    // Static property to keep track of the next ID
-    static nextId = 1;
+
+    static nextId = 0;
+
+    /**
+     * Initializes the nextId based on the highest ID in the db file.
+     * Call this ONCE before creating any riddles.
+     */
+    static initializeNextIdFromDb() {
+        try {
+            const data = fs.readFileSync(path, 'utf-8');
+            const riddles = JSON.parse(data);
+            const maxId = riddles.reduce((max, r) => Math.max(max, r.id), 0);
+            Riddle.nextId = maxId + 1;
+        } catch (err) {
+            // If file doesn't exist or is empty, keep nextId as 1
+            Riddle.nextId = 1;
+        }
+    }
 
     /**
      * @param {string} name - The name/title of the riddle.
@@ -16,7 +34,7 @@ export class Riddle {
      * @param {string} hint - A hint for the riddle.
      */
     constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
-        this.id = Riddle.nextId++; // Auto-increment ID
+        this.id = Riddle.nextId++;
         this.name = name;
         this.taskDescription = taskDescription;
         this.correctAnswer = correctAnswer;

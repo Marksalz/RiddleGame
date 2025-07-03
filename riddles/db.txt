@@ -28,7 +28,7 @@
   },
   {
     "id": 4,
-    "name": "Word Play",
+    "name": "Hiiii",
     "taskDescription": "What gets wetter the more it dries?",
     "correctAnswer": "Towel",
     "difficulty": "medium",
@@ -75,12 +75,12 @@
     "hint": "It's a single-digit number that when multiplied by itself gives 49."
   },
   {
-    "id": 8,
-    "name": "The Sphinx's Riddle",
-    "taskDescription": "What walks on four legs in the morning, two legs at noon, and three legs in the evening?",
-    "correctAnswer": "man",
-    "difficulty": "medium",
-    "timeLimit": 60,
-    "hint": "Think about the stages of a human's life."
+    "id": 9,
+    "name": "hdshdkj",
+    "taskDescription": "asdknansd",
+    "correctAnswer": "7",
+    "difficulty": "hard",
+    "timeLimit": 8,
+    "hint": "akajkaj"
   }
 ]

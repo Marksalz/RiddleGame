@@ -7,7 +7,6 @@ import readline from 'readline-sync';
  */
 export class MultipleChoiceRiddle extends Riddle {
     /**
-     * @param {number} id - The riddle's unique identifier.
      * @param {string} name - The name/title of the riddle.
      * @param {string} taskDescription - The riddle's description/question.
      * @param {string|number} correctAnswer - The correct answer to the riddle.
@@ -16,8 +15,8 @@ export class MultipleChoiceRiddle extends Riddle {
      * @param {string} hint - A hint for the riddle.
      * @param {string[]} choices - The list of answer choices.
      */
-    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
-        super(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
+    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
+        super(name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
         this.choices = choices;
     }
 

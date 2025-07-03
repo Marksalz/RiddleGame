@@ -1,9 +1,9 @@
 
 import { readFile, writeFile } from "node:fs/promises";
-import { path } from "./create";
+import { path } from "./create.js";
 
 
-async function read() {
+export async function read() {
     try {
         let dbArray;
         dbArray = JSON.parse(await readFile(path, 'utf8'));

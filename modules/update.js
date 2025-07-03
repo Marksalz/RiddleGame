@@ -4,7 +4,6 @@ import { path } from "./create.js";
 
 
 export async function update(id, newData) {
-    //const path = 'C:\\JSProjects\\RiddleGame\\riddles\\db.txt';
     try {
         let dbArray = JSON.parse(await readFile(path, 'utf8'));
         const index = dbArray.findIndex(riddle => riddle.id === id);
@@ -18,7 +17,12 @@ export async function update(id, newData) {
             }
         }
         dbArray[index] = updatedRiddle;
-        await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
+        try {
+            await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
+            console.log("Riddle updated successfully!");
+        } catch (err) {
+            console.log("Error writing to file", err.message);
+        }
     } catch (err) {
         console.error("Error reading riddles:", err.message);
     }

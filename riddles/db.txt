@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "name": "Easy Math",
+    "taskDescription": "What is 5 + 3?",
+    "correctAnswer": "8",
+    "difficulty": "easy",
+    "timeLimit": 5,
+    "hint": "It's a single-digit number greater than 7."
+  },
+  {
+    "id": 2,
+    "name": "Classic Riddle",
+    "taskDescription": "What has keys but can't open locks?",
+    "correctAnswer": "Piano",
+    "difficulty": "easy",
+    "timeLimit": 20,
+    "hint": "It's a musical instrument."
+  },
+  {
+    "id": 3,
+    "name": "Logic Puzzle",
+    "taskDescription": "I speak without a mouth and hear without ears. What am I?",
+    "correctAnswer": "Echo",
+    "difficulty": "medium",
+    "timeLimit": 25,
+    "hint": "You can hear it in a canyon."
+  },
+  {
+    "id": 4,
+    "name": "Word Play",
+    "taskDescription": "What gets wetter the more it dries?",
+    "correctAnswer": "Towel",
+    "difficulty": "medium",
+    "timeLimit": 20,
+    "hint": "You use it after a shower."
+  },
+  {
+    "id": 5,
+    "name": "Numbers Game",
+    "taskDescription": "What is the next number in the sequence: 2, 4, 8, 16, ?",
+    "correctAnswer": "32",
+    "difficulty": "hard",
+    "timeLimit": 30,
+    "hint": "Each number is double the previous one."
+  },
+  {
+    "id": 6,
+    "name": "Even Number",
+    "taskDescription": "Which of the following numbers is even?",
+    "correctAnswer": "8",
+    "choices": ["7", "8", "13", "21"],
+    "difficulty": "easy",
+    "timeLimit": 15,
+    "hint": "It's the only number divisible by 2."
+  },
+  {
+    "id": 7,
+    "name": "Square Root",
+    "taskDescription": "What is the square root of 49?",
+    "correctAnswer": "7",
+    "choices": ["6", "7", "8", "9"],
+    "difficulty": "hard",
+    "timeLimit": 20,
+    "hint": "It's a single-digit number that when multiplied by itself gives 49."
+  }
+]

@@ -49,7 +49,12 @@
     "name": "Even Number",
     "taskDescription": "Which of the following numbers is even?",
     "correctAnswer": "8",
-    "choices": ["7", "8", "13", "21"],
+    "choices": [
+      "7",
+      "8",
+      "13",
+      "21"
+    ],
     "difficulty": "easy",
     "timeLimit": 15,
     "hint": "It's the only number divisible by 2."
@@ -59,9 +64,23 @@
     "name": "Square Root",
     "taskDescription": "What is the square root of 49?",
     "correctAnswer": "7",
-    "choices": ["6", "7", "8", "9"],
+    "choices": [
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
     "difficulty": "hard",
     "timeLimit": 20,
     "hint": "It's a single-digit number that when multiplied by itself gives 49."
+  },
+  {
+    "id": 8,
+    "name": "The Sphinx's Riddle",
+    "taskDescription": "What walks on four legs in the morning, two legs at noon, and three legs in the evening?",
+    "correctAnswer": "man",
+    "difficulty": "medium",
+    "timeLimit": 60,
+    "hint": "Think about the stages of a human's life."
   }
 ]

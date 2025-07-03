@@ -7,7 +7,12 @@ export async function create(riddle) {
         let dbArray;
         dbArray = JSON.parse(await readFile(path, 'utf8'));
         dbArray.push(riddle);
-        await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
+        try {
+            await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
+            console.log("Riddle added successfully!");
+        } catch (err) {
+            console.log("Error writing to file", err.message);
+        }
     } catch (err) {
         console.error("Error creating riddle:", err);
     }

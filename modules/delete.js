@@ -17,9 +17,9 @@ export async function deleteRiddle(id) {
             await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
             console.log("Riddle deleted successfully!");
         } catch (err) {
-            console.log("Error writing to file", err.message);
+            throw new Error("Error writing to file: ", err.message);
         }
     } catch (err) {
-        console.error("Error reading riddles:", err.message);
+        throw new Error("Error reading riddles: ", err.message);
     }
 }

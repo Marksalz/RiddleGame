@@ -11,9 +11,9 @@ export async function create(riddle) {
             await writeFile(path, JSON.stringify(dbArray, null, 2), "utf8");
             console.log("Riddle added successfully!");
         } catch (err) {
-            console.log("Error writing to file", err.message);
+            throw new Error("Error writing to file", err.message);
         }
     } catch (err) {
-        console.error("Error creating riddle:", err);
+        throw new Error("Error creating riddle: ", err.message);
     }
 }

@@ -9,7 +9,7 @@ async function read() {
         dbArray = JSON.parse(await readFile(path, 'utf8'));
         return dbArray;
     } catch (err) {
-        console.error("Error reading riddles:", err.message);
+        throw new Error("Error reading riddles: ", err.message);
     }
 }
 

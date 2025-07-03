@@ -4,8 +4,10 @@ import readline from 'readline-sync';
  * Represents a riddle with a question, answer, and related metadata.
  */
 export class Riddle {
+    // Static property to keep track of the next ID
+    static nextId = 1;
+
     /**
-     * @param {number} id - The riddle's unique identifier.
      * @param {string} name - The name/title of the riddle.
      * @param {string} taskDescription - The riddle's description/question.
      * @param {string|number} correctAnswer - The correct answer to the riddle.
@@ -13,8 +15,8 @@ export class Riddle {
      * @param {number} timeLimit - The time limit for solving the riddle.
      * @param {string} hint - A hint for the riddle.
      */
-    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
-        this.id = id;
+    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
+        this.id = Riddle.nextId++; // Auto-increment ID
         this.name = name;
         this.taskDescription = taskDescription;
         this.correctAnswer = correctAnswer;

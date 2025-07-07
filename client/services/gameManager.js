@@ -2,8 +2,7 @@ import { Riddle } from '../classes/Riddle.js';
 import { Player } from '../classes/Player.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import { createRiddleService, readAllRiddlesService, updateRiddleService, deleteRiddleService } from '../../server/services/gameService.js';
-import { updatePlayerLowestTime } from '../playerManager.js';
-import readline from 'readline-sync';
+import { updatePlayerLowestTime } from './playerManager.js';
 
 // Create a new riddle
 export async function createRiddle(riddleData) {

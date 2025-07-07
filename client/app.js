@@ -1,7 +1,7 @@
-import { Player } from '../server/classes/Player.js';
-import { Riddle } from '../server/classes/Riddle.js';
-import * as gameManager from '../server/services/gameManager.js';
-import * as playerManager from '../server/services/playerManager.js';
+import { Player } from './classes/Player.js';
+import { Riddle } from './classes/Riddle.js';
+import * as gameManager from './services/gameManager.js';
+import * as playerManager from './services/playerManager.js';
 import readline from 'readline-sync';
 
 

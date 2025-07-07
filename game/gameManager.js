@@ -1,10 +1,10 @@
 import { Riddle } from '../classes/Riddle.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
-import { create } from '../modules/create.js';
-import { read } from '../modules/read.js';
-import { update } from '../modules/update.js';
-import { deleteRiddle } from '../modules/delete.js';
+import { create, read, update, remove } from '../modules/crud.js';
 import readline from 'readline-sync';
+
+const riddleDBPath = "C:\\JSProjects\\RiddleGame\\DAL\\riddles\\riddleDb.txt";
+
 
 // Create a new riddle
 export async function createRiddle() {
@@ -26,7 +26,7 @@ export async function createRiddle() {
         else {
             riddle = new Riddle(name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
         }
-        await create(riddle);
+        await create(riddle, riddleDBPath);
     } catch (err) {
         console.log("Failed to create riddle:", err.message);
     }
@@ -35,7 +35,7 @@ export async function createRiddle() {
 // Read all riddles
 export async function readAllRiddles() {
     try {
-        const riddles = await read();
+        const riddles = await read(riddleDBPath);
         riddles.forEach(riddle => {
             console.log(`ID: ${riddle.id}, Name: ${riddle.name}, Difficulty: ${riddle.difficulty}`);
             console.log(`Description: ${riddle.taskDescription}`);
@@ -66,7 +66,7 @@ export async function updateRiddle() {
         } else {
             value = readline.question(`Enter new value for ${field}: `);
         }
-        await update(id, { [field]: value });
+        await update(id, { [field]: value }, riddleDBPath);
     } catch (err) {
         console.log("Failed to update riddle:", err.message);
     }
@@ -76,7 +76,7 @@ export async function updateRiddle() {
 export async function delete_r() {
     try {
         const id = Number(readline.question('Enter the ID of the riddle to delete: '));
-        await deleteRiddle(id);
+        await remove(id, riddleDBPath);
     } catch (err) {
         console.log("Failed to delete riddle:", err.message);
     }

@@ -89,13 +89,13 @@ export async function loadRiddlesByLevel(level) {
     const riddles = allRiddles.map(riddle => {
         if ('choices' in riddle) {
             return new MultipleChoiceRiddle(
-                riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices
+                riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices, riddle.id
             );
         } else {
             return new Riddle(
-                riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint
+                riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.id
             );
         }
     });

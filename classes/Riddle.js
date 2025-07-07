@@ -33,9 +33,14 @@ export class Riddle {
      * @param {string} difficulty - The difficulty level of the riddle.
      * @param {number} timeLimit - The time limit for solving the riddle.
      * @param {string} hint - A hint for the riddle.
+     * @param {number} [id] - (Optional) The riddle's ID. If not provided, auto-assign.
      */
-    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
-        this.id = id;
+    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint, id) {
+        if (id !== undefined && id !== null) {
+            this.id = id;
+        } else {
+            this.id = Riddle.nextId++;
+        }
         this.name = name;
         this.taskDescription = taskDescription;
         this.correctAnswer = correctAnswer;

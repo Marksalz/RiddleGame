@@ -10,7 +10,7 @@
   },
   {
     "id": 2,
-    "name": "Classic Riddle",
+    "name": "class riddle",
     "taskDescription": "What has keys but can't open locks?",
     "correctAnswer": "Piano",
     "difficulty": "easy",
@@ -60,18 +60,12 @@
     "hint": "It's the only number divisible by 2."
   },
   {
-    "id": 7,
-    "name": "Square Root",
-    "taskDescription": "What is the square root of 49?",
-    "correctAnswer": "7",
-    "choices": [
-      "6",
-      "7",
-      "8",
-      "9"
-    ],
-    "difficulty": "hard",
-    "timeLimit": 20,
-    "hint": "It's a single-digit number that when multiplied by itself gives 49."
+    "id": 8,
+    "name": "ABC",
+    "taskDescription": "What comes after D?",
+    "correctAnswer": "E",
+    "difficulty": "easy",
+    "timeLimit": 8,
+    "hint": "maybe E..."
   }
 ]

@@ -24,6 +24,7 @@ async function main() {
         console.log("6. View leaderboard");
         console.log("0. Exit");
         const choice = readline.question('Enter your choice: ');
+        console.log();
 
         switch (choice) {
             case '1':

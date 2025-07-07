@@ -16,14 +16,14 @@ export async function welcomePlayer(name) {
     let players = await read(playerDbPath);
     let player = players.find(p => p.name.toLowerCase() === name.toLowerCase());
     if (player) {
-        if (player.lowestTime !== undefined) {
+        if (player.lowestTime !== null) {
             console.log(`Hi ${player.name}! Your previous lowest time was ${player.lowestTime} seconds.\n`);
         } else {
             console.log(`Hi ${player.name}! Welcome back!\n`);
         }
     } else {
         const newId = getNextPlayerId(players);
-        const newPlayer = { id: newId, name, lowestTime: undefined };
+        const newPlayer = { id: newId, name, lowestTime: null };
         await create(newPlayer, playerDbPath);
         console.log(`Hi ${name}! Welcome to your first game!\n`);
         player = newPlayer;
@@ -32,7 +32,14 @@ export async function welcomePlayer(name) {
 }
 
 export async function updatePlayerLowestTime(id, time) {
-    await update(id, { ["lowestTime"]: time }, playerDbPath);
+    const players = await read(playerDbPath);
+    const player = players.find(p => p.id === id);
+    if (!player) {
+        throw new Error("Player not found");
+    }
+    if (player.lowestTime === null || time < player.lowestTime) {
+        await update(id, { lowestTime: time }, playerDbPath);
+    }
 }
 
 

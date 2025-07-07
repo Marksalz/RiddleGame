@@ -73,14 +73,5 @@
     "difficulty": "hard",
     "timeLimit": 20,
     "hint": "It's a single-digit number that when multiplied by itself gives 49."
-  },
-  {
-    "id": 9,
-    "name": "hdshdkj",
-    "taskDescription": "asdknansd",
-    "correctAnswer": "7",
-    "difficulty": "hard",
-    "timeLimit": 8,
-    "hint": "akajkaj"
   }
 ]

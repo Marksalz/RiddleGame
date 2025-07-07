@@ -1,4 +1,5 @@
 import { Riddle } from '../classes/Riddle.js';
+import { Player } from '../classes/Player.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import { create, read, update, remove } from '../modules/crud.js';
 import { updatePlayerLowestTime } from './playerManager.js';
@@ -98,9 +99,6 @@ export async function loadRiddlesByLevel(level) {
             );
         }
     });
-    console.log(allRiddles);
-    console.log();
-    console.log(riddles);
     return riddles.filter(riddle =>
         riddle.difficulty &&
         riddle.difficulty.toLowerCase().trim() === level.toLowerCase().trim()

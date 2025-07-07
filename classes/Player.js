@@ -22,6 +22,6 @@ export class Player {
         if (this.lowestTime === null || time < this.lowestTime) {
             this.lowestTime = time;
         }
-        return this.time;
+        return this.lowestTime;
     }
 }

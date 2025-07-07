@@ -1,23 +1,3 @@
-/**
- * Riddle Game Application
- * 
- * This script is the entry point for the Riddle Game.
- * It prompts the user for their name and difficulty level,
- * loads riddles accordingly, and manages the game flow.
- * 
- * Main Steps:
- * 1. Greet the user and get their name.
- * 2. Ask for the desired difficulty level.
- * 3. Load riddles for the chosen level.
- * 4. Present each riddle to the player with a timer.
- * 5. Show the player's statistics at the end.
- * 
- * Dependencies:
- * - Player class (./classes/Player.js)
- * - Game manager functions (./game/gameManager.js)
- * - readline-sync for user input
- */
-
 import { Player } from './classes/Player.js';
 import { Riddle } from './classes/Riddle.js';
 import * as gameManager from './game/gameManager.js';

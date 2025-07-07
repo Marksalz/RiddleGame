@@ -2,7 +2,7 @@
   "name": "riddlegame",
   "version": "1.0.0",
   "description": "A terminal-based Riddle Game built with JavaScript (ES Modules) and Object-Oriented Programming.",
-  "main": "app.js",
+  "main": "client/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

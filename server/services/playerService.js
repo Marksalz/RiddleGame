@@ -6,7 +6,14 @@ function getNextPlayerId(players) {
     return players.length > 0 ? Math.max(...players.map(p => p.id)) + 1 : 1;
 }
 
+function validatePlayerName(name) {
+    if (!name || typeof name !== "string" || name.trim().length === 0) {
+        throw new Error("Invalid player name.");
+    }
+}
+
 export async function getOrCreatePlayer(name) {
+    validatePlayerName(name);
     let players = await read(playerDbPath);
     let player = players.find(p => p.name.toLowerCase() === name.toLowerCase());
     if (!player) {

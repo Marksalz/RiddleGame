@@ -1,4 +1,5 @@
 import { getOrCreatePlayer, updatePlayerTime, getLeaderboard } from "../../server/services/playerService.js";
+import { Player } from "../classes/Player.js";
 
 export async function welcomePlayer(name) {
     let player = await getOrCreatePlayer(name);
@@ -7,7 +8,7 @@ export async function welcomePlayer(name) {
     } else {
         console.log(`Hi ${player.name}! Welcome to your first game!\n`);
     }
-    return player;
+    return new Player(player.id, player.name, player.lowestTime);
 }
 
 export async function updatePlayerLowestTime(id, time) {

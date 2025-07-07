@@ -5,7 +5,6 @@ export async function create(item, dbPath) {
         let dbArray = JSON.parse(await readFile(dbPath, 'utf8'));
         dbArray.push(item);
         await writeFile(dbPath, JSON.stringify(dbArray, null, 2), "utf8");
-        console.log("Item added successfully!");
     } catch (err) {
         throw new Error("Error creating item: " + err.message);
     }
@@ -35,7 +34,6 @@ export async function update(id, newData, dbPath) {
         }
         dbArray[index] = updatedItem;
         await writeFile(dbPath, JSON.stringify(dbArray, null, 2), "utf8");
-        console.log("Item updated successfully!");
     } catch (err) {
         throw new Error("Error updating item: " + err.message);
     }
@@ -50,7 +48,6 @@ export async function remove(id, dbPath) {
         }
         dbArray.splice(index, 1);
         await writeFile(dbPath, JSON.stringify(dbArray, null, 2), "utf8");
-        console.log("Item deleted successfully!");
     } catch (err) {
         throw new Error("Error deleting item: " + err.message);
     }

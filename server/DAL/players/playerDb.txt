@@ -12,6 +12,6 @@
   {
     "id": 3,
     "name": "Mark",
-    "lowestTime": 3.309
+    "lowestTime": 2.275
   }
 ]

@@ -1,14 +1,16 @@
-import { Player } from './classes/Player.js';
-import { Riddle } from './classes/Riddle.js';
 import * as gameManager from './services/gameManager.js';
 import * as playerManager from './services/playerManager.js';
 import readline from 'readline-sync';
 
 
 async function main() {
-    await Riddle.initializeNextIdFromDb();
     console.log("Welcome to the Riddle game! ");
-    const name = readline.question('What is your name? ');
+    let name;
+    while (true) {
+        name = readline.question('What is your name? ');
+        if (name && name.trim().length > 0) break;
+        console.log("Name cannot be empty. Please enter your name.");
+    }
     console.log();
 
     let exit = false;
@@ -28,7 +30,12 @@ async function main() {
 
         switch (choice) {
             case '1':
-                const level = readline.question('Choose difficulty: easy / medium / hard: ');
+                let level;
+                while (true) {
+                    level = readline.question('Choose difficulty: easy / medium / hard: ');
+                    if (["easy", "medium", "hard"].includes(level.toLowerCase().trim())) break;
+                    console.log("Invalid difficulty. Please enter easy, medium, or hard.");
+                }
                 console.log();
                 let riddles = await gameManager.loadRiddlesByLevel(level);
                 for (const riddle of riddles) {
@@ -37,17 +44,53 @@ async function main() {
                 break;
             case '2':
                 // Collect riddle data from user
-                const name = readline.question('Enter riddle name: ');
-                const taskDescription = readline.question('Enter riddle description: ');
-                const correctAnswer = readline.question('Enter correct answer: ');
-                const difficulty = readline.question('Enter difficulty (easy/medium/hard): ');
-                const timeLimit = Number(readline.question('Enter time limit (seconds): '));
-                const hint = readline.question('Enter a hint: ');
-                let riddleData = { name, taskDescription, correctAnswer, difficulty, timeLimit, hint };
+                let riddleName;
+                while (true) {
+                    riddleName = readline.question('Enter riddle name: ');
+                    if (riddleName && riddleName.trim().length > 0) break;
+                    console.log("Riddle name cannot be empty.");
+                }
+                let taskDescription;
+                while (true) {
+                    taskDescription = readline.question('Enter riddle description: ');
+                    if (taskDescription && taskDescription.trim().length > 0) break;
+                    console.log("Description cannot be empty.");
+                }
+                let correctAnswer;
+                while (true) {
+                    correctAnswer = readline.question('Enter correct answer: ');
+                    if (correctAnswer && correctAnswer.trim().length > 0) break;
+                    console.log("Answer cannot be empty.");
+                }
+                let difficulty;
+                while (true) {
+                    difficulty = readline.question('Enter difficulty (easy/medium/hard): ');
+                    if (["easy", "medium", "hard"].includes(difficulty.toLowerCase().trim())) break;
+                    console.log("Invalid difficulty. Please enter easy, medium, or hard.");
+                }
+                let timeLimit;
+                while (true) {
+                    timeLimit = Number(readline.question('Enter time limit (seconds): '));
+                    if (!isNaN(timeLimit) && timeLimit > 0) break;
+                    console.log("Time limit must be a positive number.");
+                }
+                let hint;
+                while (true) {
+                    hint = readline.question('Enter a hint: ');
+                    if (hint && hint.trim().length > 0) break;
+                    console.log("Hint cannot be empty.");
+                }
+                let riddleData = { name: riddleName, taskDescription, correctAnswer, difficulty, timeLimit, hint };
                 if (readline.keyInYN('Is this a multiple choice riddle?')) {
                     let choices = [];
                     for (let i = 1; i <= 4; i++) {
-                        choices.push(readline.question(`Enter choice ${i}: `));
+                        let choiceText;
+                        while (true) {
+                            choiceText = readline.question(`Enter choice ${i}: `);
+                            if (choiceText && choiceText.trim().length > 0) break;
+                            console.log("Choice cannot be empty.");
+                        }
+                        choices.push(choiceText);
                     }
                     riddleData.choices = choices;
                 }

@@ -1,31 +1,9 @@
-import fs from 'fs';
 import readline from 'readline-sync';
-import { read } from '../../server/DAL/crud.js';
-
-const riddleDBPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\riddles\\riddleDb.txt";
 
 /**
  * Represents a riddle with a question, answer, and related metadata.
  */
 export class Riddle {
-
-    static nextId = 0;
-
-    /**
-     * Initializes the nextId based on the highest ID in the db file.
-     * Call this ONCE before creating any riddles.
-     */
-    static async initializeNextIdFromDb() {
-        try {
-            const riddles = await read(riddleDBPath);
-            const maxId = riddles.reduce((max, r) => Math.max(max, r.id), 0);
-            Riddle.nextId = maxId + 1;
-        } catch (err) {
-            // If file doesn't exist or is empty, keep nextId as 1
-            Riddle.nextId = 1;
-        }
-    }
-
     /**
      * @param {string} name - The name/title of the riddle.
      * @param {string} taskDescription - The riddle's description/question.
@@ -33,13 +11,11 @@ export class Riddle {
      * @param {string} difficulty - The difficulty level of the riddle.
      * @param {number} timeLimit - The time limit for solving the riddle.
      * @param {string} hint - A hint for the riddle.
-     * @param {number} [id] - (Optional) The riddle's ID. If not provided, auto-assign.
+     * @param {number} [id] - (Optional) The riddle's ID. If not provided, undefined.
      */
     constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint, id) {
         if (id !== undefined && id !== null) {
             this.id = id;
-        } else {
-            this.id = Riddle.nextId++;
         }
         this.name = name;
         this.taskDescription = taskDescription;

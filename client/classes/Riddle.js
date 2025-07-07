@@ -1,8 +1,8 @@
 import fs from 'fs';
 import readline from 'readline-sync';
-import { read } from '../modules/crud.js';
+import { read } from '../../server/DAL/crud.js';
 
-const riddleDBPath = "C:\\JSProjects\\RiddleGame\\DAL\\riddles\\riddleDb.txt";
+const riddleDBPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\riddles\\riddleDb.txt";
 
 /**
  * Represents a riddle with a question, answer, and related metadata.

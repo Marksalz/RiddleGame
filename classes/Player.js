@@ -7,7 +7,7 @@ export class Player {
      */
     constructor(name) {
         this.name = name;
-        this.times = [];
+        this.lowestTime = null;
     }
 
     /**
@@ -18,7 +18,10 @@ export class Player {
      */
     recordTime(start, end, penaltyTime) {
         const time = ((end - start) / 1000) + penaltyTime;
-        this.times.push(time);
+        if (this.lowestTime === null || time < this.lowestTime) {
+            this.lowestTime = time;
+        }
+        return this.time;
     }
 
     /**

@@ -12,7 +12,7 @@ async function main() {
     console.log();
 
     let exit = false;
-    const player = new Player(name);
+    await playerManager.welcomePlayer(name);
 
     while (!exit) {
         console.log("What do you want to do?");
@@ -33,7 +33,7 @@ async function main() {
                 riddles.forEach(riddle => {
                     gameManager.timedAsk(riddle, player)();
                 });
-                player.showStats();
+                //player.showStats();
                 break;
             case '2':
                 await gameManager.createRiddle();
@@ -48,7 +48,7 @@ async function main() {
                 await gameManager.delete_r();
                 break;
             case '6':
-                playerManager.viewLeaderboard();
+                await playerManager.viewLeaderboard();
                 break;
             case '0':
                 exit = true;

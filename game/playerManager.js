@@ -12,7 +12,9 @@ function getNextPlayerId(players) {
 }
 
 export async function welcomePlayer(name) {
-    let players = read(playerDbPath);
+    let players = await read(playerDbPath);
+    console.log(players);
+
     // try {
     //     players = JSON.parse(await readFile(playerDbPath, 'utf8'));
     // } catch (err) {
@@ -29,7 +31,7 @@ export async function welcomePlayer(name) {
     } else {
         const newId = getNextPlayerId(players);
         const newPlayer = { id: newId, name, lowestTime: undefined };
-        create(newPlayer, playerDbPath);
+        await create(newPlayer, playerDbPath);
         // players.push({ id: newId, name, lowestTime: undefined });
         // await writeFile(playerDbPath, JSON.stringify(players, null, 2), "utf8");
         console.log(`Hi ${name}! Welcome to your first game!\n`);
@@ -37,7 +39,7 @@ export async function welcomePlayer(name) {
 }
 
 export async function updatePlayerLowestTime(id, time) {
-    update(id, { ["lowestTime"]: time });
+    await update(id, { ["lowestTime"]: time });
 }
 
 

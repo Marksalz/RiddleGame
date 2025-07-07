@@ -8,5 +8,9 @@
     "id": 2,
     "name": "Sarah",
     "lowestTime": 65
+  },
+  {
+    "id": 3,
+    "name": "Mark"
   }
 ]

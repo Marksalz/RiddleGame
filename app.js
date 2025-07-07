@@ -1,6 +1,7 @@
 import { Player } from './classes/Player.js';
 import { Riddle } from './classes/Riddle.js';
 import * as gameManager from './game/gameManager.js';
+import * as playerManager from './game/playerManager.js'
 import readline from 'readline-sync';
 
 
@@ -47,7 +48,7 @@ async function main() {
                 await gameManager.delete_r();
                 break;
             case '6':
-                gameManager.viewLeaderboard();
+                playerManager.viewLeaderboard();
                 break;
             case '0':
                 exit = true;

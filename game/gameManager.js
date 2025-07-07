@@ -83,37 +83,42 @@ export async function delete_r() {
     }
 }
 
-export function loadRiddlesByLevel(level) {
-    let riddles = [];
-    const allRiddles = read(riddleDBPath);
-    allRiddles.forEach(riddle => {
+export async function loadRiddlesByLevel(level) {
+    const allRiddles = await read(riddleDBPath);
+    const riddles = allRiddles.map(riddle => {
         if ('choices' in riddle) {
-            riddles.push(new MultipleChoiceRiddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices));
-        }
-        else {
-            riddles.push(new Riddle(riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint));
+            return new MultipleChoiceRiddle(
+                riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices
+            );
+        } else {
+            return new Riddle(
+                riddle.id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint
+            );
         }
     });
-    const filterdRiddles = riddles.filter(riddle => riddle.difficulty === level);
-    return filterdRiddles;
+    console.log(allRiddles);
+    console.log();
+    console.log(riddles);
+    return riddles.filter(riddle =>
+        riddle.difficulty &&
+        riddle.difficulty.toLowerCase().trim() === level.toLowerCase().trim()
+    );
 }
 
-export function timedAsk(riddle, player) {
+export async function timedAsk(riddle, player) {
     let usedHint = false;
-    return function () {
-        const start = Date.now();
-        if (riddle instanceof MultipleChoiceRiddle) {
-            usedHint = riddle.askWithOptions();
-        }
-        else {
-            usedHint = riddle.ask();
-        }
-        const end = Date.now();
-        const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
-        updatePlayerLowestTime(player.id, time);
+    const start = Date.now();
+    if (riddle instanceof MultipleChoiceRiddle) {
+        usedHint = riddle.askWithOptions();
     }
+    else {
+        usedHint = riddle.ask();
+    }
+    const end = Date.now();
+    const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
+    await updatePlayerLowestTime(player.id, time);
 }
 
 export function calculatePenaltyTime(riddle, start, end, usedHint) {

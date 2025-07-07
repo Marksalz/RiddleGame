@@ -5,9 +5,10 @@ export class Player {
     /**
      * @param {string} name - The player's name.
      */
-    constructor(name) {
+    constructor(id, name, lowestTime = null) {
+        this.id = id;
         this.name = name;
-        this.lowestTime = null;
+        this.lowestTime = lowestTime;
     }
 
     /**
@@ -22,17 +23,5 @@ export class Player {
             this.lowestTime = time;
         }
         return this.time;
-    }
-
-    /**
-     * Displays the player's total and average time statistics.
-     */
-    showStats() {
-        let sum = 0;
-        this.times.forEach(time => { sum += time });
-        let avg = sum / this.times.length;
-
-        console.log(`Total time: ${sum.toFixed(2)} seconds`);
-        console.log(`Average time per riddle: ${avg.toFixed(2)} seconds\n`);
     }
 }

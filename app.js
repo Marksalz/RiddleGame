@@ -6,13 +6,13 @@ import readline from 'readline-sync';
 
 
 async function main() {
-    Riddle.initializeNextIdFromDb();
+    await Riddle.initializeNextIdFromDb();
     console.log("Welcome to the Riddle game! ");
     const name = readline.question('What is your name? ');
     console.log();
 
     let exit = false;
-    const player = new Player(name);
+    const player = await playerManager.welcomePlayer(name);
 
     while (!exit) {
         console.log("What do you want to do?");
@@ -29,11 +29,10 @@ async function main() {
             case '1':
                 const level = readline.question('Choose difficulty: easy / medium / hard: ');
                 console.log();
-                let riddles = gameManager.loadRiddles(level);
-                riddles.forEach(riddle => {
-                    gameManager.timedAsk(riddle, player)();
-                });
-                player.showStats();
+                let riddles = await gameManager.loadRiddlesByLevel(level);
+                for (const riddle of riddles) {
+                    await gameManager.timedAsk(riddle, player);
+                }
                 break;
             case '2':
                 await gameManager.createRiddle();
@@ -48,7 +47,7 @@ async function main() {
                 await gameManager.delete_r();
                 break;
             case '6':
-                playerManager.viewLeaderboard();
+                await playerManager.viewLeaderboard();
                 break;
             case '0':
                 exit = true;

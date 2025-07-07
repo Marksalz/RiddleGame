@@ -1,6 +1,8 @@
 import fs from 'fs';
 import readline from 'readline-sync';
-import { path } from '../modules/create.js';
+import { read } from '../modules/crud.js';
+
+const riddleDBPath = "C:\\JSProjects\\RiddleGame\\DAL\\riddles\\riddleDb.txt";
 
 /**
  * Represents a riddle with a question, answer, and related metadata.
@@ -13,10 +15,9 @@ export class Riddle {
      * Initializes the nextId based on the highest ID in the db file.
      * Call this ONCE before creating any riddles.
      */
-    static initializeNextIdFromDb() {
+    static async initializeNextIdFromDb() {
         try {
-            const data = fs.readFileSync(path, 'utf-8');
-            const riddles = JSON.parse(data);
+            const riddles = await read(riddleDBPath);
             const maxId = riddles.reduce((max, r) => Math.max(max, r.id), 0);
             Riddle.nextId = maxId + 1;
         } catch (err) {
@@ -33,8 +34,8 @@ export class Riddle {
      * @param {number} timeLimit - The time limit for solving the riddle.
      * @param {string} hint - A hint for the riddle.
      */
-    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
-        this.id = Riddle.nextId++;
+    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
+        this.id = id;
         this.name = name;
         this.taskDescription = taskDescription;
         this.correctAnswer = correctAnswer;

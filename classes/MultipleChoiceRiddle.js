@@ -15,8 +15,8 @@ export class MultipleChoiceRiddle extends Riddle {
      * @param {string} hint - A hint for the riddle.
      * @param {string[]} choices - The list of answer choices.
      */
-    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
-        super(name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
+    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices) {
+        super(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint);
         this.choices = choices;
     }
 

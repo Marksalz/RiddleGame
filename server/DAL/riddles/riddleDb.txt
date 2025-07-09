@@ -1,14 +1,5 @@
 [
   {
-    "id": 1,
-    "name": "Easy Math",
-    "taskDescription": "What is 5 + 3?",
-    "correctAnswer": "8",
-    "difficulty": "easy",
-    "timeLimit": 5,
-    "hint": "It's a single-digit number greater than 7."
-  },
-  {
     "id": 2,
     "name": "class riddle",
     "taskDescription": "What has keys but can't open locks?",
@@ -67,5 +58,14 @@
     "difficulty": "easy",
     "timeLimit": 8,
     "hint": "maybe E..."
+  },
+  {
+    "id": 9,
+    "name": "Sample Riddle",
+    "taskDescription": "What has a head and a tail but no body?",
+    "correctAnswer": "Coin",
+    "difficulty": "easy",
+    "timeLimit": 10,
+    "hint": "It's money."
   }
 ]

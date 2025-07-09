@@ -2,6 +2,7 @@ import express from "express";
 import router from "./router.js";
 
 const server = express();
+
 server.use(express.json());
 server.use("/api", router);
 

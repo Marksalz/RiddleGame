@@ -1,5 +1,5 @@
-import * as gameManager from './services/gameManager.js';
-import * as playerManager from './services/playerManager.js';
+import * as gameManager from './client.services/gameManager.js';
+import * as playerManager from './client.services/playerManager.js';
 import readline from 'readline-sync';
 
 

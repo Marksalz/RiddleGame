@@ -52,3 +52,13 @@ export async function remove(id, dbPath) {
         throw new Error("Error deleting item: " + err.message);
     }
 }
+
+
+// Client:
+//clean app transfer logs to managers
+//move manager to service and move service to client
+
+//Server:
+//server.js builds server and calls routes
+// routes deal with all endpoint options
+//route will call controllers who implement the endpoint using the crud and dal.

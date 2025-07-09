@@ -1,4 +1,5 @@
-import { getOrCreatePlayer, updatePlayerTime, getLeaderboard } from "../../server/services/playerService.js";
+import { getOrCreatePlayer, updatePlayerTime, getLeaderboard }
+    from "../../server/server.services/playerService.js";
 import { Player } from "../classes/Player.js";
 
 export async function welcomePlayer(name) {

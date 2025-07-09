@@ -15,17 +15,16 @@ riddleRouter.post("/create_riddle", async (req, res) => {
 riddleRouter.get("/read_all_riddles", async (req, res) => {
     try {
         const riddles = await riddleCtrl.readAllRiddles();
-        console.log("Riddles fetched:", riddles); // Add this line
         res.json(riddles);
     } catch (err) {
-        console.error("Error:", err); // Add this line
         res.status(500).json({ error: err.message });
     }
 });
 
-riddleRouter.put("/update_riddle", async (req, res) => {
+riddleRouter.put("/update_riddle/:id", async (req, res) => {
     try {
-        const { id, field, value } = req.body;
+        const { field, value } = req.body;
+        const id = Number(req.params.id);
         await riddleCtrl.updateRiddle(id, field, value);
         res.json({ message: "Riddle updated successfully" });
     } catch (err) {
@@ -33,9 +32,10 @@ riddleRouter.put("/update_riddle", async (req, res) => {
     }
 });
 
-riddleRouter.delete("/delete_riddle", async (req, res) => {
+
+riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
     try {
-        const { id } = req.body;
+        const id = Number(req.params.id);
         await riddleCtrl.deleteRiddle(id);
         res.json({ message: "Riddle deleted successfully" });
     } catch (err) {

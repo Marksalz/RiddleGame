@@ -32,7 +32,7 @@ function validatePlayerName(name) {
 }
 
 export async function updatePlayerTime(id, time) {
-    const players = await read(playerDbPath);
+    const players = await crud.read(playerDbPath);
     const player = players.find(p => p.id === id);
     if (!player) throw new Error("Player not found");
     if (player.lowestTime === null || time < player.lowestTime) {
@@ -42,5 +42,6 @@ export async function updatePlayerTime(id, time) {
 
 export const playerCtrl = {
     getOrCreatePlayer,
-    getLeaderboard
-}
+    getLeaderboard,
+    updatePlayerTime
+};

@@ -5,7 +5,7 @@ import * as playerManager from './playerManager.js';
 import readline from 'readline-sync';
 
 export async function loadRiddlesByLevel(level) {
-    const allRiddles = await readAllRiddlesService();
+    const allRiddles = await riddleService.readAllRiddles();
     const riddles = allRiddles.map(riddle => {
         if ('choices' in riddle) {
             return new MultipleChoiceRiddle(

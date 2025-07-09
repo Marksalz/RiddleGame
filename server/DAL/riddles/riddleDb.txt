@@ -1,14 +1,5 @@
 [
   {
-    "id": 2,
-    "name": "class riddle",
-    "taskDescription": "What has keys but can't open locks?",
-    "correctAnswer": "Piano",
-    "difficulty": "easy",
-    "timeLimit": 20,
-    "hint": "It's a musical instrument."
-  },
-  {
     "id": 3,
     "name": "Logic Puzzle",
     "taskDescription": "I speak without a mouth and hear without ears. What am I?",
@@ -85,5 +76,14 @@
     "difficulty": "easy",
     "timeLimit": 10,
     "hint": "It's money."
+  },
+  {
+    "id": 12,
+    "name": "Test1",
+    "taskDescription": "2+2",
+    "correctAnswer": "4",
+    "difficulty": "easy",
+    "timeLimit": 5,
+    "hint": "4..."
   }
 ]

@@ -1,7 +1,7 @@
 import { Riddle } from '../classes/Riddle.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
-import * as riddleService from '../api/riddleService.js';
-import { updatePlayerLowestTime } from './playerManager.js';
+import * as riddleService from '../services/riddleService.js';
+import * as playerManager from './playerManager.js';
 import readline from 'readline-sync';
 
 export async function loadRiddlesByLevel(level) {
@@ -36,7 +36,7 @@ export async function timedAsk(riddle, player) {
     }
     const end = Date.now();
     const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
-    await updatePlayerLowestTime(player.id, time);
+    await playerManager.updatePlayerLowestTime(player.id, time);
 }
 
 export function calculatePenaltyTime(riddle, start, end, usedHint) {

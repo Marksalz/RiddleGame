@@ -1,4 +1,4 @@
-import { create, read, update } from "../DAL/crud.js";
+import * as crud from "../DAL/crud.js"
 
 const playerDbPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\players\\playerDb.txt";
 
@@ -19,7 +19,7 @@ export async function getOrCreatePlayer(name) {
     if (!player) {
         const newId = getNextPlayerId(players);
         player = { id: newId, name, lowestTime: null };
-        await create(player, playerDbPath);
+        await crud.create(player, playerDbPath);
     }
     return player;
 }
@@ -29,12 +29,12 @@ export async function updatePlayerTime(id, time) {
     const player = players.find(p => p.id === id);
     if (!player) throw new Error("Player not found");
     if (player.lowestTime === null || time < player.lowestTime) {
-        await update(id, { lowestTime: time }, playerDbPath);
+        await crud.update(id, { lowestTime: time }, playerDbPath);
     }
 }
 
 export async function getLeaderboard() {
-    const players = await read(playerDbPath);
+    const players = await crud.read(playerDbPath);
     return players
         .filter(p => typeof p.lowestTime === "number")
         .sort((a, b) => a.lowestTime - b.lowestTime);

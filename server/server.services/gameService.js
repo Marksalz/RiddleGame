@@ -1,4 +1,4 @@
-import { create, read, update, remove } from "../DAL/crud.js";
+import * as crud from "../DAL/crud.js"
 
 const riddleDBPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\riddles\\riddleDb.txt";
 
@@ -22,7 +22,7 @@ function validateRiddle(riddle) {
 }
 
 export async function createRiddleService(riddle) {
-    const riddles = await read(riddleDBPath);
+    const riddles = await crud.read(riddleDBPath);
     const newId = getNextRiddleId(riddles);
     validateRiddle(riddle);
     riddle.id = newId;
@@ -30,13 +30,16 @@ export async function createRiddleService(riddle) {
 }
 
 export async function readAllRiddlesService() {
-    return await read(riddleDBPath);
+    return await crud.read(riddleDBPath);
 }
 
 export async function updateRiddleService(id, field, value) {
-    await update(id, { [field]: value }, riddleDBPath);
+    await crud.update(id, { [field]: value }, riddleDBPath);
 }
 
 export async function deleteRiddleService(id) {
-    await remove(id, riddleDBPath);
+    await crud.remove(id, riddleDBPath);
 }
+
+
+//Material icon theme

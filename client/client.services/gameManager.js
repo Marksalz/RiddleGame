@@ -1,7 +1,7 @@
 import { Riddle } from '../classes/Riddle.js';
-import { Player } from '../classes/Player.js'
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
-import { createRiddleService, readAllRiddlesService, updateRiddleService, deleteRiddleService } from '../../server/services/gameService.js';
+import { createRiddleService, readAllRiddlesService, updateRiddleService, deleteRiddleService }
+    from '../../server/server.services/gameService.js';
 import { updatePlayerLowestTime } from './playerManager.js';
 
 // Create a new riddle

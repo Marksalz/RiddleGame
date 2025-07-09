@@ -1,9 +1,8 @@
-import { getOrCreatePlayer, updatePlayerTime, getLeaderboard }
-    from "../../server/server.services/playerService.js";
-import { Player } from "../classes/Player.js";
+import * as playerService from '../services/playerService.js';
+import { Player } from '../classes/Player.js';
 
 export async function welcomePlayer(name) {
-    let player = await getOrCreatePlayer(name);
+    let player = await playerService.getOrCreatePlayer(name);
     if (player.lowestTime !== null) {
         console.log(`Hi ${player.name}! Your previous lowest time was ${player.lowestTime} seconds.\n`);
     } else {
@@ -13,12 +12,12 @@ export async function welcomePlayer(name) {
 }
 
 export async function updatePlayerLowestTime(id, time) {
-    await updatePlayerTime(id, time);
+    await playerService.updatePlayerTime(id, time);
 }
 
 export async function viewLeaderboard() {
     try {
-        const ranked = await getLeaderboard();
+        const ranked = await playerService.getLeaderboard();
         if (ranked.length === 0) {
             console.log("No leaderboard data available yet.");
             return;

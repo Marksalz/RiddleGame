@@ -55,7 +55,7 @@ export async function remove(id, dbPath) {
 
 
 // Client:
-//clean app transfer logs to managers
+//clean app, transfer logs to managers
 //move manager to service and move service to client
 
 //Server:

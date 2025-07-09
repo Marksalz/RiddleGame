@@ -4,7 +4,7 @@ const playerDbPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\players\\playerDb
 
 export async function getOrCreatePlayer(name) {
     validatePlayerName(name);
-    let players = await read(playerDbPath);
+    let players = await crud.read(playerDbPath);
     let player = players.find(p => p.name.toLowerCase() === name.toLowerCase());
     if (!player) {
         const newId = getNextPlayerId(players);

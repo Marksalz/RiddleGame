@@ -1,6 +1,5 @@
 import express from "express";
 import { playerCtrl } from "../controllers/playerController.js";
-import { updatePlayerTime } from "../controllers/playerController.js";
 const playerRouter = express.Router();
 
 playerRouter.post("/create_player", async (req, res) => {
@@ -27,7 +26,7 @@ playerRouter.put("/update_time/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
         const { time } = req.body;
-        await updatePlayerTime(id, time);
+        await playerCtrl.updatePlayerTime(id, time);
         res.json({ message: "Player time updated successfully" });
     } catch (err) {
         res.status(400).json({ error: err.message });

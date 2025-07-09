@@ -28,7 +28,7 @@
   },
   {
     "id": 6,
-    "name": "Even number",
+    "name": "kkk",
     "taskDescription": "Which of the following numbers is even?",
     "correctAnswer": "8",
     "choices": [

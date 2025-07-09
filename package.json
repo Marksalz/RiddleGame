@@ -4,7 +4,8 @@
   "description": "A terminal-based Riddle Game built with JavaScript (ES Modules) and Object-Oriented Programming.",
   "main": "client/app.js",
   "scripts": {
-    "start": "node --watch server/server.js",
+    "startServer": "node --watch server/server.js",
+    "startApp": "node client/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

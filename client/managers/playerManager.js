@@ -1,7 +1,7 @@
-import * as playerService from '../services/playerService.js';
+import * as playerService from '../services/playerService.js'
 import { Player } from '../classes/Player.js';
 
-export async function welcomePlayer(name) {
+export async function checkPlayer(name) {
     const player = await playerService.getOrCreatePlayer(name);
     if (player.error) {
         console.log(`Error: ${player.error}`);

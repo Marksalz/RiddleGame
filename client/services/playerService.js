@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:4545/api/players";
+import { PORT } from '../../server/server.js';
+
+const BASE_URL = `http://localhost:${PORT}/api/players`;
 
 async function handleResponse(res, action) {
     try {

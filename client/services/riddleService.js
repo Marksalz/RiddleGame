@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:4545/api/riddles";
+import { PORT } from '../../server/server.js';
+
+const BASE_URL = `http://localhost:${PORT}/api/riddles`;
 
 async function handleResponse(res, action) {
     try {
@@ -26,12 +28,12 @@ export async function createRiddle(riddle) {
 }
 
 export async function readAllRiddles(difficulty) {
-    let url = "/api/riddles/read_all_riddles";
+    let url = "/read_all_riddles";
     if (difficulty) {
         url += `/${encodeURIComponent(difficulty)}`;
     }
     try {
-        const response = await fetch(url);
+        const response = await fetch(BASE_URL + url);
         return await response.json();
     } catch (err) {
         return { error: "Failed to fetch riddles.", details: err.message };

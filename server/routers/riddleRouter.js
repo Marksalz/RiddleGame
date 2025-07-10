@@ -8,7 +8,7 @@ riddleRouter.post("/create_riddle", async (req, res) => {
         await riddleCtrl.createRiddle(riddle);
         res.json({ message: "Riddle created successfully" });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Failed to create riddle.", details: err.message });
     }
 });
 
@@ -17,7 +17,7 @@ riddleRouter.get("/read_all_riddles", async (req, res) => {
         const riddles = await riddleCtrl.readAllRiddles();
         res.json(riddles);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: "Failed to fetch riddles.", details: err.message });
     }
 });
 
@@ -28,10 +28,9 @@ riddleRouter.put("/update_riddle/:id", async (req, res) => {
         await riddleCtrl.updateRiddle(id, field, value);
         res.json({ message: "Riddle updated successfully" });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Failed to update riddle.", details: err.message });
     }
 });
-
 
 riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
     try {
@@ -39,7 +38,7 @@ riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
         await riddleCtrl.deleteRiddle(id);
         res.json({ message: "Riddle deleted successfully" });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Failed to delete riddle.", details: err.message });
     }
 });
 

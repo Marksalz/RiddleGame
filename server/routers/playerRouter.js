@@ -8,7 +8,7 @@ playerRouter.post("/create_player", async (req, res) => {
         const player = await playerCtrl.getOrCreatePlayer(name);
         res.json(player);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Failed to create or get player.", details: err.message });
     }
 });
 
@@ -17,7 +17,7 @@ playerRouter.get("/leaderboard", async (req, res) => {
         const leaderboard = await playerCtrl.getLeaderboard();
         res.json(leaderboard);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: "Failed to fetch leaderboard.", details: err.message });
     }
 });
 
@@ -29,7 +29,7 @@ playerRouter.put("/update_time/:id", async (req, res) => {
         await playerCtrl.updatePlayerTime(id, time);
         res.json({ message: "Player time updated successfully" });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ error: "Failed to update player time.", details: err.message });
     }
 });
 

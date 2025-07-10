@@ -12,11 +12,16 @@
   {
     "id": 3,
     "name": "Mark",
-    "lowestTime": 2.275
+    "lowestTime": 1.083
   },
   {
     "id": 4,
     "name": "Adina",
     "lowestTime": 1.457
+  },
+  {
+    "id": 5,
+    "name": "Mark2",
+    "lowestTime": 1.101
   }
 ]

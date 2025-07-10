@@ -12,9 +12,21 @@ riddleRouter.post("/create_riddle", async (req, res) => {
     }
 });
 
+// Route for all riddles (no difficulty)
 riddleRouter.get("/read_all_riddles", async (req, res) => {
     try {
         const riddles = await riddleCtrl.readAllRiddles();
+        res.json(riddles);
+    } catch (err) {
+        res.status(500).json({ error: "Failed to fetch riddles.", details: err.message });
+    }
+});
+
+// Route for riddles by difficulty
+riddleRouter.get("/read_all_riddles/:difficulty", async (req, res) => {
+    try {
+        const { difficulty } = req.params;
+        const riddles = await riddleCtrl.readAllRiddles(difficulty);
         res.json(riddles);
     } catch (err) {
         res.status(500).json({ error: "Failed to fetch riddles.", details: err.message });

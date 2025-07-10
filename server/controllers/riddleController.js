@@ -14,9 +14,16 @@ export async function createRiddle(riddle) {
     }
 }
 
-export async function readAllRiddles() {
+export async function readAllRiddles(difficulty) {
     try {
-        return await crud.read(riddleDBPath);
+        const riddles = await crud.read(riddleDBPath);
+        if (difficulty) {
+            return riddles.filter(r =>
+                r.difficulty &&
+                r.difficulty.toLowerCase().trim() === difficulty.toLowerCase().trim()
+            );
+        }
+        return riddles;
     } catch (err) {
         throw new Error("Could not read riddles: " + err.message);
     }

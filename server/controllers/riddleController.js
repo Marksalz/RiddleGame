@@ -3,23 +3,39 @@ import * as crud from "../DAL/crud.js"
 const riddleDBPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\riddles\\riddleDb.txt";
 
 export async function createRiddle(riddle) {
-    const riddles = await crud.read(riddleDBPath);
-    const newId = getNextRiddleId(riddles);
-    validateRiddle(riddle);
-    const riddleWithId = { id: newId, ...riddle };
-    await crud.create(riddleWithId, riddleDBPath);
+    try {
+        const riddles = await crud.read(riddleDBPath);
+        const newId = getNextRiddleId(riddles);
+        validateRiddle(riddle);
+        const riddleWithId = { id: newId, ...riddle };
+        await crud.create(riddleWithId, riddleDBPath);
+    } catch (err) {
+        throw new Error("Could not create riddle: " + err.message);
+    }
 }
 
 export async function readAllRiddles() {
-    return await crud.read(riddleDBPath);
+    try {
+        return await crud.read(riddleDBPath);
+    } catch (err) {
+        throw new Error("Could not read riddles: " + err.message);
+    }
 }
 
 export async function updateRiddle(id, field, value) {
-    await crud.update(id, { [field]: value }, riddleDBPath);
+    try {
+        await crud.update(id, { [field]: value }, riddleDBPath);
+    } catch (err) {
+        throw new Error("Could not update riddle: " + err.message);
+    }
 }
 
 export async function deleteRiddle(id) {
-    await crud.remove(id, riddleDBPath);
+    try {
+        await crud.remove(id, riddleDBPath);
+    } catch (err) {
+        throw new Error("Could not delete riddle: " + err.message);
+    }
 }
 
 function getNextRiddleId(riddles) {

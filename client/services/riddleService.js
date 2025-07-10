@@ -1,35 +1,59 @@
 const BASE_URL = "http://localhost:4545/api/riddles";
 
+async function handleResponse(res, action) {
+    try {
+        const data = await res.json();
+        if (!res.ok) {
+            return { error: `Failed to ${action}.`, details: data.error || data };
+        }
+        return data;
+    } catch (err) {
+        return { error: `Failed to ${action}.`, details: "Invalid server response." };
+    }
+}
+
 export async function createRiddle(riddle) {
-    const res = await fetch(`${BASE_URL}/create_riddle`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(riddle)
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/create_riddle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(riddle)
+        });
+        return await handleResponse(res, "create riddle");
+    } catch (err) {
+        return { error: "Network error: Failed to create riddle.", details: err.message };
+    }
 }
 
 export async function readAllRiddles() {
-    const res = await fetch(`${BASE_URL}/read_all_riddles`);
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/read_all_riddles`);
+        return await handleResponse(res, "fetch riddles");
+    } catch (err) {
+        return { error: "Network error: Failed to fetch riddles.", details: err.message };
+    }
 }
 
 export async function updateRiddle(id, field, value) {
-    const res = await fetch(`${BASE_URL}/update_riddle/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ field, value })
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/update_riddle/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ field, value })
+        });
+        return await handleResponse(res, "update riddle");
+    } catch (err) {
+        return { error: "Network error: Failed to update riddle.", details: err.message };
+    }
 }
 
 export async function deleteRiddle(id) {
-    const res = await fetch(`${BASE_URL}/delete_riddle/${id}`, {
-        method: "DELETE"
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
+    try {
+        const res = await fetch(`${BASE_URL}/delete_riddle/${id}`, {
+            method: "DELETE"
+        });
+        return await handleResponse(res, "delete riddle");
+    } catch (err) {
+        return { error: "Network error: Failed to delete riddle.", details: err.message };
+    }
 }

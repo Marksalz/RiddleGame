@@ -1,4 +1,5 @@
 import { Riddle } from '../classes/Riddle.js';
+import { Player } from '../classes/Player.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import * as riddleService from '../services/riddleService.js';
 import * as playerManager from './playerManager.js';
@@ -6,6 +7,11 @@ import readline from 'readline-sync';
 
 export async function loadRiddlesByLevel(level) {
     const allRiddles = await riddleService.readAllRiddles();
+    if (allRiddles.error) {
+        console.log(`Error loading riddles: ${allRiddles.error}`);
+        if (allRiddles.details) console.log(`Details: ${allRiddles.details}`);
+        return [];
+    }
     const riddles = allRiddles.map(riddle => {
         if ('choices' in riddle) {
             return new MultipleChoiceRiddle(
@@ -25,7 +31,7 @@ export async function loadRiddlesByLevel(level) {
     );
 }
 
-export async function timedAsk(riddle, player) {
+export function timedAsk(riddle, player) {
     let usedHint = false;
     const start = Date.now();
     if (riddle instanceof MultipleChoiceRiddle) {
@@ -36,7 +42,8 @@ export async function timedAsk(riddle, player) {
     }
     const end = Date.now();
     const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
-    await playerManager.updatePlayerLowestTime(player.id, time);
+    //await playerManager.updatePlayerLowestTime(player.id, time);
+    return time;
 }
 
 export function calculatePenaltyTime(riddle, start, end, usedHint) {
@@ -65,6 +72,10 @@ export async function runGame() {
 
     let exit = false;
     const player = await playerManager.welcomePlayer(name);
+    if (!player) {
+        console.log("Cannot continue without a valid player.");
+        return;
+    }
 
     while (!exit) {
         console.log("What do you want to do?");
@@ -118,7 +129,9 @@ async function handlePlayGame(player) {
     console.log();
     let riddles = await loadRiddlesByLevel(level);
     for (const riddle of riddles) {
-        await timedAsk(riddle, player);
+        let time = timedAsk(riddle, player);
+        await playerManager.updatePlayerLowestTime(player.id, time);
+        //await new Promise(res => setTimeout(res, 500));
     }
 }
 
@@ -173,29 +186,31 @@ async function handleCreateRiddle() {
         }
         riddleData.choices = choices;
     }
-    try {
-        await riddleService.createRiddle(riddleData);
+    const result = await riddleService.createRiddle(riddleData);
+    if (result.error) {
+        console.log("Failed to create riddle: " + result.error);
+        if (result.details) console.log("Details: " + result.details);
+    } else {
         console.log("Riddle created successfully!");
-    } catch (err) {
-        console.log("Failed to create riddle: " + err.message);
     }
 }
 
 async function handleReadAllRiddles() {
-    try {
-        const riddles = await riddleService.readAllRiddles();
-        riddles.forEach(riddle => {
-            console.log(`ID: ${riddle.id}, Name: ${riddle.name}, Difficulty: ${riddle.difficulty}`);
-            console.log(`Description: ${riddle.taskDescription}`);
-            if (riddle.choices) {
-                console.log('Choices:', riddle.choices.join(', '));
-            }
-            console.log(`Answer: ${riddle.correctAnswer}, Hint: ${riddle.hint}, Time Limit: ${riddle.timeLimit}`);
-            console.log('---');
-        });
-    } catch (err) {
-        console.log("Failed to read riddles: " + err.message);
+    const riddles = await riddleService.readAllRiddles();
+    if (riddles.error) {
+        console.log("Failed to read riddles: " + riddles.error);
+        if (riddles.details) console.log("Details: " + riddles.details);
+        return;
     }
+    riddles.forEach(riddle => {
+        console.log(`ID: ${riddle.id}, Name: ${riddle.name}, Difficulty: ${riddle.difficulty}`);
+        console.log(`Description: ${riddle.taskDescription}`);
+        if (riddle.choices) {
+            console.log('Choices:', riddle.choices.join(', '));
+        }
+        console.log(`Answer: ${riddle.correctAnswer}, Hint: ${riddle.hint}, Time Limit: ${riddle.timeLimit}`);
+        console.log('---');
+    });
 }
 
 async function handleUpdateRiddle() {
@@ -213,8 +228,13 @@ async function handleUpdateRiddle() {
         } else {
             value = readline.question(`Enter new value for ${field}: `);
         }
-        await riddleService.updateRiddle(id, field, value);
-        console.log("Riddle updated successfully!");
+        const result = await riddleService.updateRiddle(id, field, value);
+        if (result.error) {
+            console.log("Failed to update riddle: " + result.error);
+            if (result.details) console.log("Details: " + result.details);
+        } else {
+            console.log("Riddle updated successfully!");
+        }
     } catch (err) {
         console.log("Failed to update riddle: " + err.message);
     }
@@ -223,8 +243,13 @@ async function handleUpdateRiddle() {
 async function handleDeleteRiddle() {
     try {
         const id = Number(readline.question('Enter the ID of the riddle to delete: '));
-        await riddleService.deleteRiddle(id);
-        console.log("Riddle deleted successfully!");
+        const result = await riddleService.deleteRiddle(id);
+        if (result.error) {
+            console.log("Failed to delete riddle: " + result.error);
+            if (result.details) console.log("Details: " + result.details);
+        } else {
+            console.log("Riddle deleted successfully!");
+        }
     } catch (err) {
         console.log("Failed to delete riddle: " + err.message);
     }

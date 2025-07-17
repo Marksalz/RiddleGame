@@ -1,125 +1,10 @@
+import readline from 'readline-sync';
 import { Riddle } from '../classes/Riddle.js';
-import { Player } from '../classes/Player.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import * as riddleService from '../services/riddleService.js';
-import * as playerManager from './playerManager.js';
-import readline from 'readline-sync';
+import * as playerManager from './playerManager.js'
 
-export async function loadRiddlesByLevel(level) {
-    const allRiddles = await riddleService.readAllRiddles();
-    if (allRiddles.error) {
-        console.log(`Error loading riddles: ${allRiddles.error}`);
-        if (allRiddles.details) console.log(`Details: ${allRiddles.details}`);
-        return [];
-    }
-    const riddles = allRiddles.map(riddle => {
-        if ('choices' in riddle) {
-            return new MultipleChoiceRiddle(
-                riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices, riddle.id
-            );
-        } else {
-            return new Riddle(
-                riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.id
-            );
-        }
-    });
-    return riddles.filter(riddle =>
-        riddle.difficulty &&
-        riddle.difficulty.toLowerCase().trim() === level.toLowerCase().trim()
-    );
-}
-
-export function timedAsk(riddle, player) {
-    let usedHint = false;
-    const start = Date.now();
-    if (riddle instanceof MultipleChoiceRiddle) {
-        usedHint = riddle.askWithOptions();
-    }
-    else {
-        usedHint = riddle.ask();
-    }
-    const end = Date.now();
-    const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
-    //await playerManager.updatePlayerLowestTime(player.id, time);
-    return time;
-}
-
-export function calculatePenaltyTime(riddle, start, end, usedHint) {
-    const actualTime = (end - start) / 1000;
-    let penaltyTime = 0;
-    if (actualTime > riddle.timeLimit) {
-        penaltyTime += 5;
-        console.log("Too slow! 5 seconds penalty applied.\n");
-    }
-    if (usedHint) {
-        penaltyTime += 10;
-        console.log("Penalty! 10 seconds added to recorded time!\n");
-    }
-    return penaltyTime;
-}
-
-export async function runGame() {
-    console.log("Welcome to the Riddle game! ");
-    let name;
-    while (true) {
-        name = readline.question('What is your name? ');
-        if (name && name.trim().length > 0) break;
-        console.log("Name cannot be empty. Please enter your name.");
-    }
-    console.log();
-
-    let exit = false;
-    const player = await playerManager.welcomePlayer(name);
-    if (!player) {
-        console.log("Cannot continue without a valid player.");
-        return;
-    }
-
-    while (!exit) {
-        console.log("What do you want to do?");
-        console.log("1. Play the game");
-        console.log("2. Create a new riddle");
-        console.log("3. Read all riddles");
-        console.log("4. Update an existing riddle");
-        console.log("5. Delete a riddle");
-        console.log("6. View leaderboard");
-        console.log("0. Exit");
-        const choice = readline.question('Enter your choice: ');
-        console.log();
-
-        switch (choice) {
-            case '1':
-                await handlePlayGame(player);
-                break;
-            case '2':
-                await handleCreateRiddle();
-                break;
-            case '3':
-                await handleReadAllRiddles();
-                break;
-            case '4':
-                await handleUpdateRiddle();
-                break;
-            case '5':
-                await handleDeleteRiddle();
-                break;
-            case '6':
-                await playerManager.viewLeaderboard();
-                break;
-            case '0':
-                exit = true;
-                console.log("Goodbye!");
-                break;
-            default:
-                console.log("Invalid choice. Please try again.");
-        }
-        console.log();
-    }
-}
-
-async function handlePlayGame(player) {
+export async function handlePlayGame(player) {
     let level;
     while (true) {
         level = readline.question('Choose difficulty: easy / medium / hard: ');
@@ -135,7 +20,7 @@ async function handlePlayGame(player) {
     }
 }
 
-async function handleCreateRiddle() {
+export async function handleCreateRiddle() {
     let riddleName;
     while (true) {
         riddleName = readline.question('Enter riddle name: ');
@@ -195,7 +80,7 @@ async function handleCreateRiddle() {
     }
 }
 
-async function handleReadAllRiddles() {
+export async function handleReadAllRiddles() {
     const riddles = await riddleService.readAllRiddles();
     if (riddles.error) {
         console.log("Failed to read riddles: " + riddles.error);
@@ -213,7 +98,7 @@ async function handleReadAllRiddles() {
     });
 }
 
-async function handleUpdateRiddle() {
+export async function handleUpdateRiddle() {
     try {
         const id = Number(readline.question('Enter the ID of the riddle to update: '));
         const field = readline.question('Which field do you want to update? (name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices):');
@@ -240,7 +125,7 @@ async function handleUpdateRiddle() {
     }
 }
 
-async function handleDeleteRiddle() {
+export async function handleDeleteRiddle() {
     try {
         const id = Number(readline.question('Enter the ID of the riddle to delete: '));
         const result = await riddleService.deleteRiddle(id);
@@ -253,4 +138,56 @@ async function handleDeleteRiddle() {
     } catch (err) {
         console.log("Failed to delete riddle: " + err.message);
     }
+}
+
+export async function loadRiddlesByLevel(level) {
+    const allRiddles = await riddleService.readAllRiddles(level);
+    if (allRiddles.error) {
+        console.log(`Error loading riddles: ${allRiddles.error}`);
+        if (allRiddles.details) console.log(`Details: ${allRiddles.details}`);
+        return [];
+    }
+    const riddlesInClass = allRiddles.map(riddle => {
+        if ('choices' in riddle) {
+            return new MultipleChoiceRiddle(
+                riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices, riddle.id
+            );
+        } else {
+            return new Riddle(
+                riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.id
+            );
+        }
+    });
+    return riddlesInClass;
+}
+
+export function timedAsk(riddle, player) {
+    let usedHint = false;
+    const start = Date.now();
+    if (riddle instanceof MultipleChoiceRiddle) {
+        usedHint = riddle.askWithOptions();
+    }
+    else {
+        usedHint = riddle.ask();
+    }
+    const end = Date.now();
+    const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
+    //await playerManager.updatePlayerLowestTime(player.id, time);
+    return time;
+}
+
+export function calculatePenaltyTime(riddle, start, end, usedHint) {
+    const actualTime = (end - start) / 1000;
+    let penaltyTime = 0;
+    if (actualTime > riddle.timeLimit) {
+        penaltyTime += 5;
+        console.log("Too slow! 5 seconds penalty applied.\n");
+    }
+    if (usedHint) {
+        penaltyTime += 10;
+        console.log("Penalty! 10 seconds added to recorded time!\n");
+    }
+    return penaltyTime;
 }

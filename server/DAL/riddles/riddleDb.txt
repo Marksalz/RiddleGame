@@ -18,15 +18,6 @@
     "hint": "You use it after a shower."
   },
   {
-    "id": 5,
-    "name": "number riddle",
-    "taskDescription": "What is the next number in the sequence: 2, 4, 8, 16, ?",
-    "correctAnswer": "32",
-    "difficulty": "hard",
-    "timeLimit": 30,
-    "hint": "Each number is double the previous one."
-  },
-  {
     "id": 6,
     "name": "kkk",
     "taskDescription": "Which of the following numbers is even?",
@@ -85,5 +76,29 @@
     "difficulty": "easy",
     "timeLimit": 5,
     "hint": "4..."
+  },
+  {
+    "id": 13,
+    "name": "Hiiiii",
+    "taskDescription": "add an I",
+    "correctAnswer": "I",
+    "difficulty": "hard",
+    "timeLimit": 10,
+    "hint": "II"
+  },
+  {
+    "id": 14,
+    "name": "Numbers",
+    "taskDescription": "What comes after 3?",
+    "correctAnswer": "4",
+    "difficulty": "easy",
+    "timeLimit": 6,
+    "hint": "after 3",
+    "choices": [
+      "77",
+      "5",
+      "6",
+      "4"
+    ]
   }
 ]

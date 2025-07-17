@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./router.js";
+import "dotenv/config";
 export const PORT = 1234;
 const server = express();
 
@@ -12,6 +13,6 @@ server.use((req, res, next) => {
 server.use(express.json());
 server.use("/api", router);
 
-server.listen(1234, () => {
-  console.log(`Server running on port ${PORT}`);
+server.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });

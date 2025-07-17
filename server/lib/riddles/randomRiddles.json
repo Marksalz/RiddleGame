@@ -1,6 +1,5 @@
 [
   {
-    "id": 3,
     "name": "Logic Puzzle",
     "taskDescription": "I speak without a mouth and hear without ears. What am I?",
     "correctAnswer": "Echo",
@@ -9,7 +8,6 @@
     "hint": "You can hear it in a canyon."
   },
   {
-    "id": 4,
     "name": "Hiiii",
     "taskDescription": "What gets wetter the more it dries?",
     "correctAnswer": "Towel",
@@ -18,7 +16,6 @@
     "hint": "You use it after a shower."
   },
   {
-    "id": 6,
     "name": "kkk",
     "taskDescription": "Which of the following numbers is even?",
     "correctAnswer": "8",
@@ -33,7 +30,6 @@
     "hint": "It's the only number divisible by 2."
   },
   {
-    "id": 8,
     "name": "ABC",
     "taskDescription": "What comes after D?",
     "correctAnswer": "E",
@@ -42,7 +38,6 @@
     "hint": "maybe E..."
   },
   {
-    "id": 9,
     "name": "Sample Riddle",
     "taskDescription": "What has a head and a tail but no body?",
     "correctAnswer": "Coin",
@@ -51,7 +46,6 @@
     "hint": "It's money."
   },
   {
-    "id": 10,
     "name": "Sample Riddle",
     "taskDescription": "What has a head and a tail but no body?",
     "correctAnswer": "Coin",
@@ -60,7 +54,6 @@
     "hint": "It's money."
   },
   {
-    "id": 11,
     "name": "Sample Riddle",
     "taskDescription": "What has a head and a tail but no body?",
     "correctAnswer": "Coin",
@@ -69,7 +62,6 @@
     "hint": "It's money."
   },
   {
-    "id": 12,
     "name": "Test1",
     "taskDescription": "2+2",
     "correctAnswer": "4",
@@ -78,7 +70,6 @@
     "hint": "4..."
   },
   {
-    "id": 13,
     "name": "Hiiiii",
     "taskDescription": "add an I",
     "correctAnswer": "I",
@@ -87,7 +78,6 @@
     "hint": "II"
   },
   {
-    "id": 14,
     "name": "Numbers",
     "taskDescription": "What comes after 3?",
     "correctAnswer": "4",

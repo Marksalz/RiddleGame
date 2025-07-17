@@ -1,4 +1,4 @@
-import { PORT } from '../../server/server.js';
+const PORT = process.env.PORT;
 
 const BASE_URL = `http://localhost:${PORT}/api/riddles`;
 

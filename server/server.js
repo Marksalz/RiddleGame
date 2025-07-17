@@ -1,6 +1,9 @@
 import express from "express";
 import router from "./router.js";
-export const PORT = 1234;
+import "dotenv/config";
+import { connectToMongo } from "./lib/riddles/riddleDb.js";
+const PORT = process.env.PORT || 3000;
+
 const server = express();
 
 
@@ -12,6 +15,12 @@ server.use((req, res, next) => {
 server.use(express.json());
 server.use("/api", router);
 
-server.listen(1234, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+try {
+  await connectToMongo();
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+} catch (err) {
+  console.error("Failed to connect to DB:", err);
+  process.exit(1);
+}

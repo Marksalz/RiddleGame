@@ -1,14 +1,9 @@
-import * as crud from "../DAL/crud.js"
-
-const riddleDBPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\riddles\\riddleDb.txt";
+import * as crud from "../DAL/riddleCrud.js"
 
 export async function createRiddle(riddle) {
     try {
-        const riddles = await crud.read(riddleDBPath);
-        const newId = getNextRiddleId(riddles);
         validateRiddle(riddle);
-        const riddleWithId = { id: newId, ...riddle };
-        await crud.create(riddleWithId, riddleDBPath);
+        await crud.createRiddle(riddle);
     } catch (err) {
         throw new Error("Could not create riddle: " + err.message);
     }
@@ -16,7 +11,7 @@ export async function createRiddle(riddle) {
 
 export async function readAllRiddles(difficulty) {
     try {
-        const riddles = await crud.read(riddleDBPath);
+        const riddles = await crud.getRiddles();
         if (difficulty) {
             return riddles.filter(r =>
                 r.difficulty &&
@@ -31,7 +26,7 @@ export async function readAllRiddles(difficulty) {
 
 export async function updateRiddle(id, field, value) {
     try {
-        await crud.update(id, { [field]: value }, riddleDBPath);
+        await crud.updateRiddle(id, { [field]: value });
     } catch (err) {
         throw new Error("Could not update riddle: " + err.message);
     }
@@ -39,14 +34,10 @@ export async function updateRiddle(id, field, value) {
 
 export async function deleteRiddle(id) {
     try {
-        await crud.remove(id, riddleDBPath);
+        await crud.deleteRiddle(id);
     } catch (err) {
         throw new Error("Could not delete riddle: " + err.message);
     }
-}
-
-function getNextRiddleId(riddles) {
-    return riddles.length > 0 ? Math.max(...riddles.map(r => r.id)) + 1 : 1;
 }
 
 function validateRiddle(riddle) {
@@ -70,4 +61,5 @@ export const riddleCtrl = {
     updateRiddle,
     deleteRiddle
 };
+
 

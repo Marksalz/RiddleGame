@@ -1,5 +1,6 @@
 import express from "express";
 import { riddleCtrl } from "../controllers/riddleController.js";
+import fs from "fs/promises";
 const riddleRouter = express.Router();
 
 riddleRouter.post("/create_riddle", async (req, res) => {
@@ -66,6 +67,24 @@ riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
     } catch (err) {
         console.error("Failed to delete riddle:", err);
         res.status(400).json({ error: "Failed to delete riddle.", details: err.message });
+    }
+});
+
+riddleRouter.post("/load_initial_riddles", async (req, res) => {
+    try {
+        const riddlesPath = "C:\\JSProjects\\RiddleGame\\server\\lib\\riddles\\randomRiddles.json";
+        const data = await fs.readFile(riddlesPath, "utf-8");
+        const riddles = JSON.parse(data);
+
+        // Insert each riddle using the controller
+        for (const riddle of riddles) {
+            await riddleCtrl.createRiddle(riddle);
+        }
+
+        res.json({ message: "Initial riddles loaded successfully", count: riddles.length });
+    } catch (err) {
+        console.error("Failed to load initial riddles:", err);
+        res.status(500).json({ error: "Failed to load initial riddles.", details: err.message });
     }
 });
 

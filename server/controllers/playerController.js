@@ -1,6 +1,6 @@
 import * as crud from "../DAL/crud.js";
 
-const playerDbPath = "C:\\JSProjects\\RiddleGame\\server\\DAL\\players\\playerDb.txt";
+const playerDbPath = "C:\\JSProjects\\RiddleGame\\server\\lib\\players\\playerExampleData.txt";
 
 export async function getOrCreatePlayer(name) {
     try {

@@ -60,9 +60,8 @@ riddleRouter.put("/update_riddle/:id", async (req, res) => {
 riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
     console.log(`[DELETE] /riddles/delete_riddle/${req.params.id}`);
     try {
-        const id = Number(req.params.id);
-        await riddleCtrl.deleteRiddle(id);
-        console.log(`Riddle ${id} deleted`);
+        await riddleCtrl.deleteRiddle(req.params.id);
+        console.log(`Riddle ${req.params.id} deleted`);
         res.json({ message: "Riddle deleted successfully" });
     } catch (err) {
         console.error("Failed to delete riddle:", err);

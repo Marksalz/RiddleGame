@@ -1,4 +1,4 @@
-import client, { connectToMongo } from "../lib/riddles/riddleDb.js";
+import client from "../lib/riddles/riddleDb.js";
 import "dotenv/config";
 import { ObjectId } from "mongodb";
 

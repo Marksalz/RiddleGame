@@ -70,14 +70,6 @@
     "hint": "4..."
   },
   {
-    "name": "Hiiiii",
-    "taskDescription": "add an I",
-    "correctAnswer": "I",
-    "difficulty": "hard",
-    "timeLimit": 10,
-    "hint": "II"
-  },
-  {
     "name": "Numbers",
     "taskDescription": "What comes after 3?",
     "correctAnswer": "4",

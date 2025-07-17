@@ -55,3 +55,11 @@ function validateRiddle(riddle) {
     }
 }
 
+export const riddleCtrl = {
+    createRiddle,
+    readAllRiddles,
+    updateRiddle,
+    deleteRiddle
+};
+
+

@@ -70,7 +70,7 @@ riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
     }
 });
 
-riddleRouter.post("/load-initial-riddles", async (req, res) => {
+riddleRouter.post("/load_initial_riddles", async (req, res) => {
     try {
         const riddlesPath = "C:\\JSProjects\\RiddleGame\\server\\lib\\riddles\\randomRiddles.json";
         const data = await fs.readFile(riddlesPath, "utf-8");

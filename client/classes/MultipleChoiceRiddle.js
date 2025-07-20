@@ -57,7 +57,7 @@ export class MultipleChoiceRiddle extends Riddle {
      * Prints the riddle's details and choices to the console.
      */
     printRiddleWithChoices() {
-        console.log(`Riddle number: ${this.id}`);
+        console.log(`Riddle:`);
         console.log(`Name: ${this.name}`);
         console.log(`Task description: ${this.taskDescription}`);
         console.log(`Time limit: ${this.timeLimit}\n`);

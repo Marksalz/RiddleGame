@@ -1,19 +1,19 @@
 import * as playerService from '../services/playerService.js'
 import { Player } from '../classes/Player.js';
 
-export async function checkPlayer(name) {
-    const player = await playerService.getOrCreatePlayer(name);
+export async function checkPlayer(username) {
+    const player = await playerService.getOrCreatePlayer(username);
     if (player.error) {
         console.log(`Error: ${player.error}`);
         if (player.details) console.log(`Details: ${player.details}`);
         return null;
     }
     if (player.lowestTime !== null) {
-        console.log(`Hi ${player.name}! Your previous lowest time was ${player.lowestTime} seconds.\n`);
+        console.log(`Hi ${player.username}! Your previous lowest time was ${player.lowestTime} seconds.\n`);
     } else {
-        console.log(`Hi ${player.name}! Welcome to your first game!\n`);
+        console.log(`Hi ${player.username}! Welcome to your first game!\n`);
     }
-    return new Player(player.id, player.name, player.lowestTime);
+    return new Player(player.id, player.username, player.lowestTime);
 }
 
 export async function updatePlayerLowestTime(id, time) {
@@ -37,6 +37,6 @@ export async function viewLeaderboard() {
     }
     console.log("Leaderboard (Lowest Time):");
     ranked.forEach((p, i) => {
-        console.log(`${i + 1}. ${p.name} - ${p.lowestTime} seconds`);
+        console.log(`${i + 1}. ${p.username} - ${p.lowestTime} seconds`);
     });
 }

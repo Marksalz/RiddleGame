@@ -62,7 +62,7 @@ export class Riddle {
      * Prints the riddle's details to the console.
      */
     printRiddle() {
-        console.log(`Riddle number: ${this.id}`);
+        console.log(`Riddle: `);
         console.log(`Name: ${this.name}`);
         console.log(`Task description: ${this.taskDescription}`);
         console.log(`Time limit: ${this.timeLimit}\n`);

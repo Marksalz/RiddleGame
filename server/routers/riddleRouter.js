@@ -4,7 +4,7 @@ import fs from "fs/promises";
 const riddleRouter = express.Router();
 
 riddleRouter.post("/create_riddle", async (req, res) => {
-    console.log("[POST] /riddles/create_riddle", req.body);
+    //console.log("[POST] /riddles/create_riddle", req.body);
     try {
         const riddle = req.body;
         await riddleCtrl.createRiddle(riddle);
@@ -18,7 +18,7 @@ riddleRouter.post("/create_riddle", async (req, res) => {
 
 
 riddleRouter.get("/read_all_riddles", async (req, res) => {
-    console.log("[GET] /riddles/read_all_riddles");
+    //console.log("[GET] /riddles/read_all_riddles");
     try {
         const riddles = await riddleCtrl.readAllRiddles();
         console.log("All riddles fetched:", riddles.length);
@@ -31,7 +31,7 @@ riddleRouter.get("/read_all_riddles", async (req, res) => {
 
 
 riddleRouter.get("/read_all_riddles/:difficulty", async (req, res) => {
-    console.log(`[GET] /riddles/read_all_riddles/${req.params.difficulty}`);
+    //console.log(`[GET] /riddles/read_all_riddles/${req.params.difficulty}`);
     try {
         const { difficulty } = req.params;
         const riddles = await riddleCtrl.readAllRiddles(difficulty);
@@ -44,10 +44,10 @@ riddleRouter.get("/read_all_riddles/:difficulty", async (req, res) => {
 });
 
 riddleRouter.put("/update_riddle/:id", async (req, res) => {
-    console.log(`[PUT] /riddles/update_riddle/${req.params.id}`, req.body);
+    //console.log(`[PUT] /riddles/update_riddle/${req.params.id}`, req.body);
     try {
         const { field, value } = req.body;
-        const id = Number(req.params.id);
+        const id = req.params.id;
         await riddleCtrl.updateRiddle(id, field, value);
         console.log(`Riddle ${id} updated: ${field} = ${value}`);
         res.json({ message: "Riddle updated successfully" });
@@ -58,7 +58,7 @@ riddleRouter.put("/update_riddle/:id", async (req, res) => {
 });
 
 riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
-    console.log(`[DELETE] /riddles/delete_riddle/${req.params.id}`);
+    //console.log(`[DELETE] /riddles/delete_riddle/${req.params.id}`);
     try {
         await riddleCtrl.deleteRiddle(req.params.id);
         console.log(`Riddle ${req.params.id} deleted`);
@@ -75,7 +75,6 @@ riddleRouter.post("/load_initial_riddles", async (req, res) => {
         const data = await fs.readFile(riddlesPath, "utf-8");
         const riddles = JSON.parse(data);
 
-        // Insert each riddle using the controller
         for (const riddle of riddles) {
             await riddleCtrl.createRiddle(riddle);
         }

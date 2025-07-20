@@ -3,7 +3,7 @@ import { playerCtrl } from "../controllers/playerController.js";
 const playerRouter = express.Router();
 
 playerRouter.post("/create_player", async (req, res) => {
-    console.log("[POST] /players/create_player", req.body);
+    //console.log("[POST] /players/create_player", req.body);
     try {
         const { name } = req.body;
         const player = await playerCtrl.getOrCreatePlayer(name);
@@ -16,7 +16,7 @@ playerRouter.post("/create_player", async (req, res) => {
 });
 
 playerRouter.get("/leaderboard", async (req, res) => {
-    console.log("[GET] /players/leaderboard");
+    //console.log("[GET] /players/leaderboard");
     try {
         const leaderboard = await playerCtrl.getLeaderboard();
         console.log("Leaderboard fetched:", leaderboard);
@@ -29,7 +29,7 @@ playerRouter.get("/leaderboard", async (req, res) => {
 
 
 playerRouter.put("/update_time/:id", async (req, res) => {
-    console.log(`[PUT] /players/update_time/${req.params.id}`, req.body);
+    //console.log(`[PUT] /players/update_time/${req.params.id}`, req.body);
     try {
         const id = Number(req.params.id);
         const { time } = req.body;

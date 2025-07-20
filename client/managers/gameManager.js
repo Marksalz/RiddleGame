@@ -4,69 +4,70 @@ import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import * as riddleService from '../services/riddleService.js';
 import * as playerManager from './playerManager.js'
 
-export async function handlePlayGame(player) {
-    let level;
+function promptUntilValid(promptText, validateFn, errorMsg) {
+    let value;
     while (true) {
-        level = readline.question('Choose difficulty: easy / medium / hard: ');
-        if (["easy", "medium", "hard"].includes(level.toLowerCase().trim())) break;
-        console.log("Invalid difficulty. Please enter easy, medium, or hard.");
+        value = readline.question(promptText);
+        if (validateFn(value)) break;
+        if (errorMsg) console.log(errorMsg);
     }
+    return value;
+}
+
+export async function handlePlayGame(player) {
+    const level = promptUntilValid(
+        'Choose difficulty: easy / medium / hard: ',
+        v => ["easy", "medium", "hard"].includes(v.toLowerCase().trim()),
+        "Invalid difficulty. Please enter easy, medium, or hard."
+    );
     console.log();
     let riddles = await loadRiddlesByLevel(level);
     for (const riddle of riddles) {
         let time = timedAsk(riddle, player);
         await playerManager.updatePlayerLowestTime(player.id, time);
-        //await new Promise(res => setTimeout(res, 500));
     }
 }
 
 export async function handleCreateRiddle() {
-    let riddleName;
-    while (true) {
-        riddleName = readline.question('Enter riddle name: ');
-        if (riddleName && riddleName.trim().length > 0) break;
-        console.log("Riddle name cannot be empty.");
-    }
-    let taskDescription;
-    while (true) {
-        taskDescription = readline.question('Enter riddle description: ');
-        if (taskDescription && taskDescription.trim().length > 0) break;
-        console.log("Description cannot be empty.");
-    }
-    let correctAnswer;
-    while (true) {
-        correctAnswer = readline.question('Enter correct answer: ');
-        if (correctAnswer && correctAnswer.trim().length > 0) break;
-        console.log("Answer cannot be empty.");
-    }
-    let difficulty;
-    while (true) {
-        difficulty = readline.question('Enter difficulty (easy/medium/hard): ');
-        if (["easy", "medium", "hard"].includes(difficulty.toLowerCase().trim())) break;
-        console.log("Invalid difficulty. Please enter easy, medium, or hard.");
-    }
-    let timeLimit;
-    while (true) {
-        timeLimit = Number(readline.question('Enter time limit (seconds): '));
-        if (!isNaN(timeLimit) && timeLimit > 0) break;
-        console.log("Time limit must be a positive number.");
-    }
-    let hint;
-    while (true) {
-        hint = readline.question('Enter a hint: ');
-        if (hint && hint.trim().length > 0) break;
-        console.log("Hint cannot be empty.");
-    }
+    const riddleName = promptUntilValid(
+        'Enter riddle name: ',
+        v => v && v.trim().length > 0,
+        "Riddle name cannot be empty."
+    );
+    const taskDescription = promptUntilValid(
+        'Enter riddle description: ',
+        v => v && v.trim().length > 0,
+        "Description cannot be empty."
+    );
+    const correctAnswer = promptUntilValid(
+        'Enter correct answer: ',
+        v => v && v.trim().length > 0,
+        "Answer cannot be empty."
+    );
+    const difficulty = promptUntilValid(
+        'Enter difficulty (easy/medium/hard): ',
+        v => ["easy", "medium", "hard"].includes(v.toLowerCase().trim()),
+        "Invalid difficulty. Please enter easy, medium, or hard."
+    );
+    const timeLimit = Number(promptUntilValid(
+        'Enter time limit (seconds): ',
+        v => !isNaN(Number(v)) && Number(v) > 0,
+        "Time limit must be a positive number."
+    ));
+    const hint = promptUntilValid(
+        'Enter a hint: ',
+        v => v && v.trim().length > 0,
+        "Hint cannot be empty."
+    );
     let riddleData = { name: riddleName, taskDescription, correctAnswer, difficulty, timeLimit, hint };
     if (readline.keyInYN('Is this a multiple choice riddle?')) {
         let choices = [];
         for (let i = 1; i <= 4; i++) {
-            let choiceText;
-            while (true) {
-                choiceText = readline.question(`Enter choice ${i}: `);
-                if (choiceText && choiceText.trim().length > 0) break;
-                console.log("Choice cannot be empty.");
-            }
+            const choiceText = promptUntilValid(
+                `Enter choice ${i}: `,
+                v => v && v.trim().length > 0,
+                "Choice cannot be empty."
+            );
             choices.push(choiceText);
         }
         riddleData.choices = choices;
@@ -100,7 +101,7 @@ export async function handleReadAllRiddles() {
 
 export async function handleUpdateRiddle() {
     try {
-        const id = Number(readline.question('Enter the ID of the riddle to update: '));
+        const id = readline.question('Enter the ID of the riddle to update: ');
         const field = readline.question('Which field do you want to update? (name, taskDescription, correctAnswer, difficulty, timeLimit, hint, choices):');
         let value;
         if (field === 'choices') {
@@ -127,7 +128,7 @@ export async function handleUpdateRiddle() {
 
 export async function handleDeleteRiddle() {
     try {
-        const id = Number(readline.question('Enter the ID of the riddle to delete: '));
+        const id = readline.question('Enter the ID of the riddle to delete: ');
         const result = await riddleService.deleteRiddle(id);
         if (result.error) {
             console.log("Failed to delete riddle: " + result.error);

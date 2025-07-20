@@ -19,6 +19,26 @@ export async function read() {
     return data;
 }
 
+export async function readById(id) {
+    const { data, error } = await playerSupabase
+        .from(TABLE)
+        .select("*")
+        .eq("id", id)
+        .single();
+    if (error) throw error;
+    return data;
+}
+
+export async function readByUsername(username) {
+    const { data, error } = await playerSupabase
+        .from(TABLE)
+        .select("*")
+        .ilike("username", username)
+        .single();
+    if (error && error.code !== "PGRST116") throw error;
+    return data;
+}
+
 export async function update(id, updates) {
     const { data, error } = await playerSupabase
         .from(TABLE)

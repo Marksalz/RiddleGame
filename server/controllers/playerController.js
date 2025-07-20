@@ -1,16 +1,12 @@
-import * as crud from "../DAL/crud.js";
+import * as crud from "../DAL/playerCrud.js";
 
-const playerDbPath = "C:\\JSProjects\\RiddleGame\\server\\lib\\players\\playerExampleData.txt";
-
-export async function getOrCreatePlayer(name) {
+export async function getOrCreatePlayer(username) {
     try {
-        validatePlayerName(name);
-        let players = await crud.read(playerDbPath);
-        let player = players.find(p => p.name.toLowerCase() === name.toLowerCase());
+        validatePlayerName(username);
+        let player = await crud.readByUsername(username);
         if (!player) {
-            const newId = getNextPlayerId(players);
-            player = { id: newId, name, lowestTime: null };
-            await crud.create(player, playerDbPath);
+            player = { username, lowestTime: null };
+            player = await crud.create(player);
         }
         return player;
     } catch (err) {
@@ -20,17 +16,13 @@ export async function getOrCreatePlayer(name) {
 
 export async function getLeaderboard() {
     try {
-        const players = await crud.read(playerDbPath);
+        const players = await crud.read();
         return players
             .filter(p => typeof p.lowestTime === "number")
             .sort((a, b) => a.lowestTime - b.lowestTime);
     } catch (err) {
         throw new Error("Could not get leaderboard: " + err.message);
     }
-}
-
-function getNextPlayerId(players) {
-    return players.length > 0 ? Math.max(...players.map(p => p.id)) + 1 : 1;
 }
 
 function validatePlayerName(name) {
@@ -41,11 +33,10 @@ function validatePlayerName(name) {
 
 export async function updatePlayerTime(id, time) {
     try {
-        const players = await crud.read(playerDbPath);
-        const player = players.find(p => p.id === id);
+        const player = await crud.readById(id);
         if (!player) throw new Error("Player not found");
         if (player.lowestTime === null || time < player.lowestTime) {
-            await crud.update(id, { lowestTime: time }, playerDbPath);
+            await crud.update(id, { lowestTime: time });
         }
     } catch (err) {
         throw new Error("Could not update player time: " + err.message);

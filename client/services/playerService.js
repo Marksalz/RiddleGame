@@ -17,7 +17,7 @@ async function handleResponse(res, action) {
 }
 
 function delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((res) => { setTimeout(res, ms) });
 }
 
 export async function getOrCreatePlayer(name) {

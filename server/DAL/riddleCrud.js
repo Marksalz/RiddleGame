@@ -16,6 +16,12 @@ export async function getRiddles() {
     return allRiddles;
 }
 
+export async function getRiddlesByDifficulty(difficulty) {
+    const riddles = await riddleCollection.find({ difficulty }).toArray();
+    console.log(riddles);
+    return riddles;
+}
+
 export async function updateRiddle(id, newData) {
     const updateResult = await riddleCollection.updateOne(
         { _id: new ObjectId(id) },

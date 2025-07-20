@@ -11,12 +11,12 @@ export async function createRiddle(riddle) {
 
 export async function readAllRiddles(difficulty) {
     try {
-        const riddles = await crud.getRiddles();
+        let riddles = null;
         if (difficulty) {
-            return riddles.filter(r =>
-                r.difficulty &&
-                r.difficulty.toLowerCase().trim() === difficulty.toLowerCase().trim()
-            );
+            riddles = await crud.getRiddlesByDifficulty(difficulty);
+        }
+        else {
+            riddles = await crud.getRiddles();
         }
         return riddles;
     } catch (err) {

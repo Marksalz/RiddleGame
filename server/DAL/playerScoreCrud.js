@@ -1,8 +1,6 @@
 import { playerSupabase } from "../lib/players/playerDb.js";
 
 export async function createScore({ player_id, riddle_id, time_to_solve }) {
-    console.log(riddle_id);
-
     const { data, error } = await playerSupabase
         .from("player_scores")
         .insert([{ player_id, riddle_id, time_to_solve }])

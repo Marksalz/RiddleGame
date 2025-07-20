@@ -16,8 +16,13 @@ async function handleResponse(res, action) {
     }
 }
 
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export async function getOrCreatePlayer(name) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/create_player`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -31,6 +36,7 @@ export async function getOrCreatePlayer(name) {
 
 export async function updatePlayerTime(id, time) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/update_time/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -44,6 +50,7 @@ export async function updatePlayerTime(id, time) {
 
 export async function getLeaderboard() {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/leaderboard`);
         return await handleResponse(res, "fetch leaderboard");
     } catch (err) {

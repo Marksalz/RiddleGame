@@ -88,8 +88,9 @@ export async function handleReadAllRiddles() {
         if (riddles.details) console.log("Details: " + riddles.details);
         return;
     }
-    riddles.forEach(riddle => {
-        console.log(`ID: ${riddle.id}, Name: ${riddle.name}, Difficulty: ${riddle.difficulty}`);
+    riddles.forEach((riddle, idx) => {
+        console.log(`Riddle #${idx + 1}`);
+        console.log(`Name: ${riddle.name}, Difficulty: ${riddle.difficulty}`);
         console.log(`Description: ${riddle.taskDescription}`);
         if (riddle.choices) {
             console.log('Choices:', riddle.choices.join(', '));

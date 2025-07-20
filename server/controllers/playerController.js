@@ -39,6 +39,8 @@ export async function updatePlayerTime(id, time) {
             await crud.update(id, { lowestTime: time });
         }
     } catch (err) {
+        console.log(err.message);
+
         throw new Error("Could not update player time: " + err.message);
     }
 }

@@ -3,6 +3,8 @@ import { Riddle } from '../classes/Riddle.js';
 import { MultipleChoiceRiddle } from '../classes/MultipleChoiceRiddle.js';
 import * as riddleService from '../services/riddleService.js';
 import * as playerManager from './playerManager.js'
+import * as playerService from '../services/playerService.js';
+import riddleDb from '../../server/lib/riddles/riddleDb.js';
 
 function promptUntilValid(promptText, validateFn, errorMsg) {
     let value;
@@ -21,10 +23,15 @@ export async function handlePlayGame(player) {
         "Invalid difficulty. Please enter easy, medium, or hard."
     );
     console.log();
-    let riddles = await loadRiddlesByLevel(level);
+    let riddles = await loadUnsolvedRiddlesByLevel(player.id, level);
+    if (riddles.length === 0) {
+        console.log("No unsolved riddles left for this difficulty!");
+        return;
+    }
     for (const riddle of riddles) {
-        let time = timedAsk(riddle, player);
-        await playerManager.updatePlayerLowestTime(player.id, time);
+        let times = timedAsk(riddle, player);
+        await playerManager.updatePlayerLowestTime(player.id, times.updatedTime);
+        await playerService.recordSolvedRiddle(player.id, riddle.id, times.finalTime);
     }
 }
 
@@ -142,8 +149,10 @@ export async function handleDeleteRiddle() {
     }
 }
 
-export async function loadRiddlesByLevel(level) {
-    const allRiddles = await riddleService.readAllRiddles(level);
+export async function loadUnsolvedRiddlesByLevel(player_id, level) {
+    const allRiddles = await playerService.getUnsolvedRiddles(player_id, level);
+    //console.log(allRiddles);
+
     if (allRiddles.error) {
         console.log(`Error loading riddles: ${allRiddles.error}`);
         if (allRiddles.details) console.log(`Details: ${allRiddles.details}`);
@@ -152,16 +161,17 @@ export async function loadRiddlesByLevel(level) {
     const riddlesInClass = allRiddles.map(riddle => {
         if ('choices' in riddle) {
             return new MultipleChoiceRiddle(
-                riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices, riddle.id
+                riddle._id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.choices
             );
         } else {
             return new Riddle(
-                riddle.name, riddle.taskDescription, riddle.correctAnswer,
-                riddle.difficulty, riddle.timeLimit, riddle.hint, riddle.id
+                riddle._id, riddle.name, riddle.taskDescription, riddle.correctAnswer,
+                riddle.difficulty, riddle.timeLimit, riddle.hint
             );
         }
     });
+
     return riddlesInClass;
 }
 
@@ -175,9 +185,10 @@ export function timedAsk(riddle, player) {
         usedHint = riddle.ask();
     }
     const end = Date.now();
-    const time = player.recordTime(start, end, calculatePenaltyTime(riddle, start, end, usedHint));
+    const finalTime = ((end - start) / 1000) + calculatePenaltyTime(riddle, start, end, usedHint);
+    const updatedTime = player.recordTime(finalTime);
     //await playerManager.updatePlayerLowestTime(player.id, time);
-    return time;
+    return { finalTime, updatedTime };
 }
 
 export function calculatePenaltyTime(riddle, start, end, usedHint) {

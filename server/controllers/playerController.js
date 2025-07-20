@@ -1,4 +1,6 @@
 import * as crud from "../DAL/playerCrud.js";
+import * as scoreCrud from "../DAL/playerScoreCrud.js";
+import * as riddleCrud from "../DAL/riddleCrud.js";
 
 export async function getOrCreatePlayer(username) {
     try {
@@ -45,8 +47,33 @@ export async function updatePlayerTime(id, time) {
     }
 }
 
+export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
+    try {
+        return await scoreCrud.createScore({ player_id, riddle_id, time_to_solve });
+    } catch (err) {
+        throw new Error("Could not record solved riddle: " + err.message);
+    }
+}
+
+export async function getUnsolvedRiddles(player_id, difficulty) {
+    try {
+        const solvedIds = await scoreCrud.getSolvedRiddleIds(player_id);
+        console.log(solvedIds);
+        let riddles = await riddleCrud.getRiddles();
+        if (difficulty) {
+            riddles = riddles.filter(r => r.difficulty === difficulty);
+        }
+        const solvedIdStrings = solvedIds.map(id => String(id));
+        return riddles.filter(r => !solvedIdStrings.includes(String(r.id)));
+    } catch (err) {
+        throw new Error("Could not get unsolved riddles: " + err.message);
+    }
+}
+
 export const playerCtrl = {
     getOrCreatePlayer,
     getLeaderboard,
-    updatePlayerTime
+    updatePlayerTime,
+    recordSolvedRiddle,
+    getUnsolvedRiddles
 };

@@ -17,10 +17,10 @@ export class Player {
      * @param {number} end - The end time (timestamp in ms).
      * @param {number} penaltyTime - The penalty time in seconds.
      */
-    recordTime(start, end, penaltyTime) {
-        const time = ((end - start) / 1000) + penaltyTime;
-        if (this.lowestTime === null || time < this.lowestTime) {
-            this.lowestTime = time;
+    recordTime(finalTime) {
+        //const time = ((end - start) / 1000) + penaltyTime;
+        if (this.lowestTime === null || finalTime < this.lowestTime) {
+            this.lowestTime = finalTime;
         }
         return this.lowestTime;
     }

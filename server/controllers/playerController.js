@@ -63,8 +63,7 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
         if (difficulty) {
             riddles = riddles.filter(r => r.difficulty === difficulty);
         }
-        const solvedIdStrings = solvedIds.map(id => String(id));
-        return riddles.filter(r => !solvedIdStrings.includes(String(r.id)));
+        return riddles.filter(r => !solvedIds.includes(String(r._id)));
     } catch (err) {
         throw new Error("Could not get unsolved riddles: " + err.message);
     }

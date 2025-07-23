@@ -1,3 +1,9 @@
+/**
+ * @fileoverview Controller layer for player operations.
+ * Handles authentication, player management, scoring, and game progress tracking.
+ * @author RiddleGame Team
+ */
+
 import * as crud from "../DAL/playerCrud.js";
 import * as scoreCrud from "../DAL/playerScoreCrud.js";
 import * as riddleCrud from "../DAL/riddleCrud.js";
@@ -5,6 +11,12 @@ import { playerSupabase } from "../lib/players/playerDb.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+/**
+ * Gets an existing player or creates a new one (legacy method)
+ * @param {string} username - Player username
+ * @returns {Object} Player object
+ * @throws {Error} If validation or database operation fails
+ */
 export async function getOrCreatePlayer(username) {
     try {
         validatePlayerName(username);
@@ -19,6 +31,14 @@ export async function getOrCreatePlayer(username) {
     }
 }
 
+/**
+ * Creates a new player with hashed password
+ * @param {string} username - Player username
+ * @param {string} hashedPassword - BCrypt hashed password
+ * @param {string} [role='user'] - User role (guest, user, admin)
+ * @returns {Object} Created player object
+ * @throws {Error} If validation or creation fails
+ */
 export async function createPlayer(username, hashedPassword, role = 'user') {
     try {
         validatePlayerName(username);
@@ -30,6 +50,11 @@ export async function createPlayer(username, hashedPassword, role = 'user') {
     }
 }
 
+/**
+ * Retrieves leaderboard sorted by best completion times
+ * @returns {Array} Array of players sorted by lowestTime (ascending)
+ * @throws {Error} If database operation fails
+ */
 export async function getLeaderboard() {
     try {
         const players = await crud.read();
@@ -41,12 +66,24 @@ export async function getLeaderboard() {
     }
 }
 
+/**
+ * Validates player name format and content
+ * @param {string} name - Player name to validate
+ * @throws {Error} If name is invalid
+ * @private
+ */
 function validatePlayerName(name) {
     if (!name || typeof name !== "string" || name.trim().length === 0) {
         throw new Error("Invalid player name.");
     }
 }
 
+/**
+ * Updates a player's best completion time if the new time is better
+ * @param {number} id - Player ID
+ * @param {number} time - New completion time in seconds
+ * @throws {Error} If player not found or update fails
+ */
 export async function updatePlayerTime(id, time) {
     try {
         const player = await crud.readById(id);
@@ -61,6 +98,14 @@ export async function updatePlayerTime(id, time) {
     }
 }
 
+/**
+ * Records a solved riddle for a player with completion time
+ * @param {number} player_id - ID of the player
+ * @param {string} riddle_id - MongoDB ObjectId of the riddle
+ * @param {number} time_to_solve - Time taken to solve in seconds
+ * @returns {Object} Created score record
+ * @throws {Error} If recording fails
+ */
 export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
     try {
         return await scoreCrud.createScore({ player_id, riddle_id, time_to_solve });
@@ -69,20 +114,39 @@ export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
     }
 }
 
+/**
+ * Gets riddles that a player hasn't solved yet
+ * @param {number} player_id - Player ID
+ * @param {string} [difficulty] - Optional difficulty filter
+ * @returns {Array} Array of unsolved riddles
+ * @throws {Error} If database operations fail
+ */
 export async function getUnsolvedRiddles(player_id, difficulty) {
     try {
+        // Get list of riddle IDs the player has already solved
         const solvedIds = await scoreCrud.getSolvedRiddleIds(player_id);
         console.log(solvedIds);
+
+        // Get all riddles, optionally filtered by difficulty
         let riddles = await riddleCrud.getRiddles();
         if (difficulty) {
             riddles = riddles.filter(r => r.difficulty === difficulty);
         }
+
+        // Filter out already solved riddles
         return riddles.filter(r => !solvedIds.includes(String(r._id)));
     } catch (err) {
         throw new Error("Could not get unsolved riddles: " + err.message);
     }
 }
 
+/**
+ * Checks user authentication status and token validity
+ * @param {string} username - Username to check
+ * @param {Object} req - Express request object with auth middleware data
+ * @returns {Object} Authentication status and user information
+ * @throws {Error} If authentication check fails
+ */
 export async function checkUserAuthentication(username, req) {
     try {
         if (req.authenticated && req.user && req.user.username === username) {
@@ -136,16 +200,27 @@ export async function checkUserAuthentication(username, req) {
     }
 }
 
+/**
+ * Creates a new player account with authentication
+ * @param {string} username - Desired username
+ * @param {string} password - Plain text password (will be hashed)
+ * @param {string} [role='user'] - User role (guest, user, admin)
+ * @returns {Object} Player data and JWT token
+ * @throws {Error} If signup fails or role is invalid
+ */
 export async function signupPlayer(username, password, role = 'user') {
     try {
+        // Validate role
         const validRoles = ['guest', 'user', 'admin'];
         if (!validRoles.includes(role)) {
             throw new Error('Invalid role specified');
         }
 
+        // Hash password with 12 salt rounds for security
         const hashedPassword = await bcrypt.hash(password, 12);
         const player = await createPlayer(username, hashedPassword, role);
 
+        // Generate JWT token with 7-day expiration
         const token = jwt.sign(
             {
                 id: player.id,
@@ -166,9 +241,16 @@ export async function signupPlayer(username, password, role = 'user') {
     }
 }
 
+/**
+ * Authenticates a player with username and password
+ * @param {string} username - Player username
+ * @param {string} password - Plain text password
+ * @returns {Object} Authentication result with token and user data
+ * @throws {Error} If login credentials are invalid
+ */
 export async function loginPlayer(username, password) {
     try {
-
+        // Find user by username
         const { data: user, error } = await playerSupabase
             .from('players')
             .select('*')
@@ -179,11 +261,13 @@ export async function loginPlayer(username, password) {
             throw new Error('User not found');
         }
 
+        // Verify password against stored hash
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
             throw new Error('Invalid password');
         }
 
+        // Generate new JWT token
         const token = jwt.sign(
             {
                 id: user.id,

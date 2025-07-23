@@ -1,5 +1,6 @@
 import * as playerManager from './managers/playerManager.js';
 import * as gameManager from './managers/gameManager.js'
+import * as playerService from './services/playerService.js';
 import readline from 'readline-sync';
 
 
@@ -55,7 +56,15 @@ export async function runGame() {
         }
 
         console.log("6. View leaderboard");
-        console.log("0. Exit");
+
+        // Add logout option for authenticated users
+        if (playerService.hasToken()) {
+            console.log("7. Logout");
+            console.log("0. Exit");
+        } else {
+            console.log("0. Exit");
+        }
+
         const choice = readline.question('Enter your choice: ');
         console.log();
 
@@ -93,6 +102,19 @@ export async function runGame() {
                 break;
             case '6':
                 await playerManager.viewLeaderboard();
+                break;
+            case '7':
+                if (playerService.hasToken()) {
+                    const logoutResult = await playerService.logout();
+                    if (logoutResult.error) {
+                        console.log(`Logout failed: ${logoutResult.error}`);
+                    } else {
+                        console.log("You have been logged out successfully.");
+                        exit = true;
+                    }
+                } else {
+                    console.log("Invalid choice. Please try again.");
+                }
                 break;
             case '0':
                 exit = true;

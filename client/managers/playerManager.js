@@ -4,8 +4,6 @@ import readline from 'readline-sync';
 
 export async function authenticatePlayer(username) {
     try {
-        console.log("Checking server connection...");
-
         // First, check if user exists and has valid token
         const checkResult = await playerService.checkUser(username);
 
@@ -21,6 +19,25 @@ export async function authenticatePlayer(username) {
             console.log(`Welcome back, ${user.username}! You're already logged in.`);
             console.log(`Role: ${user.role || 'guest'}`);
             return new Player(user.id, user.username, user.lowestTime, user.role);
+        }
+
+        // Handle token expiration
+        if (checkResult.tokenExpired) {
+            console.log(`Your session has expired. Please log in again.`);
+            if (checkResult.userExists) {
+                const password = readline.question('Enter your password: ', { hideEchoBack: true });
+                const loginResult = await playerService.loginWithName(username, password);
+
+                if (loginResult.error) {
+                    console.log(`Login failed: ${loginResult.error}`);
+                    return null;
+                }
+
+                const user = loginResult.user;
+                console.log(`Welcome back, ${user.username}! Session renewed.`);
+                console.log(`Role: ${user.role || 'guest'}`);
+                return new Player(user.id, user.username, user.lowestTime, user.role);
+            }
         }
 
         // If user exists but needs password
@@ -86,10 +103,6 @@ export async function authenticatePlayer(username) {
         }
     } catch (err) {
         console.log(`Authentication error: ${err.message}`);
-        console.log("\nTroubleshooting:");
-        console.log("1. Make sure the server is running: node server/app.js");
-        console.log("2. Check your PORT environment variable");
-        console.log("3. Verify Supabase credentials in .env file");
         return null;
     }
 }

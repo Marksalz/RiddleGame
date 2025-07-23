@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 //import { getPlayerCollection } from "";
 import { playerSupabase } from "../lib/players/playerDb.js";
-import { verifyToken, checkUserExists, requireAuth, requireRole } from "../middleware/auth.js";
+import { verifyToken, checkUserExists } from "../middleware/auth.js";
 const playerRouter = express.Router();
 
 playerRouter.post("/create_player", async (req, res) => {
@@ -31,7 +31,32 @@ playerRouter.post('/signup', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 12);
         const player = await playerCtrl.createPlayer(username, hashedPassword, role);
-        res.status(201).json(player);
+
+        // Generate user-specific token with 1-week expiration
+        const token = jwt.sign(
+            {
+                id: player.id,
+                username: player.username,
+                role: player.role || 'user'
+            },
+            process.env.SECRET,
+            { expiresIn: '7d' }
+        );
+
+        // Set cookie with 1-week expiration
+        res.cookie("token", token, {
+            httpOnly: false,
+            sameSite: "lax",
+            secure: false,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+            path: '/'
+        });
+
+        res.status(201).json({
+            ...player,
+            token: token,
+            expiresIn: '7d'
+        });
     } catch (err) {
         console.error("Failed to create player:", err);
         res.status(err.status || 500).json({ error: err.message || 'Server internal error' });
@@ -53,6 +78,16 @@ playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) 
                     lowestTime: req.user.lowestTime
                 },
                 message: 'User authenticated with existing token'
+            });
+        }
+
+        // Check if token expired
+        if (req.tokenExpired) {
+            return res.json({
+                authenticated: false,
+                tokenExpired: true,
+                userExists: req.userExists,
+                message: 'Token expired, please log in again'
             });
         }
 
@@ -79,60 +114,59 @@ playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) 
 playerRouter.post('/login-with-name', async (req, res) => {
     try {
         const { username, password } = req.body;
+
         const { data: user, error } = await playerSupabase
             .from('players')
             .select('*')
             .eq('username', username)
             .single();
 
-        if (error || !user) return res.status(403).json({ error: 'User not found' });
-
-
-        console.log(password, user.password);
+        if (error || !user) {
+            return res.status(403).json({ error: 'User not found' });
+        }
 
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return res.status(403).json({ error: 'Invalid password' });
 
-        const token = jwt.sign({ id: user.id }, process.env.SECRET, {
-            expiresIn: '7d'
+        // Generate user-specific token with 1-week expiration
+        const token = jwt.sign(
+            {
+                id: user.id,
+                username: user.username,
+                role: user.role || 'guest'
+            },
+            process.env.SECRET,
+            { expiresIn: '7d' }
+        );
+
+        // Set cookie with 1-week expiration
+        res.cookie("token", token, {
+            httpOnly: false,
+            sameSite: "lax",
+            secure: false,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+            path: '/'
         });
 
-        res.cookie("token", token, { httpOnly: true, sameSite: "strict" })
-            .json({
-                message: 'Login successful!',
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    role: user.role || 'guest',
-                    lowestTime: user.lowestTime
-                }
-            });
+        res.json({
+            message: 'Login successful!',
+            token: token,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.role || 'guest',
+                lowestTime: user.lowestTime
+            },
+            expiresIn: '7d'
+        });
     } catch (err) {
         res.status(500).json({ error: 'Server error', details: err.message });
     }
 });
 
-// playerRouter.post('/login', async (req, res) => {
-//     try {
-//         const { username, password } = req.body;
-//         const collection = await getPlayerCollection();
-//         const user = await collection.findOne({ username: username });
-//         if (!user) return res.status(403).send('User not found');
-//         const passwordMatch = await bcrypt.compare(password, user.password);
-//         if (!passwordMatch) return res.status(403).send('User not found');
-//         const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-//             expiresIn: '7d'
-//         });
-//         res.cookie("token", token, { httpOnly: true, sameSite: "strict" }).send('login successful!');
-//     } catch (err) {
-//         res.status(err.status || 500).send(err.message || 'Server internal error');
-//     }
-// });
-
 playerRouter.get("/leaderboard", async (req, res) => {
     try {
         const leaderboard = await playerCtrl.getLeaderboard();
-        console.log("Leaderboard fetched:", leaderboard);
         res.json(leaderboard);
     } catch (err) {
         console.error("Failed to fetch leaderboard:", err);
@@ -146,7 +180,6 @@ playerRouter.put("/update_time/:id", async (req, res) => {
         const { time } = req.body;
 
         await playerCtrl.updatePlayerTime(id, time);
-        console.log(`Player ${id} time updated to ${time}`);
         res.json({ message: "Player time updated successfully" });
     } catch (err) {
         console.error("Failed to update player time:", err);
@@ -173,6 +206,14 @@ playerRouter.get("/unsolved_riddles/:player_id", async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: "Failed to get unsolved riddles.", details: err.message });
     }
+});
+
+playerRouter.post('/logout', (req, res) => {
+    // Clear cookie with multiple path configurations to ensure removal
+    res.clearCookie('token');
+    res.clearCookie('token', { path: '/' });
+    res.clearCookie('token', { path: '/api/' });
+    res.json({ message: 'Logged out successfully' });
 });
 
 export default playerRouter;

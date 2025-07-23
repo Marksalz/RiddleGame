@@ -1,8 +1,8 @@
 import express from "express";
 import { playerCtrl } from "../controllers/playerController.js";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { getPlayerCollection } from "../db/playerDb.js";
+//import { getPlayerCollection } from "";
 import { playerSupabase } from "../lib/players/playerDb.js";
 import { verifyToken, checkUserExists, requireAuth, requireRole } from "../middleware/auth.js";
 const playerRouter = express.Router();
@@ -21,13 +21,20 @@ playerRouter.post("/create_player", async (req, res) => {
 
 playerRouter.post('/signup', async (req, res) => {
     try {
-        const { username, password, role = 'guest' } = req.body;
+        const { username, password, role = 'user' } = req.body;
+
+        // Validate role
+        const validRoles = ['guest', 'user', 'admin'];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({ error: 'Invalid role specified' });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 12);
         const player = await playerCtrl.createPlayer(username, hashedPassword, role);
         res.status(201).json(player);
     } catch (err) {
-        console.error("Failed to create or get player:", err);
-        res.status(err.status || 500).send(err.message || 'Server internal error');
+        console.error("Failed to create player:", err);
+        res.status(err.status || 500).json({ error: err.message || 'Server internal error' });
     }
 });
 
@@ -80,6 +87,9 @@ playerRouter.post('/login-with-name', async (req, res) => {
 
         if (error || !user) return res.status(403).json({ error: 'User not found' });
 
+
+        console.log(password, user.password);
+
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) return res.status(403).json({ error: 'Invalid password' });
 
@@ -102,22 +112,22 @@ playerRouter.post('/login-with-name', async (req, res) => {
     }
 });
 
-playerRouter.post('/login', async (req, res) => {
-    try {
-        const { username, password } = req.body;
-        const collection = await getPlayerCollection();
-        const user = await collection.findOne({ username: username });
-        if (!user) return res.status(403).send('User not found');
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) return res.status(403).send('User not found');
-        const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-            expiresIn: '7d'
-        });
-        res.cookie("token", token, { httpOnly: true, sameSite: "strict" }).send('login successful!');
-    } catch (err) {
-        res.status(err.status || 500).send(err.message || 'Server internal error');
-    }
-});
+// playerRouter.post('/login', async (req, res) => {
+//     try {
+//         const { username, password } = req.body;
+//         const collection = await getPlayerCollection();
+//         const user = await collection.findOne({ username: username });
+//         if (!user) return res.status(403).send('User not found');
+//         const passwordMatch = await bcrypt.compare(password, user.password);
+//         if (!passwordMatch) return res.status(403).send('User not found');
+//         const token = jwt.sign({ id: user._id }, process.env.SECRET, {
+//             expiresIn: '7d'
+//         });
+//         res.cookie("token", token, { httpOnly: true, sameSite: "strict" }).send('login successful!');
+//     } catch (err) {
+//         res.status(err.status || 500).send(err.message || 'Server internal error');
+//     }
+// });
 
 playerRouter.get("/leaderboard", async (req, res) => {
     try {

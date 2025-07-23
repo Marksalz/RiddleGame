@@ -87,9 +87,10 @@ export async function checkUser(username) {
         const res = await fetch(`${BASE_URL}/check-user`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            credentials: 'include', // Include cookies
+            credentials: 'include',
             body: JSON.stringify({ username })
         });
+
         return await handleResponse(res, "check user");
     } catch (err) {
         return { error: "Network error: Failed to check user.", details: err.message };
@@ -110,7 +111,7 @@ export async function loginWithName(username, password) {
     }
 }
 
-export async function signup(username, password, role = 'player') {
+export async function signup(username, password, role = 'guest') {
     try {
         const res = await fetch(`${BASE_URL}/signup`, {
             method: "POST",

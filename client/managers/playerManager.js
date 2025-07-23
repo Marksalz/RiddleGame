@@ -4,6 +4,8 @@ import readline from 'readline-sync';
 
 export async function authenticatePlayer(username) {
     try {
+        console.log("Checking server connection...");
+
         // First, check if user exists and has valid token
         const checkResult = await playerService.checkUser(username);
 
@@ -37,11 +39,28 @@ export async function authenticatePlayer(username) {
             return new Player(user.id, user.username, user.lowestTime, user.role);
         }
 
-        // User doesn't exist, offer signup
-        console.log(`User '${username}' not found. Would you like to create an account?`);
-        const createAccount = readline.keyInYNStrict('Create new account?');
+        // User doesn't exist - offer options
+        console.log(`\nUser '${username}' not found. How would you like to proceed?`);
+        console.log("1. Play as guest (username only, limited features)");
+        console.log("2. Create account (username + password, full features)");
 
-        if (createAccount) {
+        const choice = readline.question('Choose option (1 or 2): ');
+
+        if (choice === '1') {
+            // Play as guest using the old getOrCreatePlayer method
+            const guestResult = await playerService.getOrCreatePlayer(username);
+
+            if (guestResult.error) {
+                console.log(`Failed to create guest player: ${guestResult.error}`);
+                return null;
+            }
+
+            console.log(`Welcome, ${guestResult.username}! Playing as guest.`);
+            console.log(`Role: guest (limited features)`);
+            return new Player(guestResult.id, guestResult.username, guestResult.lowestTime, 'guest');
+        }
+        else if (choice === '2') {
+            // Create account
             const password = readline.question('Enter a password: ', { hideEchoBack: true });
             const confirmPassword = readline.question('Confirm password: ', { hideEchoBack: true });
 
@@ -50,7 +69,7 @@ export async function authenticatePlayer(username) {
                 return null;
             }
 
-            const signupResult = await playerService.signup(username, password, 'guest');
+            const signupResult = await playerService.signup(username, password, 'user');
 
             if (signupResult.error) {
                 console.log(`Signup failed: ${signupResult.error}`);
@@ -58,13 +77,19 @@ export async function authenticatePlayer(username) {
             }
 
             console.log(`Account created successfully! Welcome, ${signupResult.username}!`);
-            console.log(`Role: ${signupResult.role || 'guest'}`);
+            console.log(`Role: user (full features)`);
             return new Player(signupResult.id, signupResult.username, signupResult.lowestTime, signupResult.role);
         }
-
-        return null;
+        else {
+            console.log('Invalid choice.');
+            return null;
+        }
     } catch (err) {
         console.log(`Authentication error: ${err.message}`);
+        console.log("\nTroubleshooting:");
+        console.log("1. Make sure the server is running: node server/app.js");
+        console.log("2. Check your PORT environment variable");
+        console.log("3. Verify Supabase credentials in .env file");
         return null;
     }
 }

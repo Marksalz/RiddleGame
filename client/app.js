@@ -27,23 +27,31 @@ export async function runGame() {
 
     let exit = false;
     while (!exit) {
-        console.log("What do you want to do?");
+        console.log(`\n=== Riddle Game Menu (Role: ${player.role}) ===`);
         console.log("1. Play the game");
 
         if (player.canCreateRiddles()) {
             console.log("2. Create a new riddle");
+        } else {
+            console.log("2. Create a new riddle (requires user account)");
         }
 
         if (player.canViewAllRiddles()) {
             console.log("3. Read all riddles");
+        } else {
+            console.log("3. Read all riddles (requires user account)");
         }
 
         if (player.canEditRiddles()) {
             console.log("4. Update an existing riddle");
+        } else {
+            console.log("4. Update an existing riddle (admin only)");
         }
 
         if (player.canDeleteRiddles()) {
             console.log("5. Delete a riddle");
+        } else {
+            console.log("5. Delete a riddle (admin only)");
         }
 
         console.log("6. View leaderboard");
@@ -59,28 +67,28 @@ export async function runGame() {
                 if (player.canCreateRiddles()) {
                     await gameManager.handleCreateRiddle();
                 } else {
-                    console.log("You don't have permission to create riddles.");
+                    console.log("You need a user account to create riddles. Create an account to unlock this feature!");
                 }
                 break;
             case '3':
                 if (player.canViewAllRiddles()) {
                     await gameManager.handleReadAllRiddles();
                 } else {
-                    console.log("You don't have permission to view all riddles.");
+                    console.log("You need a user account to view all riddles. Create an account to unlock this feature!");
                 }
                 break;
             case '4':
                 if (player.canEditRiddles()) {
                     await gameManager.handleUpdateRiddle();
                 } else {
-                    console.log("You don't have permission to edit riddles.");
+                    console.log("You need admin privileges to edit riddles.");
                 }
                 break;
             case '5':
                 if (player.canDeleteRiddles()) {
                     await gameManager.handleDeleteRiddle();
                 } else {
-                    console.log("You don't have permission to delete riddles.");
+                    console.log("You need admin privileges to delete riddles.");
                 }
                 break;
             case '6':

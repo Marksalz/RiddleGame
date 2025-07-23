@@ -16,7 +16,7 @@ export async function getOrCreatePlayer(username) {
     }
 }
 
-export async function createPlayer(username, hashedPassword, role = 'guest') {
+export async function createPlayer(username, hashedPassword, role = 'user') {
     try {
         validatePlayerName(username);
         let player = { username, password: hashedPassword, role, lowestTime: null };

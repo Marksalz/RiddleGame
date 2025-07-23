@@ -131,7 +131,7 @@ export async function authenticatePlayer(username) {
 }
 
 /**
- * Legacy player check method for simple username-based access
+ * player check method for simple username-based access
  * @param {string} username - Username to check or create
  * @returns {Promise<Player|null>} Player instance or null if failed
  * @deprecated Use authenticatePlayer() for full authentication flow

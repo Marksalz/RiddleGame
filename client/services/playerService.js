@@ -81,3 +81,45 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
         return { error: "Network error: Failed to get unsolved riddles.", details: err.message };
     }
 }
+
+export async function checkUser(username) {
+    try {
+        const res = await fetch(`${BASE_URL}/check-user`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include', // Include cookies
+            body: JSON.stringify({ username })
+        });
+        return await handleResponse(res, "check user");
+    } catch (err) {
+        return { error: "Network error: Failed to check user.", details: err.message };
+    }
+}
+
+export async function loginWithName(username, password) {
+    try {
+        const res = await fetch(`${BASE_URL}/login-with-name`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include', // Include cookies
+            body: JSON.stringify({ username, password })
+        });
+        return await handleResponse(res, "login");
+    } catch (err) {
+        return { error: "Network error: Failed to login.", details: err.message };
+    }
+}
+
+export async function signup(username, password, role = 'player') {
+    try {
+        const res = await fetch(`${BASE_URL}/signup`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: 'include',
+            body: JSON.stringify({ username, password, role })
+        });
+        return await handleResponse(res, "signup");
+    } catch (err) {
+        return { error: "Network error: Failed to signup.", details: err.message };
+    }
+}

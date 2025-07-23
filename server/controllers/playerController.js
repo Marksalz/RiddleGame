@@ -16,6 +16,17 @@ export async function getOrCreatePlayer(username) {
     }
 }
 
+export async function createPlayer(username, hashedPassword, role = 'guest') {
+    try {
+        validatePlayerName(username);
+        let player = { username, password: hashedPassword, role, lowestTime: null };
+        player = await crud.create(player);
+        return player;
+    } catch (err) {
+        throw new Error("Could not get or create player: " + err.message);
+    }
+}
+
 export async function getLeaderboard() {
     try {
         const players = await crud.read();
@@ -71,6 +82,7 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
 
 export const playerCtrl = {
     getOrCreatePlayer,
+    createPlayer,
     getLeaderboard,
     updatePlayerTime,
     recordSolvedRiddle,

@@ -1,5 +1,73 @@
 import * as playerService from '../services/playerService.js'
 import { Player } from '../classes/Player.js';
+import readline from 'readline-sync';
+
+export async function authenticatePlayer(username) {
+    try {
+        // First, check if user exists and has valid token
+        const checkResult = await playerService.checkUser(username);
+
+        if (checkResult.error) {
+            console.log(`Error checking user: ${checkResult.error}`);
+            if (checkResult.details) console.log(`Details: ${checkResult.details}`);
+            return null;
+        }
+
+        // If already authenticated with valid token
+        if (checkResult.authenticated) {
+            const user = checkResult.user;
+            console.log(`Welcome back, ${user.username}! You're already logged in.`);
+            console.log(`Role: ${user.role || 'guest'}`);
+            return new Player(user.id, user.username, user.lowestTime, user.role);
+        }
+
+        // If user exists but needs password
+        if (checkResult.userExists) {
+            const password = readline.question('Enter your password: ', { hideEchoBack: true });
+            const loginResult = await playerService.loginWithName(username, password);
+
+            if (loginResult.error) {
+                console.log(`Login failed: ${loginResult.error}`);
+                return null;
+            }
+
+            const user = loginResult.user;
+            console.log(`Welcome back, ${user.username}!`);
+            console.log(`Role: ${user.role || 'guest'}`);
+            return new Player(user.id, user.username, user.lowestTime, user.role);
+        }
+
+        // User doesn't exist, offer signup
+        console.log(`User '${username}' not found. Would you like to create an account?`);
+        const createAccount = readline.keyInYNStrict('Create new account?');
+
+        if (createAccount) {
+            const password = readline.question('Enter a password: ', { hideEchoBack: true });
+            const confirmPassword = readline.question('Confirm password: ', { hideEchoBack: true });
+
+            if (password !== confirmPassword) {
+                console.log('Passwords do not match.');
+                return null;
+            }
+
+            const signupResult = await playerService.signup(username, password, 'guest');
+
+            if (signupResult.error) {
+                console.log(`Signup failed: ${signupResult.error}`);
+                return null;
+            }
+
+            console.log(`Account created successfully! Welcome, ${signupResult.username}!`);
+            console.log(`Role: ${signupResult.role || 'guest'}`);
+            return new Player(signupResult.id, signupResult.username, signupResult.lowestTime, signupResult.role);
+        }
+
+        return null;
+    } catch (err) {
+        console.log(`Authentication error: ${err.message}`);
+        return null;
+    }
+}
 
 export async function checkPlayer(username) {
     const player = await playerService.getOrCreatePlayer(username);

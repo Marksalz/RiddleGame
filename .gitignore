@@ -9,5 +9,8 @@ npm-debug.log*
 # Environment variables
 .env
 
+# Authentication tokens (sensitive data)
+.auth-tokens.json
+
 # OS files
 .DS_Store

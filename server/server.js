@@ -1,5 +1,6 @@
 import express from "express";
 import router from "./router.js";
+import cookieParser from 'cookie-parser';
 import "dotenv/config";
 import { connectToMongo } from "./lib/riddles/riddleDb.js";
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,7 @@ server.use((req, res, next) => {
 });
 
 server.use(express.json());
+server.use(cookieParser());
 server.use("/api", router);
 
 try {

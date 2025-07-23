@@ -22,8 +22,11 @@
   "homepage": "https://github.com/Marksalz/RiddleGame#readme",
   "dependencies": {
     "@supabase/supabase-js": "^2.51.0",
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.17.0",
     "readline-sync": "^1.4.10"
   }

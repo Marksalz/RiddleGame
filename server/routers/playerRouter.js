@@ -1,5 +1,6 @@
 import express from "express";
 import { playerCtrl } from "../controllers/playerController.js";
+import { verifyToken, checkUserExists } from "../middleware/auth.js";
 const playerRouter = express.Router();
 
 playerRouter.post("/create_player", async (req, res) => {
@@ -14,10 +15,83 @@ playerRouter.post("/create_player", async (req, res) => {
     }
 });
 
+playerRouter.post('/signup', async (req, res) => {
+    try {
+        const { username, password, role = 'user' } = req.body;
+
+        const result = await playerCtrl.signupPlayer(username, password, role);
+
+        res.cookie("token", result.token, {
+            httpOnly: false,
+            sameSite: "lax",
+            secure: false,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+            path: '/'
+        });
+
+        res.status(201).json({
+            ...result.player,
+            token: result.token,
+            expiresIn: result.expiresIn
+        });
+    } catch (err) {
+        console.error("Failed to create player:", err);
+        res.status(500).json({ error: err.message || 'Server internal error' });
+    }
+});
+
+playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) => {
+    try {
+        const { username } = req.body;
+
+        const result = await playerCtrl.checkUserAuthentication(username, req);
+
+        // Handle token expiration specifically
+        if (req.tokenExpired) {
+            return res.status(401).json({
+                ...result,
+                tokenExpired: true,
+                tokenError: req.tokenError
+            });
+        }
+
+        // Handle other token errors
+        if (req.tokenError && !req.authenticated) {
+            return res.status(401).json({
+                ...result,
+                tokenError: req.tokenError
+            });
+        }
+
+        res.json(result);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error', details: err.message });
+    }
+});
+
+playerRouter.post('/login-with-name', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        const result = await playerCtrl.loginPlayer(username, password);
+
+        res.cookie("token", result.token, {
+            httpOnly: false,
+            sameSite: "lax",
+            secure: false,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+            path: '/'
+        });
+
+        res.json(result);
+    } catch (err) {
+        res.status(403).json({ error: err.message });
+    }
+});
+
 playerRouter.get("/leaderboard", async (req, res) => {
     try {
         const leaderboard = await playerCtrl.getLeaderboard();
-        console.log("Leaderboard fetched:", leaderboard);
         res.json(leaderboard);
     } catch (err) {
         console.error("Failed to fetch leaderboard:", err);
@@ -31,7 +105,6 @@ playerRouter.put("/update_time/:id", async (req, res) => {
         const { time } = req.body;
 
         await playerCtrl.updatePlayerTime(id, time);
-        console.log(`Player ${id} time updated to ${time}`);
         res.json({ message: "Player time updated successfully" });
     } catch (err) {
         console.error("Failed to update player time:", err);
@@ -58,6 +131,13 @@ playerRouter.get("/unsolved_riddles/:player_id", async (req, res) => {
     } catch (err) {
         res.status(400).json({ error: "Failed to get unsolved riddles.", details: err.message });
     }
+});
+
+playerRouter.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.clearCookie('token', { path: '/' });
+    res.clearCookie('token', { path: '/api/' });
+    res.json({ message: 'Logged out successfully' });
 });
 
 export default playerRouter;

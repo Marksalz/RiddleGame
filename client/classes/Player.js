@@ -3,12 +3,16 @@
  */
 export class Player {
     /**
-     * @param {string} name - The player's name.
+     * @param {number} id - The player's ID.
+     * @param {string} username - The player's username.
+     * @param {number|null} lowestTime - The player's lowest time.
+     * @param {string} role - The player's role.
      */
-    constructor(id, name, lowestTime = null) {
+    constructor(id, username, lowestTime = null, role = 'guest') {
         this.id = id;
-        this.name = name;
+        this.username = username;
         this.lowestTime = lowestTime;
+        this.role = role;
     }
 
     /**
@@ -23,5 +27,21 @@ export class Player {
             this.lowestTime = finalTime;
         }
         return this.lowestTime;
+    }
+
+    canCreateRiddles() {
+        return this.role === 'user' || this.role === 'admin';
+    }
+
+    canEditRiddles() {
+        return this.role === 'admin';
+    }
+
+    canDeleteRiddles() {
+        return this.role === 'admin';
+    }
+
+    canViewAllRiddles() {
+        return this.role === 'user' || this.role === 'admin';
     }
 }

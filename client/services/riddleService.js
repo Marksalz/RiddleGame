@@ -1,7 +1,21 @@
+/**
+ * @fileoverview Service layer for riddle-related API operations.
+ * Handles communication with the riddle endpoints on the server.
+ * Provides CRUD operations and error handling for riddle management.
+ * @author RiddleGame Team
+ */
+
 const PORT = process.env.PORT;
 
 const BASE_URL = `http://localhost:${PORT}/api/riddles`;
 
+/**
+ * Handles API response parsing and error extraction
+ * @param {Response} res - Fetch API response object
+ * @param {string} action - Description of the action for error messages
+ * @returns {Object} Parsed response data or error object
+ * @private
+ */
 async function handleResponse(res, action) {
     try {
         const data = await res.json();
@@ -14,10 +28,38 @@ async function handleResponse(res, action) {
     }
 }
 
+/**
+ * Adds artificial delay for better UX (simulates network latency)
+ * @param {number} ms - Milliseconds to delay
+ * @returns {Promise} Promise that resolves after the delay
+ * @private
+ */
 function delay(ms) {
     return new Promise((res) => { setTimeout(res, ms) });
 }
 
+/**
+ * Creates a new riddle on the server
+ * @param {Object} riddle - Riddle object to create
+ * @param {string} riddle.name - Name/title of the riddle
+ * @param {string} riddle.taskDescription - The riddle question
+ * @param {string} riddle.correctAnswer - Correct answer
+ * @param {string} riddle.difficulty - Difficulty level (easy, medium, hard)
+ * @param {number} riddle.timeLimit - Time limit in seconds
+ * @param {string} riddle.hint - Hint text
+ * @param {Array} [riddle.choices] - Optional array of multiple choice options
+ * @returns {Promise<Object>} Success message or error details
+ * @example
+ * const riddle = {
+ *   name: "Math Puzzle",
+ *   taskDescription: "What is 2 + 2?",
+ *   correctAnswer: "4",
+ *   difficulty: "easy",
+ *   timeLimit: 30,
+ *   hint: "Think basic arithmetic"
+ * };
+ * const result = await createRiddle(riddle);
+ */
 export async function createRiddle(riddle) {
     try {
         await delay(1000);
@@ -32,7 +74,19 @@ export async function createRiddle(riddle) {
     }
 }
 
+/**
+ * Retrieves riddles from the server, optionally filtered by difficulty
+ * @param {string} [difficulty] - Optional difficulty filter (easy, medium, hard)
+ * @returns {Promise<Array|Object>} Array of riddles or error object
+ * @example
+ * // Get all riddles
+ * const allRiddles = await readAllRiddles();
+ * 
+ * // Get only easy riddles
+ * const easyRiddles = await readAllRiddles('easy');
+ */
 export async function readAllRiddles(difficulty) {
+    // Construct URL with optional difficulty parameter
     let url = "/read_all_riddles";
     if (difficulty) {
         url += `/${encodeURIComponent(difficulty)}`;
@@ -46,6 +100,19 @@ export async function readAllRiddles(difficulty) {
     }
 }
 
+/**
+ * Updates a specific field of an existing riddle
+ * @param {string} id - MongoDB ObjectId of the riddle
+ * @param {string} field - Field name to update
+ * @param {*} value - New value for the field
+ * @returns {Promise<Object>} Success message or error details
+ * @example
+ * // Update riddle difficulty
+ * await updateRiddle('507f1f77bcf86cd799439011', 'difficulty', 'hard');
+ * 
+ * // Update time limit
+ * await updateRiddle('507f1f77bcf86cd799439011', 'timeLimit', 45);
+ */
 export async function updateRiddle(id, field, value) {
     try {
         await delay(1000);
@@ -60,6 +127,16 @@ export async function updateRiddle(id, field, value) {
     }
 }
 
+/**
+ * Deletes a riddle from the server
+ * @param {string} id - MongoDB ObjectId of the riddle to delete
+ * @returns {Promise<Object>} Success message or error details
+ * @example
+ * const result = await deleteRiddle('507f1f77bcf86cd799439011');
+ * if (result.error) {
+ *   console.log('Delete failed:', result.error);
+ * }
+ */
 export async function deleteRiddle(id) {
     try {
         await delay(1000);

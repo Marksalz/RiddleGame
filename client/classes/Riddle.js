@@ -4,19 +4,8 @@ import readline from 'readline-sync';
  * Represents a riddle with a question, answer, and related metadata.
  */
 export class Riddle {
-    /**
-     * @param {string} name - The name/title of the riddle.
-     * @param {string} taskDescription - The riddle's description/question.
-     * @param {string|number} correctAnswer - The correct answer to the riddle.
-     * @param {string} difficulty - The difficulty level of the riddle.
-     * @param {number} timeLimit - The time limit for solving the riddle.
-     * @param {string} hint - A hint for the riddle.
-     * @param {number} [id] - (Optional) The riddle's ID. If not provided, undefined.
-     */
-    constructor(name, taskDescription, correctAnswer, difficulty, timeLimit, hint, id) {
-        if (id !== undefined && id !== null) {
-            this.id = id;
-        }
+    constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
+        this.id = id;
         this.name = name;
         this.taskDescription = taskDescription;
         this.correctAnswer = correctAnswer;

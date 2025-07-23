@@ -25,7 +25,6 @@ playerRouter.get("/leaderboard", async (req, res) => {
     }
 });
 
-
 playerRouter.put("/update_time/:id", async (req, res) => {
     try {
         const id = Number(req.params.id);
@@ -37,6 +36,27 @@ playerRouter.put("/update_time/:id", async (req, res) => {
     } catch (err) {
         console.error("Failed to update player time:", err);
         res.status(400).json({ error: "Failed to update player time.", details: err.message });
+    }
+});
+
+playerRouter.post("/record_solved_riddle", async (req, res) => {
+    try {
+        const { player_id, riddle_id, time_to_solve } = req.body;
+        const score = await playerCtrl.recordSolvedRiddle(player_id, riddle_id, time_to_solve);
+        res.json(score);
+    } catch (err) {
+        res.status(400).json({ error: "Failed to record solved riddle.", details: err.message });
+    }
+});
+
+playerRouter.get("/unsolved_riddles/:player_id", async (req, res) => {
+    try {
+        const player_id = Number(req.params.player_id);
+        const difficulty = req.query.difficulty;
+        const riddles = await playerCtrl.getUnsolvedRiddles(player_id, difficulty);
+        res.json(riddles);
+    } catch (err) {
+        res.status(400).json({ error: "Failed to get unsolved riddles.", details: err.message });
     }
 });
 

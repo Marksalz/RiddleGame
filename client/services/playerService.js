@@ -57,3 +57,27 @@ export async function getLeaderboard() {
         return { error: "Network error: Failed to fetch leaderboard.", details: err.message };
     }
 }
+
+export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
+    try {
+        const res = await fetch(`${BASE_URL}/record_solved_riddle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ player_id, riddle_id, time_to_solve })
+        });
+        return await handleResponse(res, "record solved riddle");
+    } catch (err) {
+        return { error: "Network error: Failed to record solved riddle.", details: err.message };
+    }
+}
+
+export async function getUnsolvedRiddles(player_id, difficulty) {
+    try {
+        let url = `${BASE_URL}/unsolved_riddles/${player_id}`;
+        if (difficulty) url += `?difficulty=${encodeURIComponent(difficulty)}`;
+        const res = await fetch(url);
+        return await handleResponse(res, "get unsolved riddles");
+    } catch (err) {
+        return { error: "Network error: Failed to get unsolved riddles.", details: err.message };
+    }
+}

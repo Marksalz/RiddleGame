@@ -21,12 +21,11 @@ playerRouter.post('/signup', async (req, res) => {
 
         const result = await playerCtrl.signupPlayer(username, password, role);
 
-        // Set cookie with 1-week expiration
         res.cookie("token", result.token, {
             httpOnly: false,
             sameSite: "lax",
             secure: false,
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+            maxAge: 7 * 24 * 60 * 60 * 1000,
             path: '/'
         });
 
@@ -46,6 +45,24 @@ playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) 
         const { username } = req.body;
 
         const result = await playerCtrl.checkUserAuthentication(username, req);
+
+        // Handle token expiration specifically
+        if (req.tokenExpired) {
+            return res.status(401).json({
+                ...result,
+                tokenExpired: true,
+                tokenError: req.tokenError
+            });
+        }
+
+        // Handle other token errors
+        if (req.tokenError && !req.authenticated) {
+            return res.status(401).json({
+                ...result,
+                tokenError: req.tokenError
+            });
+        }
+
         res.json(result);
     } catch (err) {
         res.status(500).json({ error: 'Server error', details: err.message });
@@ -58,7 +75,6 @@ playerRouter.post('/login-with-name', async (req, res) => {
 
         const result = await playerCtrl.loginPlayer(username, password);
 
-        // Set cookie with 1-week expiration
         res.cookie("token", result.token, {
             httpOnly: false,
             sameSite: "lax",

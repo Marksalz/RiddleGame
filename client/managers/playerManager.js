@@ -21,7 +21,6 @@ export async function authenticatePlayer(username) {
             return new Player(user.id, user.username, user.lowestTime, user.role);
         }
 
-        // Handle token expiration
         if (checkResult.tokenExpired) {
             console.log(`Your session has expired. Please log in again.`);
             if (checkResult.userExists) {

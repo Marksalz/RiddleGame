@@ -25,7 +25,7 @@ export async function getOrCreatePlayer(name) {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/create_player`, {
             method: "POST",
-            headers: tokenService.getHeaders(null, false), 
+            headers: tokenService.getHeaders(null, false),
             body: JSON.stringify({ name })
         });
         return await handleResponse(res, "create or get player");
@@ -88,6 +88,7 @@ export async function getUnsolvedRiddles(player_id, difficulty, username) {
 
 export async function checkUser(username) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/check-user`, {
             method: "POST",
             headers: tokenService.getHeaders(username),
@@ -102,15 +103,15 @@ export async function checkUser(username) {
 
 export async function loginWithName(username, password) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/login-with-name`, {
             method: "POST",
-            headers: tokenService.getHeaders(null, false), // Don't include old token for login
+            headers: tokenService.getHeaders(null, false),
             body: JSON.stringify({ username, password })
         });
 
         const result = await handleResponse(res, "login");
 
-        // Store token in file
         if (result && result.token && !result.error) {
             tokenService.setToken(username, result.token);
             console.log(`Login successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
@@ -124,15 +125,15 @@ export async function loginWithName(username, password) {
 
 export async function signup(username, password, role = 'user') {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/signup`, {
             method: "POST",
-            headers: tokenService.getHeaders(null, false), // Don't include token for signup
+            headers: tokenService.getHeaders(null, false),
             body: JSON.stringify({ username, password, role })
         });
 
         const result = await handleResponse(res, "signup");
 
-        // Store token in file
         if (result && result.token && !result.error) {
             tokenService.setToken(username, result.token);
             console.log(`Signup successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
@@ -146,6 +147,7 @@ export async function signup(username, password, role = 'user') {
 
 export async function logout(username) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/logout`, {
             method: "POST",
             headers: tokenService.getHeaders(username)
@@ -161,12 +163,6 @@ export async function logout(username) {
     }
 }
 
-// Export utilities from token service
 export function hasToken(username) {
     return tokenService.hasValidToken(username);
-}
-
-export function logoutAll() {
-    tokenService.clearAllTokens();
-    console.log('All tokens cleared.');
 }

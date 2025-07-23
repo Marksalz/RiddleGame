@@ -1,6 +1,7 @@
 import * as crud from "../DAL/playerCrud.js";
 import * as scoreCrud from "../DAL/playerScoreCrud.js";
 import * as riddleCrud from "../DAL/riddleCrud.js";
+import { playerSupabase } from "../lib/players/playerDb.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -84,7 +85,6 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
 
 export async function checkUserAuthentication(username, req) {
     try {
-        // If user is already authenticated with valid token
         if (req.authenticated && req.user && req.user.username === username) {
             return {
                 authenticated: true,
@@ -98,17 +98,26 @@ export async function checkUserAuthentication(username, req) {
             };
         }
 
-        // Check if token expired
         if (req.tokenExpired) {
             return {
                 authenticated: false,
                 tokenExpired: true,
                 userExists: req.userExists,
+                tokenError: req.tokenError,
                 message: 'Token expired, please log in again'
             };
         }
 
-        // If user exists but no valid token
+        if (req.tokenError) {
+            return {
+                authenticated: false,
+                tokenExpired: false,
+                userExists: req.userExists,
+                tokenError: req.tokenError,
+                message: 'Invalid token, please log in again'
+            };
+        }
+
         if (req.userExists) {
             return {
                 authenticated: false,
@@ -117,7 +126,6 @@ export async function checkUserAuthentication(username, req) {
             };
         }
 
-        // User doesn't exist
         return {
             authenticated: false,
             userExists: false,
@@ -130,7 +138,6 @@ export async function checkUserAuthentication(username, req) {
 
 export async function signupPlayer(username, password, role = 'user') {
     try {
-        // Validate role
         const validRoles = ['guest', 'user', 'admin'];
         if (!validRoles.includes(role)) {
             throw new Error('Invalid role specified');
@@ -139,7 +146,6 @@ export async function signupPlayer(username, password, role = 'user') {
         const hashedPassword = await bcrypt.hash(password, 12);
         const player = await createPlayer(username, hashedPassword, role);
 
-        // Generate user-specific token with 1-week expiration
         const token = jwt.sign(
             {
                 id: player.id,
@@ -162,7 +168,6 @@ export async function signupPlayer(username, password, role = 'user') {
 
 export async function loginPlayer(username, password) {
     try {
-        const { playerSupabase } = await import("../lib/players/playerDb.js");
 
         const { data: user, error } = await playerSupabase
             .from('players')
@@ -179,7 +184,6 @@ export async function loginPlayer(username, password) {
             throw new Error('Invalid password');
         }
 
-        // Generate user-specific token with 1-week expiration
         const token = jwt.sign(
             {
                 id: user.id,

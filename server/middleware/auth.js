@@ -6,7 +6,6 @@ export const verifyToken = async (req, res, next) => {
     try {
         let token = req.cookies.token;
 
-        // If no token in parsed cookies, try to parse from header manually
         if (!token && req.headers.cookie) {
             const cookies = req.headers.cookie.split(';');
             for (const cookie of cookies) {
@@ -25,13 +24,11 @@ export const verifyToken = async (req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.SECRET);
 
-        // Verify the token contains both id and username
         if (!decoded.id || !decoded.username) {
             req.authenticated = false;
             return next();
         }
 
-        // Try to find user by ID and verify username matches
         const { data: user, error } = await playerSupabase
             .from('players')
             .select('*')
@@ -49,9 +46,21 @@ export const verifyToken = async (req, res, next) => {
         req.tokenData = decoded;
         next();
     } catch (err) {
-        // Token expired or invalid
         req.authenticated = false;
-        req.tokenExpired = err.name === 'TokenExpiredError';
+
+        if (err.name === 'TokenExpiredError') {
+            req.tokenExpired = true;
+            req.tokenError = 'Token has expired';
+        } else if (err.name === 'JsonWebTokenError') {
+            req.tokenExpired = false;
+            req.tokenError = 'Invalid token';
+        } else if (err.name === 'NotBeforeError') {
+            req.tokenExpired = false;
+            req.tokenError = 'Token not active yet';
+        } else {
+            req.tokenExpired = false;
+            req.tokenError = 'Authentication error';
+        }
         next();
     }
 };
@@ -62,7 +71,7 @@ export const checkUserExists = async (req, res, next) => {
         const { data: user, error } = await playerSupabase
             .from('players')
             .select('*')
-            .ilike('username', username)  // Use case-insensitive search
+            .ilike('username', username)
             .single();
 
         req.userExists = !!user && !error;

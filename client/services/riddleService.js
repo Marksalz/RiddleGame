@@ -14,8 +14,13 @@ async function handleResponse(res, action) {
     }
 }
 
+function delay(ms) {
+    return new Promise((res) => { setTimeout(res, ms) });
+}
+
 export async function createRiddle(riddle) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/create_riddle`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -33,6 +38,7 @@ export async function readAllRiddles(difficulty) {
         url += `/${encodeURIComponent(difficulty)}`;
     }
     try {
+        await delay(1000);
         const response = await fetch(BASE_URL + url);
         return await response.json();
     } catch (err) {
@@ -42,6 +48,7 @@ export async function readAllRiddles(difficulty) {
 
 export async function updateRiddle(id, field, value) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/update_riddle/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -55,6 +62,7 @@ export async function updateRiddle(id, field, value) {
 
 export async function deleteRiddle(id) {
     try {
+        await delay(1000);
         const res = await fetch(`${BASE_URL}/delete_riddle/${id}`, {
             method: "DELETE"
         });

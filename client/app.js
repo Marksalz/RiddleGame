@@ -28,6 +28,13 @@ export async function runGame() {
 
     let exit = false;
     while (!exit) {
+        // Show token info if available
+        // const tokenInfo = playerService.getTokenInfo(player.username);
+        // let sessionInfo = '';
+        // if (tokenInfo) {
+        //     sessionInfo = ` (Token: ${tokenInfo.remainingDays}d ${tokenInfo.remainingHours}h remaining)`;
+        // }
+
         console.log(`\n=== Riddle Game Menu (Role: ${player.role}) ===`);
         console.log("1. Play the game");
 
@@ -58,7 +65,7 @@ export async function runGame() {
         console.log("6. View leaderboard");
 
         // Add logout option for authenticated users
-        if (playerService.hasToken()) {
+        if (playerService.hasToken(player.username)) {
             console.log("7. Logout");
             console.log("0. Exit");
         } else {
@@ -104,8 +111,8 @@ export async function runGame() {
                 await playerManager.viewLeaderboard();
                 break;
             case '7':
-                if (playerService.hasToken()) {
-                    const logoutResult = await playerService.logout();
+                if (playerService.hasToken(player.username)) {
+                    const logoutResult = await playerService.logout(player.username);
                     if (logoutResult.error) {
                         console.log(`Logout failed: ${logoutResult.error}`);
                     } else {

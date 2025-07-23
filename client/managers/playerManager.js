@@ -122,8 +122,8 @@ export async function checkPlayer(username) {
     return new Player(player.id, player.username, player.lowestTime);
 }
 
-export async function updatePlayerLowestTime(id, time) {
-    const result = await playerService.updatePlayerTime(id, time);
+export async function updatePlayerLowestTime(id, time, username) {
+    const result = await playerService.updatePlayerTime(id, time, username);
     if (result && result.error) {
         console.log(`Error updating player time: ${result.error}`);
         if (result.details) console.log(`Details: ${result.details}`);

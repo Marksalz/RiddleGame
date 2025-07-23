@@ -166,10 +166,6 @@ export function hasToken(username) {
     return tokenService.hasValidToken(username);
 }
 
-export function getTokenInfo(username) {
-    return tokenService.getTokenInfo(username);
-}
-
 export function logoutAll() {
     tokenService.clearAllTokens();
     console.log('All tokens cleared.');

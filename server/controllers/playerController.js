@@ -1,6 +1,8 @@
 import * as crud from "../DAL/playerCrud.js";
 import * as scoreCrud from "../DAL/playerScoreCrud.js";
 import * as riddleCrud from "../DAL/riddleCrud.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export async function getOrCreatePlayer(username) {
     try {
@@ -80,11 +82,138 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
     }
 }
 
+export async function checkUserAuthentication(username, req) {
+    try {
+        // If user is already authenticated with valid token
+        if (req.authenticated && req.user && req.user.username === username) {
+            return {
+                authenticated: true,
+                user: {
+                    id: req.user.id,
+                    username: req.user.username,
+                    role: req.user.role || 'guest',
+                    lowestTime: req.user.lowestTime
+                },
+                message: 'User authenticated with existing token'
+            };
+        }
+
+        // Check if token expired
+        if (req.tokenExpired) {
+            return {
+                authenticated: false,
+                tokenExpired: true,
+                userExists: req.userExists,
+                message: 'Token expired, please log in again'
+            };
+        }
+
+        // If user exists but no valid token
+        if (req.userExists) {
+            return {
+                authenticated: false,
+                userExists: true,
+                message: 'User exists, password required'
+            };
+        }
+
+        // User doesn't exist
+        return {
+            authenticated: false,
+            userExists: false,
+            message: 'User not found, signup required'
+        };
+    } catch (err) {
+        throw new Error("Could not check user authentication: " + err.message);
+    }
+}
+
+export async function signupPlayer(username, password, role = 'user') {
+    try {
+        // Validate role
+        const validRoles = ['guest', 'user', 'admin'];
+        if (!validRoles.includes(role)) {
+            throw new Error('Invalid role specified');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const player = await createPlayer(username, hashedPassword, role);
+
+        // Generate user-specific token with 1-week expiration
+        const token = jwt.sign(
+            {
+                id: player.id,
+                username: player.username,
+                role: player.role || 'user'
+            },
+            process.env.SECRET,
+            { expiresIn: '7d' }
+        );
+
+        return {
+            player: player,
+            token: token,
+            expiresIn: '7d'
+        };
+    } catch (err) {
+        throw new Error("Could not signup player: " + err.message);
+    }
+}
+
+export async function loginPlayer(username, password) {
+    try {
+        const { playerSupabase } = await import("../lib/players/playerDb.js");
+
+        const { data: user, error } = await playerSupabase
+            .from('players')
+            .select('*')
+            .eq('username', username)
+            .single();
+
+        if (error || !user) {
+            throw new Error('User not found');
+        }
+
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            throw new Error('Invalid password');
+        }
+
+        // Generate user-specific token with 1-week expiration
+        const token = jwt.sign(
+            {
+                id: user.id,
+                username: user.username,
+                role: user.role || 'guest'
+            },
+            process.env.SECRET,
+            { expiresIn: '7d' }
+        );
+
+        return {
+            message: 'Login successful!',
+            token: token,
+            user: {
+                id: user.id,
+                username: user.username,
+                role: user.role || 'guest',
+                lowestTime: user.lowestTime
+            },
+            expiresIn: '7d'
+        };
+    } catch (err) {
+        throw new Error("Could not login player: " + err.message);
+    }
+}
+
 export const playerCtrl = {
     getOrCreatePlayer,
     createPlayer,
     getLeaderboard,
     updatePlayerTime,
     recordSolvedRiddle,
-    getUnsolvedRiddles
+    getUnsolvedRiddles,
+    checkUserAuthentication,
+    signupPlayer,
+    loginPlayer
 };

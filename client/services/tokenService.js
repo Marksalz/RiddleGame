@@ -98,22 +98,6 @@ export function hasValidToken(username) {
     return !!getToken(username);
 }
 
-export function getTokenInfo(username) {
-    const tokenData = tokenCache[username];
-    if (!tokenData) return null;
-
-    const remainingTime = Math.max(0, tokenData.expiresAt - Date.now());
-    const remainingDays = Math.floor(remainingTime / (24 * 60 * 60 * 1000));
-    const remainingHours = Math.floor((remainingTime % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-
-    return {
-        username: username,
-        remainingDays: remainingDays,
-        remainingHours: remainingHours,
-        expiresAt: tokenData.expiresAt
-    };
-}
-
 export function getHeaders(username = null, includeToken = true) {
     const headers = {
         "Content-Type": "application/json"

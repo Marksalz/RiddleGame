@@ -28,13 +28,6 @@ export async function runGame() {
 
     let exit = false;
     while (!exit) {
-        // Show token info if available
-        // const tokenInfo = playerService.getTokenInfo(player.username);
-        // let sessionInfo = '';
-        // if (tokenInfo) {
-        //     sessionInfo = ` (Token: ${tokenInfo.remainingDays}d ${tokenInfo.remainingHours}h remaining)`;
-        // }
-
         console.log(`\n=== Riddle Game Menu (Role: ${player.role}) ===`);
         console.log("1. Play the game");
 

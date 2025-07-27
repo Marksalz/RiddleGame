@@ -254,7 +254,7 @@ created_at    TIMESTAMP DEFAULT NOW()
 
 ### Prerequisites
 - Node.js (v14 or higher)
-- MongoDB (local or Atlas)
+- MongoDB (Atlas)
 - Supabase account
 
 ### Installation Steps
@@ -299,8 +299,8 @@ npm run startServer
 # Start client application
 npm run startApp
 
-# Run both simultaneously (if using concurrently)
-npm run dev
+# Note: Run these commands in separate terminal windows
+# The server must be running before starting the client
 ```
 
 ---
@@ -323,9 +323,6 @@ npm run dev
 - Verify server is running on correct port
 - Check firewall settings
 - Ensure both processes are running
-
-### Debug Mode
-Set `NODE_ENV=development` in your `.env` file for verbose logging.
 
 ---
 

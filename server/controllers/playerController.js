@@ -125,7 +125,6 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
     try {
         // Get list of riddle IDs the player has already solved
         const solvedIds = await scoreCrud.getSolvedRiddleIds(player_id);
-        console.log(solvedIds);
 
         // Get all riddles, optionally filtered by difficulty
         let riddles = await riddleCrud.getRiddles();

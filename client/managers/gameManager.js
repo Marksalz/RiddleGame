@@ -40,8 +40,6 @@ function promptUntilValid(promptText, validateFn, errorMsg) {
  * 2. Loads unsolved riddles for that difficulty
  * 3. Player solves riddles one by one with timing
  * 4. Records completion times and updates player stats
- * @example
- * await handlePlayGame(authenticatedPlayer);
  */
 export async function handlePlayGame(player) {
     // Get difficulty selection with validation
@@ -75,8 +73,6 @@ export async function handlePlayGame(player) {
  * 2. Validates all inputs according to business rules
  * 3. Optionally handles multiple choice setup
  * 4. Submits riddle to server for storage
- * @example
- * await handleCreateRiddle(); // Guides user through creation process
  */
 export async function handleCreateRiddle() {
     // Collect and validate basic riddle information
@@ -139,9 +135,6 @@ export async function handleCreateRiddle() {
 /**
  * Displays all riddles in the database with formatting
  * @description Shows comprehensive riddle information including metadata
- * @example
- * await handleReadAllRiddles();
- * // Output formatted list of all riddles with details
  */
 export async function handleReadAllRiddles() {
     const riddles = await riddleService.readAllRiddles();
@@ -170,8 +163,6 @@ export async function handleReadAllRiddles() {
  * 2. Selects field to modify
  * 3. Handles special cases (choices array, numeric fields)
  * 4. Submits update to server
- * @example
- * await handleUpdateRiddle(); // Admin-only function
  */
 export async function handleUpdateRiddle() {
     try {
@@ -208,8 +199,6 @@ export async function handleUpdateRiddle() {
 /**
  * Handles riddle deletion workflow for administrators
  * @description Simple ID-based deletion with confirmation
- * @example
- * await handleDeleteRiddle(); // Admin-only function
  */
 export async function handleDeleteRiddle() {
     try {
@@ -236,9 +225,6 @@ export async function handleDeleteRiddle() {
  * 1. Fetches unsolved riddles from server
  * 2. Converts raw data to appropriate riddle class instances
  * 3. Handles both regular and multiple choice riddles
- * @example
- * const riddles = await loadUnsolvedRiddlesByLevel(123, 'easy');
- * console.log(`Found ${riddles.length} unsolved easy riddles`);
  */
 export async function loadUnsolvedRiddlesByLevel(player_id, level) {
     const allRiddles = await playerService.getUnsolvedRiddles(player_id, level);
@@ -278,9 +264,6 @@ export async function loadUnsolvedRiddlesByLevel(player_id, level) {
  * 2. Handles riddle interaction (regular or multiple choice)
  * 3. Calculates penalties for hints and time overruns
  * 4. Updates player's best time if improved
- * @example
- * const times = timedAsk(riddle, player);
- * console.log(`Solved in ${times.finalTime}s (best: ${times.updatedTime}s)`);
  */
 export function timedAsk(riddle, player) {
     let usedHint = false;
@@ -313,9 +296,6 @@ export function timedAsk(riddle, player) {
  * Penalty rules:
  * - 5 seconds for exceeding time limit
  * - 10 seconds for using hint
- * @example
- * const penalty = calculatePenaltyTime(riddle, startTime, endTime, true);
- * // Returns penalty seconds (0-15 depending on violations)
  */
 export function calculatePenaltyTime(riddle, start, end, usedHint) {
     const actualTime = (end - start) / 1000;

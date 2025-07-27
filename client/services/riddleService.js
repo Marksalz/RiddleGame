@@ -49,16 +49,6 @@ function delay(ms) {
  * @param {string} riddle.hint - Hint text
  * @param {Array} [riddle.choices] - Optional array of multiple choice options
  * @returns {Promise<Object>} Success message or error details
- * @example
- * const riddle = {
- *   name: "Math Puzzle",
- *   taskDescription: "What is 2 + 2?",
- *   correctAnswer: "4",
- *   difficulty: "easy",
- *   timeLimit: 30,
- *   hint: "Think basic arithmetic"
- * };
- * const result = await createRiddle(riddle);
  */
 export async function createRiddle(riddle) {
     try {
@@ -78,12 +68,6 @@ export async function createRiddle(riddle) {
  * Retrieves riddles from the server, optionally filtered by difficulty
  * @param {string} [difficulty] - Optional difficulty filter (easy, medium, hard)
  * @returns {Promise<Array|Object>} Array of riddles or error object
- * @example
- * // Get all riddles
- * const allRiddles = await readAllRiddles();
- * 
- * // Get only easy riddles
- * const easyRiddles = await readAllRiddles('easy');
  */
 export async function readAllRiddles(difficulty) {
     // Construct URL with optional difficulty parameter
@@ -106,12 +90,6 @@ export async function readAllRiddles(difficulty) {
  * @param {string} field - Field name to update
  * @param {*} value - New value for the field
  * @returns {Promise<Object>} Success message or error details
- * @example
- * // Update riddle difficulty
- * await updateRiddle('507f1f77bcf86cd799439011', 'difficulty', 'hard');
- * 
- * // Update time limit
- * await updateRiddle('507f1f77bcf86cd799439011', 'timeLimit', 45);
  */
 export async function updateRiddle(id, field, value) {
     try {
@@ -131,11 +109,6 @@ export async function updateRiddle(id, field, value) {
  * Deletes a riddle from the server
  * @param {string} id - MongoDB ObjectId of the riddle to delete
  * @returns {Promise<Object>} Success message or error details
- * @example
- * const result = await deleteRiddle('507f1f77bcf86cd799439011');
- * if (result.error) {
- *   console.log('Delete failed:', result.error);
- * }
  */
 export async function deleteRiddle(id) {
     try {

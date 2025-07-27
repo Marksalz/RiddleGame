@@ -19,11 +19,6 @@ import readline from 'readline-sync';
  * - Expired token scenarios (re-login required)
  * - Existing users without valid token (login required)
  * - New users (signup or guest play options)
- * @example
- * const player = await authenticatePlayer('john_doe');
- * if (player) {
- *   console.log(`Welcome ${player.username}, role: ${player.role}`);
- * }
  */
 export async function authenticatePlayer(username) {
     try {
@@ -36,11 +31,16 @@ export async function authenticatePlayer(username) {
             return null;
         }
 
-        // Step 2: Handle already authenticated user with valid token
+        // Step 2: Handle already authenticated user with valid token or guest login
         if (checkResult.authenticated) {
             const user = checkResult.user;
-            console.log(`Welcome back, ${user.username}! You're already logged in.`);
-            console.log(`Role: ${user.role || 'guest'}`);
+            if (checkResult.guestLogin) {
+                console.log(`Welcome back, ${user.username}! Logging in as guest.`);
+                console.log(`Role: guest (limited features)`);
+            } else {
+                console.log(`Welcome back, ${user.username}! You're already logged in.`);
+                console.log(`Role: ${user.role || 'guest'}`);
+            }
             return new Player(user.id, user.username, user.lowestTime, user.role);
         }
 
@@ -49,7 +49,7 @@ export async function authenticatePlayer(username) {
             console.log(`Your session has expired. Please log in again.`);
             if (checkResult.userExists) {
                 const password = readline.question('Enter your password: ', { hideEchoBack: true });
-                const loginResult = await playerService.loginWithName(username, password);
+                const loginResult = await playerService.loginWithPassword(username, password);
 
                 if (loginResult.error) {
                     console.log(`Login failed: ${loginResult.error}`);
@@ -66,7 +66,7 @@ export async function authenticatePlayer(username) {
         // Step 4: Handle existing user who needs to log in
         if (checkResult.userExists) {
             const password = readline.question('Enter your password: ', { hideEchoBack: true });
-            const loginResult = await playerService.loginWithName(username, password);
+            const loginResult = await playerService.loginWithPassword(username, password);
 
             if (loginResult.error) {
                 console.log(`Login failed: ${loginResult.error}`);
@@ -87,38 +87,10 @@ export async function authenticatePlayer(username) {
         const choice = readline.question('Choose option (1 or 2): ');
 
         if (choice === '1') {
-            // Guest play using legacy method
-            const guestResult = await playerService.getOrCreatePlayer(username);
-
-            if (guestResult.error) {
-                console.log(`Failed to create guest player: ${guestResult.error}`);
-                return null;
-            }
-
-            console.log(`Welcome, ${guestResult.username}! Playing as guest.`);
-            console.log(`Role: guest (limited features)`);
-            return new Player(guestResult.id, guestResult.username, guestResult.lowestTime, 'guest');
+            return await checkAndWelcomeGuestPlayer(username);
         }
         else if (choice === '2') {
-            // Account creation flow with password confirmation
-            const password = readline.question('Enter a password: ', { hideEchoBack: true });
-            const confirmPassword = readline.question('Confirm password: ', { hideEchoBack: true });
-
-            if (password !== confirmPassword) {
-                console.log('Passwords do not match.');
-                return null;
-            }
-
-            const signupResult = await playerService.signup(username, password, 'user');
-
-            if (signupResult.error) {
-                console.log(`Signup failed: ${signupResult.error}`);
-                return null;
-            }
-
-            console.log(`Account created successfully! Welcome, ${signupResult.username}!`);
-            console.log(`Role: user (full features)`);
-            return new Player(signupResult.id, signupResult.username, signupResult.lowestTime, signupResult.role);
+            return await handleAccountCreation(username);
         }
         else {
             console.log('Invalid choice.');
@@ -134,21 +106,46 @@ export async function authenticatePlayer(username) {
  * player check method for simple username-based access
  * @param {string} username - Username to check or create
  * @returns {Promise<Player|null>} Player instance or null if failed
- * @deprecated Use authenticatePlayer() for full authentication flow
  */
-export async function checkPlayer(username) {
-    const player = await playerService.getOrCreatePlayer(username);
-    if (player.error) {
-        console.log(`Error: ${player.error}`);
-        if (player.details) console.log(`Details: ${player.details}`);
+export async function checkAndWelcomeGuestPlayer(username) {
+    const guestPlayer = await playerService.getOrCreatePlayerGuestMode(username);
+    if (guestPlayer.error) {
+        console.log(`Error: ${guestPlayer.error}`);
+        if (guestPlayer.details) console.log(`Details: ${guestPlayer.details}`);
         return null;
     }
-    if (player.lowestTime !== null) {
-        console.log(`Hi ${player.username}! Your previous lowest time was ${player.lowestTime} seconds.\n`);
+    if (guestPlayer.lowestTime !== null) {
+        console.log(`Hi ${guestPlayer.username}! Your previous lowest time was ${guestPlayer.lowestTime} seconds.\nPlaying as guest you have limited features.`);
     } else {
-        console.log(`Hi ${player.username}! Welcome to your first game!\n`);
+        console.log(`Hi ${guestPlayer.username}! Welcome to your first game!\nPlaying as guest you have limited features.`);
     }
-    return new Player(player.id, player.username, player.lowestTime);
+    return new Player(guestPlayer.id, guestPlayer.username, guestPlayer.lowestTime, guestPlayer.role);
+}
+
+/**
+ * Handles new user account creation with password confirmation
+ * @param {string} username - Username for the new account
+ * @returns {Promise<Player|null>} New Player instance or null if failed
+ */
+async function handleAccountCreation(username) {
+    const password = readline.question('Enter a password: ', { hideEchoBack: true });
+    const confirmPassword = readline.question('Confirm password: ', { hideEchoBack: true });
+
+    if (password !== confirmPassword) {
+        console.log('Passwords do not match.');
+        return null;
+    }
+
+    const signupResult = await playerService.signup(username, password, 'user');
+
+    if (signupResult.error) {
+        console.log(`Signup failed: ${signupResult.error}`);
+        return null;
+    }
+
+    console.log(`Account created successfully! Welcome, ${signupResult.username}!`);
+    console.log(`Role: user (full features)`);
+    return new Player(signupResult.id, signupResult.username, signupResult.lowestTime, signupResult.role);
 }
 
 /**
@@ -169,12 +166,6 @@ export async function updatePlayerLowestTime(id, time, username) {
 /**
  * Displays the game leaderboard showing top players by completion time
  * @description Fetches and displays leaderboard data, handles empty states and errors
- * @example
- * await viewLeaderboard();
- * // Output:
- * // Leaderboard (Lowest Time):
- * // 1. alice - 45.2 seconds
- * // 2. bob - 52.1 seconds
  */
 export async function viewLeaderboard() {
     const ranked = await playerService.getLeaderboard();
@@ -192,3 +183,4 @@ export async function viewLeaderboard() {
         console.log(`${i + 1}. ${p.username} - ${p.lowestTime} seconds`);
     });
 }
+

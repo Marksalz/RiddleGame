@@ -7,9 +7,6 @@
 /**
  * Represents a player in the riddle game with role-based access control
  * @class
- * @example
- * const player = new Player(1, 'john_doe', 45.5, 'user');
- * console.log(`${player.username} can create riddles: ${player.canCreateRiddles()}`);
  */
 export class Player {
     /**
@@ -33,9 +30,6 @@ export class Player {
      * @description
      * Only updates lowestTime if the new time is better (lower) than the current best.
      * Used to track player improvement over time.
-     * @example
-     * const newBest = player.recordTime(42.3);
-     * console.log(`New best time: ${newBest}s`);
      */
     recordTime(finalTime) {
         if (this.lowestTime === null || finalTime < this.lowestTime) {

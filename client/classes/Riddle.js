@@ -9,17 +9,6 @@ import readline from 'readline-sync';
 /**
  * Represents a text-based riddle with answer validation and hint system
  * @class
- * @example
- * const riddle = new Riddle(
- *   '507f1f77bcf86cd799439011',
- *   'Math Puzzle',
- *   'What is 2 + 2?',
- *   '4',
- *   'easy',
- *   30,
- *   'Think basic arithmetic'
- * );
- * const usedHint = riddle.ask(); // Presents riddle to user
  */
 export class Riddle {
     /**
@@ -52,10 +41,6 @@ export class Riddle {
      * 3. Validates answer with type-appropriate comparison
      * 4. Continues until correct answer is provided
      * 5. Tracks hint usage for penalty calculation
-     * @example
-     * const riddle = new Riddle(...);
-     * const usedHint = riddle.ask();
-     * if (usedHint) console.log('Hint penalty will be applied');
      */
     ask() {
         this.printRiddle();

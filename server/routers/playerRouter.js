@@ -19,8 +19,8 @@ const playerRouter = express.Router();
  */
 playerRouter.post("/create_player", async (req, res) => {
     try {
-        const { name } = req.body;
-        const player = await playerCtrl.getOrCreatePlayer(name);
+        const { name, role } = req.body;
+        const player = await playerCtrl.getOrCreatePlayerGuest(name, role);
         console.log("Player created or fetched:", player);
         res.json(player);
     } catch (err) {

@@ -50,8 +50,6 @@ function saveTokensToFile(tokens = null) {
  * Stores an authentication token for a specific user
  * @param {string} username - Username to associate with the token
  * @param {string} token - JWT token to store
- * @example
- * setToken('john_doe', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...')
  */
 export function setToken(username, token) {
     tokenCache[username] = token;
@@ -62,9 +60,6 @@ export function setToken(username, token) {
  * Retrieves the stored authentication token for a user
  * @param {string} username - Username to get token for
  * @returns {string|null} JWT token or null if not found
- * @example
- * const token = getToken('john_doe');
- * if (token) console.log('User is authenticated');
  */
 export function getToken(username) {
     return tokenCache[username] || null;
@@ -99,12 +94,6 @@ export function hasValidToken(username) {
  * @param {string|null} [username=null] - Username for token inclusion
  * @param {boolean} [includeToken=true] - Whether to include authentication token
  * @returns {Object} HTTP headers object ready for fetch requests
- * @example
- * // Get headers with authentication
- * const headers = getHeaders('john_doe');
- * 
- * // Get headers without authentication
- * const publicHeaders = getHeaders(null, false);
  */
 export function getHeaders(username = null, includeToken = true) {
     const headers = {

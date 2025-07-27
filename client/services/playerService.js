@@ -40,18 +40,17 @@ function delay(ms) {
 }
 
 /**
- * Creates or retrieves a player (legacy method for guest users)
+ * Creates or retrieves a player
  * @param {string} name - Player username
  * @returns {Promise<Object>} Player object or error details
- * @deprecated Use signup() and loginWithName() for authenticated users
  */
-export async function getOrCreatePlayer(name) {
+export async function getOrCreatePlayerGuestMode(name) {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/create_player`, {
             method: "POST",
             headers: tokenService.getHeaders(null, false),
-            body: JSON.stringify({ name })
+            body: JSON.stringify({ name, role: "guest" })
         });
         return await handleResponse(res, "create or get player");
     } catch (err) {
@@ -128,12 +127,6 @@ export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve, us
  * @param {string} [difficulty] - Optional difficulty filter
  * @param {string} username - Username for authentication
  * @returns {Promise<Array|Object>} Array of unsolved riddles or error object
- * @example
- * // Get all unsolved riddles for player
- * const riddles = await getUnsolvedRiddles(123, null, 'john_doe');
- * 
- * // Get only easy unsolved riddles
- * const easyRiddles = await getUnsolvedRiddles(123, 'easy', 'john_doe');
  */
 export async function getUnsolvedRiddles(player_id, difficulty, username) {
     try {
@@ -152,15 +145,6 @@ export async function getUnsolvedRiddles(player_id, difficulty, username) {
  * Checks if a user exists and validates their authentication status
  * @param {string} username - Username to check
  * @returns {Promise<Object>} Authentication status and user information
- * @example
- * const result = await checkUser('john_doe');
- * if (result.authenticated) {
- *   console.log('User is logged in:', result.user);
- * } else if (result.userExists) {
- *   console.log('User exists but needs to log in');
- * } else {
- *   console.log('User needs to sign up');
- * }
  */
 export async function checkUser(username) {
     try {
@@ -182,15 +166,8 @@ export async function checkUser(username) {
  * @param {string} username - Player username
  * @param {string} password - Player password
  * @returns {Promise<Object} Authentication result with token and user data
- * @example
- * const result = await loginWithName('john_doe', 'password123');
- * if (result.error) {
- *   console.log('Login failed:', result.error);
- * } else {
- *   console.log('Logged in as:', result.user.username);
- * }
  */
-export async function loginWithName(username, password) {
+export async function loginWithPassword(username, password) {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/login-with-name`, {

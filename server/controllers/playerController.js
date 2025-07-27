@@ -17,12 +17,12 @@ import jwt from "jsonwebtoken";
  * @returns {Object} Player object
  * @throws {Error} If validation or database operation fails
  */
-export async function getOrCreatePlayer(username) {
+export async function getOrCreatePlayerGuest(username, role) {
     try {
         validatePlayerName(username);
         let player = await crud.readByUsername(username);
         if (!player) {
-            player = { username, lowestTime: null };
+            player = { username, role, lowestTime: null };
             player = await crud.create(player);
         }
         return player;
@@ -149,6 +149,21 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
  */
 export async function checkUserAuthentication(username, req) {
     try {
+        // Handle guest role direct login
+        if (req.guestLogin && req.user && req.user.role === 'guest') {
+            return {
+                authenticated: true,
+                user: {
+                    id: req.user.id,
+                    username: req.user.username,
+                    role: req.user.role,
+                    lowestTime: req.user.lowestTime
+                },
+                guestLogin: true,
+                message: 'Guest user authenticated without token'
+            };
+        }
+
         if (req.authenticated && req.user && req.user.username === username) {
             return {
                 authenticated: true,
@@ -201,6 +216,24 @@ export async function checkUserAuthentication(username, req) {
 }
 
 /**
+ * Generates a JWT token for a user
+ * @param {Object} user - User object with id, username, and role
+ * @returns {string} JWT token
+ * @private
+ */
+function generateToken(user) {
+    return jwt.sign(
+        {
+            id: user.id,
+            username: user.username,
+            role: user.role || 'user'
+        },
+        process.env.SECRET,
+        { expiresIn: '7d' }
+    );
+}
+
+/**
  * Creates a new player account with authentication
  * @param {string} username - Desired username
  * @param {string} password - Plain text password (will be hashed)
@@ -221,15 +254,7 @@ export async function signupPlayer(username, password, role = 'user') {
         const player = await createPlayer(username, hashedPassword, role);
 
         // Generate JWT token with 7-day expiration
-        const token = jwt.sign(
-            {
-                id: player.id,
-                username: player.username,
-                role: player.role || 'user'
-            },
-            process.env.SECRET,
-            { expiresIn: '7d' }
-        );
+        const token = generateToken(player);
 
         return {
             player: player,
@@ -268,15 +293,7 @@ export async function loginPlayer(username, password) {
         }
 
         // Generate new JWT token
-        const token = jwt.sign(
-            {
-                id: user.id,
-                username: user.username,
-                role: user.role || 'guest'
-            },
-            process.env.SECRET,
-            { expiresIn: '7d' }
-        );
+        const token = generateToken(user);
 
         return {
             message: 'Login successful!',
@@ -295,7 +312,7 @@ export async function loginPlayer(username, password) {
 }
 
 export const playerCtrl = {
-    getOrCreatePlayer,
+    getOrCreatePlayerGuest,
     createPlayer,
     getLeaderboard,
     updatePlayerTime,

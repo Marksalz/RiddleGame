@@ -12,18 +12,6 @@ import readline from 'readline-sync';
  * Represents a multiple-choice riddle with numbered options
  * @class
  * @extends Riddle
- * @example
- * const mcRiddle = new MultipleChoiceRiddle(
- *   '507f1f77bcf86cd799439011',
- *   'Geography Quiz',
- *   'What is the capital of France?',
- *   'Paris',
- *   'easy',
- *   20,
- *   'Think of romantic cities',
- *   ['London', 'Paris', 'Berlin', 'Madrid']
- * );
- * const usedHint = mcRiddle.askWithOptions();
  */
 export class MultipleChoiceRiddle extends Riddle {
     /**
@@ -52,10 +40,6 @@ export class MultipleChoiceRiddle extends Riddle {
      * 3. Validates selection against correct answer index
      * 4. Continues until correct selection is made
      * 5. Tracks hint usage for penalty calculation
-     * @example
-     * const mcRiddle = new MultipleChoiceRiddle(...);
-     * const usedHint = mcRiddle.askWithOptions();
-     * if (usedHint) console.log('10-second penalty will be applied');
      */
     askWithOptions() {
         this.printRiddleWithChoices();
@@ -112,9 +96,6 @@ export class MultipleChoiceRiddle extends Riddle {
      * @description
      * Searches through the choices array to find which option matches
      * the correctAnswer text, then returns the 1-based index for user selection
-     * @example
-     * // If choices = ['A', 'B', 'C', 'D'] and correctAnswer = 'C'
-     * // Returns 3 (since 'C' is at index 2, but we return 1-based)
      */
     findCorrectAnswerIndex() {
         return this.choices.findIndex(choice => choice === this.correctAnswer) + 1;

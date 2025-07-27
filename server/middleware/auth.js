@@ -8,6 +8,35 @@ import jwt from "jsonwebtoken";
 import { playerSupabase } from "../lib/players/playerDb.js";
 
 /**
+ * Middleware to check if a user exists in the database
+ * Sets user existence status on the request object
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object  
+ * @param {Function} next - Express next middleware function
+ * @description Queries database for username and sets req.userExists, req.existingUser
+ */
+export const checkUserExists = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        // Case-sensitive username lookup
+        const { data: user, error } = await playerSupabase
+            .from('players')
+            .select('*')
+            .eq('username', username)
+            .single();
+
+        req.userExists = !!user && !error;
+        req.existingUser = user;
+        next();
+    } catch (err) {
+        // Set default values on error
+        req.userExists = false;
+        req.existingUser = null;
+        next();
+    }
+};
+
+/**
  * Middleware to verify JWT tokens from cookies or headers
  * Sets authentication status and user data on the request object
  * @param {Object} req - Express request object
@@ -31,6 +60,14 @@ export const verifyToken = async (req, res, next) => {
                     break;
                 }
             }
+        }
+
+        // Check if user exists and is a guest - allow direct access without token
+        if (!token && req.userExists && req.existingUser && req.existingUser.role === 'guest') {
+            req.authenticated = true;
+            req.user = req.existingUser;
+            req.guestLogin = true;
+            return next();
         }
 
         // No token found - set as unauthenticated
@@ -83,35 +120,6 @@ export const verifyToken = async (req, res, next) => {
             req.tokenExpired = false;
             req.tokenError = 'Authentication error';
         }
-        next();
-    }
-};
-
-/**
- * Middleware to check if a user exists in the database
- * Sets user existence status on the request object
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object  
- * @param {Function} next - Express next middleware function
- * @description Queries database for username and sets req.userExists, req.existingUser
- */
-export const checkUserExists = async (req, res, next) => {
-    try {
-        const { username } = req.body;
-        // Case-insensitive username lookup
-        const { data: user, error } = await playerSupabase
-            .from('players')
-            .select('*')
-            .ilike('username', username)
-            .single();
-
-        req.userExists = !!user && !error;
-        req.existingUser = user;
-        next();
-    } catch (err) {
-        // Set default values on error
-        req.userExists = false;
-        req.existingUser = null;
         next();
     }
 };

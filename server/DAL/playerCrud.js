@@ -2,6 +2,12 @@ import { playerSupabase } from "../lib/players/playerDb.js";
 
 const TABLE = "players";
 
+/**
+ * Creates a new player in the database
+ * @param {Object} player - The player object to create
+ * @returns {Promise<Object>} The created player record
+ * @throws {Error} If database operation fails
+ */
 export async function create(player) {
     const { data, error } = await playerSupabase
         .from(TABLE)
@@ -11,6 +17,11 @@ export async function create(player) {
     return data[0];
 }
 
+/**
+ * Retrieves all players from the database
+ * @returns {Promise<Array<Object>>} Array of all player records
+ * @throws {Error} If database operation fails
+ */
 export async function read() {
     const { data, error } = await playerSupabase
         .from(TABLE)
@@ -19,6 +30,12 @@ export async function read() {
     return data;
 }
 
+/**
+ * Retrieves a player by their ID
+ * @param {string} id - The player ID
+ * @returns {Promise<Object>} The player record
+ * @throws {Error} If database operation fails or player not found
+ */
 export async function readById(id) {
     const { data, error } = await playerSupabase
         .from(TABLE)
@@ -29,6 +46,12 @@ export async function readById(id) {
     return data;
 }
 
+/**
+ * Retrieves a player by their username (case-insensitive)
+ * @param {string} username - The username to search for
+ * @returns {Promise<Object|null>} The player record or null if not found
+ * @throws {Error} If database operation fails (excluding not found errors)
+ */
 export async function readByUsername(username) {
     const { data, error } = await playerSupabase
         .from(TABLE)
@@ -39,6 +62,13 @@ export async function readByUsername(username) {
     return data;
 }
 
+/**
+ * Updates a player's information
+ * @param {string} id - The player ID
+ * @param {Object} updates - The fields to update
+ * @returns {Promise<Object>} The updated player record
+ * @throws {Error} If database operation fails
+ */
 export async function update(id, updates) {
     const { data, error } = await playerSupabase
         .from(TABLE)
@@ -49,6 +79,12 @@ export async function update(id, updates) {
     return data[0];
 }
 
+/**
+ * Removes a player from the database
+ * @param {string} id - The player ID to remove
+ * @returns {Promise<void>}
+ * @throws {Error} If database operation fails
+ */
 export async function remove(id) {
     const { error } = await playerSupabase
         .from(TABLE)

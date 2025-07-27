@@ -1,26 +1,47 @@
 # RiddleGame
-A terminal-based Riddle Game built with JavaScript (ES Modules), Node.js, Express, MongoDB, and Supabase.
+
+A terminal-based riddle game built with modern JavaScript, featuring a REST API backend and interactive CLI frontend.
+
+## Quick Start
+
+1. **Clone and install:**
+   ```bash
+   git clone <repository-url>
+   cd RiddleGame
+   npm install
+   ```
+
+2. **Set up environment variables** (see [Environment Setup](#environment-setup))
+
+3. **Start the server:**
+   ```bash
+   npm run startServer
+   ```
+
+4. **Start the game (in new terminal):**
+   ```bash
+   npm run startApp
+   ```
 
 ## Tech Stack
 
-- **JavaScript** (ESM syntax)
-- **Node.js**
-- **Express** (for REST API server)
-- **MongoDB** (for riddle storage)
-- **Supabase** (for player data and scoring)
-- **readline-sync** (for terminal input)
-- **dotenv** (for environment variables)
+- **Backend:** Node.js, Express.js, JavaScript (ES Modules)
+- **Databases:** 
+  - MongoDB (riddle storage)
+  - Supabase (player data & scoring)
+- **Frontend:** Terminal-based CLI with readline-sync
+- **Tools:** dotenv, fetch API
 
 ---
 
 ## Project Overview
 
-This project is split into two main parts:
+This project demonstrates a full-stack JavaScript application with clear separation of concerns:
 
-- **Server** (`/server`):  
-  Handles all data storage and retrieval for riddles and players via a REST API. Riddles are stored in MongoDB, while player data and scores are managed through Supabase.
-- **Client** (`/client`):  
-  A terminal-based game that interacts with the server using HTTP requests. All game logic, user interaction, and timing are handled here.
+- **Server** (`/server`): REST API handling data persistence and business logic
+- **Client** (`/client`): Interactive terminal game consuming the API
+
+The architecture showcases modern JavaScript patterns, database integration, and API design principles.
 
 ---
 
@@ -28,39 +49,39 @@ This project is split into two main parts:
 
 ```
 RiddleGame/
-├── client/
-│   ├── app.js
-│   ├── classes/
+├── client/                    # Terminal game application
+│   ├── app.js                 # Main game entry point
+│   ├── classes/               # Game entities
 │   │   ├── Riddle.js
 │   │   ├── Player.js
 │   │   └── MultipleChoiceRiddle.js
-│   ├── managers/
+│   ├── managers/              # Game flow controllers
 │   │   ├── gameManager.js
 │   │   └── playerManager.js
-│   └── services/
+│   └── services/              # API communication
 │       ├── playerService.js
 │       └── riddleService.js
-├── server/
-│   ├── server.js
-│   ├── router.js
-│   ├── controllers/
+├── server/                    # REST API server
+│   ├── server.js              # Express server setup
+│   ├── router.js              # Main API router
+│   ├── controllers/           # Request handlers
 │   │   ├── playerController.js
 │   │   └── riddleController.js
-│   ├── routers/
+│   ├── routers/               # Route definitions
 │   │   ├── playerRouter.js
 │   │   └── riddleRouter.js
-│   ├── DAL/
+│   ├── DAL/                   # Data Access Layer
 │   │   ├── riddleCrud.js
 │   │   ├── playerCrud.js
 │   │   └── playerScoreCrud.js
-│   └── lib/
+│   └── lib/                   # Database configurations
 │       ├── riddles/
 │       │   ├── riddleDb.js
 │       │   └── randomRiddles.json
 │       └── players/
 │           ├── playerDb.js
 │           └── playerExampleData.txt
-├── .env
+├── .env                       # Environment variables
 ├── .gitignore
 ├── package.json
 └── README.md
@@ -70,167 +91,259 @@ RiddleGame/
 
 ## Environment Setup
 
-Create a `.env` file in the project root with the following variables:
+Create a `.env` file in the project root:
 
 ```env
+# Server Configuration
 PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-PUBLIC_PROJECT_URL=your_supabase_project_url
+
+# MongoDB Atlas Configuration
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/riddle_game
+
+# Supabase Configuration
+PUBLIC_PROJECT_URL=https://your-project.supabase.co
 PUBLIC_ANON_API_KEY=your_supabase_anon_key
+```
+
+### Database Setup
+
+**MongoDB Atlas:**
+- Create a MongoDB Atlas account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+- Create a new cluster
+- Create a database user with read/write permissions
+- Whitelist your IP address or use 0.0.0.0/0 for development
+- Get your connection string and replace `<username>`, `<password>`, and `<cluster>` with your actual values
+- Database: `riddle_game`
+- Collection: `riddles`
+
+**Supabase:**
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Create the following tables:
+
+```sql
+-- Players table
+CREATE TABLE players (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    lowestTime NUMERIC DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Player scores table
+CREATE TABLE player_scores (
+    id SERIAL PRIMARY KEY,
+    player_id INTEGER REFERENCES players(id),
+    riddle_id TEXT NOT NULL,
+    time_to_solve NUMERIC NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
 ---
 
-## How It Works
+## Game Features
 
-### Server
+### Core Gameplay
+- **Multiple Riddle Types:** Standard and multiple-choice riddles
+- **Difficulty Levels:** Easy, Medium, Hard
+- **Time Challenges:** Each riddle has configurable time limits
+- **Smart Hint System:** Get help when stuck (with time penalty)
+- **Progress Tracking:** Only unsolved riddles are presented
+- **Leaderboard:** Compete for the fastest solving times
 
-- Start the server with `npm run startServer`.
-- The server exposes REST API endpoints for riddles and players (CRUD operations).
-- Riddle data is stored in MongoDB (`riddle_game` database, `riddles` collection).
-- Player data is stored in Supabase (`players` table).
-- Player scores/progress is tracked in Supabase (`player_scores` table).
-
-### Client
-
-- Start the game with `npm run startApp`.
-- The client uses `fetch` to communicate with the server's API endpoints.
-- All game logic, user prompts, and timing are handled in the terminal.
-- Players can play riddles, create/update/delete riddles, and view the leaderboard.
-
----
-
-## Features
-
-### Game Features
-- **Multiple Riddle Types**: Regular riddles and multiple-choice riddles
-- **Difficulty Levels**: Easy, Medium, Hard
-- **Time Limits**: Each riddle has a configurable time limit
-- **Hint System**: Players can request hints (with time penalty)
-- **Penalty System**: 
-  - 5 seconds penalty for exceeding time limit
-  - 10 seconds penalty for using hints
-- **Progress Tracking**: Only unsolved riddles are presented to players
-- **Leaderboard**: Track players' best times
+### Penalty System
+- **Time Limit Exceeded:** +5 seconds penalty
+- **Hint Usage:** +10 seconds penalty
+- **Strategic Gameplay:** Balance speed vs. accuracy
 
 ### Administrative Features
-- **CRUD Operations**: Create, read, update, delete riddles
-- **Initial Data Loading**: Load riddles from JSON file
-- **Player Management**: Automatic player creation and time tracking
+- **CRUD Operations:** Full riddle management
+- **Bulk Import:** Load riddles from JSON files
+- **Player Management:** Automatic registration and tracking
 
 ---
 
 ## Database Schema
 
-### MongoDB (Riddles)
+### MongoDB Collections
+
+**Riddles Collection:**
 ```javascript
 {
   _id: ObjectId,
-  name: String,
-  taskDescription: String,
-  correctAnswer: String,
-  difficulty: String, // "easy", "medium", "hard"
-  timeLimit: Number,
-  hint: String,
-  choices: Array // Optional, for multiple choice riddles
+  name: String,                    // Riddle title
+  taskDescription: String,         // The riddle question
+  correctAnswer: String,           // Expected answer
+  difficulty: String,              // "easy" | "medium" | "hard"
+  timeLimit: Number,              // Seconds allowed
+  hint: String,                   // Optional hint text
+  choices: Array<String>          // For multiple choice (optional)
 }
 ```
 
-### Supabase (Players)
+### Supabase Tables
+
+**players:**
 ```sql
--- players table
-{
-  id: SERIAL PRIMARY KEY,
-  username: TEXT,
-  lowestTime: NUMERIC
-}
-
--- player_scores table
-{
-  id: SERIAL PRIMARY KEY,
-  player_id: INTEGER REFERENCES players(id),
-  riddle_id: TEXT,
-  time_to_solve: NUMERIC,
-  created_at: TIMESTAMP
-}
+id          SERIAL PRIMARY KEY
+username    TEXT UNIQUE NOT NULL
+lowestTime  NUMERIC              -- Best overall time
+created_at  TIMESTAMP DEFAULT NOW()
 ```
 
----
-
-## Example Workflow
-
-1. **Set up environment:**
-   - Create `.env` file with database credentials
-   - Ensure MongoDB and Supabase are accessible
-
-2. **Start the server:**
-   ```bash
-   npm run startServer
-   ```
-
-3. **Load initial riddles (optional):**
-   ```bash
-   # Make a POST request to /api/riddles/load_initial_riddles
-   # This loads riddles from randomRiddles.json
-   ```
-
-4. **Start the client/game:**
-   ```bash
-   npm run startApp
-   ```
-
-5. **Play the game:**  
-   - Enter your name (creates player if doesn't exist)
-   - Choose difficulty level
-   - Solve riddles within time limits
-   - Use hints if needed (with penalty)
-   - Track your progress and compete on leaderboard
+**player_scores:**
+```sql
+id            SERIAL PRIMARY KEY
+player_id     INTEGER REFERENCES players(id)
+riddle_id     TEXT NOT NULL      -- MongoDB ObjectId as string
+time_to_solve NUMERIC NOT NULL   -- Time in seconds (including penalties)
+created_at    TIMESTAMP DEFAULT NOW()
+```
 
 ---
 
 ## API Endpoints
 
-### Riddle Endpoints
-- `POST /api/riddles/create_riddle` - Create a new riddle
-- `GET /api/riddles/read_all_riddles` - Get all riddles
-- `GET /api/riddles/read_all_riddles/:difficulty` - Get riddles by difficulty
-- `PUT /api/riddles/update_riddle/:id` - Update a riddle
-- `DELETE /api/riddles/delete_riddle/:id` - Delete a riddle
-- `POST /api/riddles/load_initial_riddles` - Load riddles from JSON file
+### Riddle Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/riddles/create_riddle` | Create a new riddle |
+| `GET` | `/api/riddles/read_all_riddles` | Get all riddles |
+| `GET` | `/api/riddles/read_all_riddles/:difficulty` | Filter by difficulty |
+| `PUT` | `/api/riddles/update_riddle/:id` | Update existing riddle |
+| `DELETE` | `/api/riddles/delete_riddle/:id` | Delete riddle |
+| `POST` | `/api/riddles/load_initial_riddles` | Bulk import from JSON |
 
-### Player Endpoints
-- `POST /api/players/create_player` - Create or get existing player
-- `PUT /api/players/update_time/:id` - Update player's best time
-- `GET /api/players/leaderboard` - Get leaderboard (sorted by best time)
-- `POST /api/players/record_solved_riddle` - Record a solved riddle
-- `GET /api/players/unsolved_riddles/:player_id` - Get unsolved riddles for player
-- `GET /api/players/unsolved_riddles/:player_id?difficulty=:level` - Get unsolved riddles by difficulty
+### Player Management
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/players/create_player` | Register or retrieve player |
+| `PUT` | `/api/players/update_time/:id` | Update best time |
+| `GET` | `/api/players/leaderboard` | Get top players |
+| `POST` | `/api/players/record_solved_riddle` | Record completion |
+| `GET` | `/api/players/unsolved_riddles/:player_id` | Get pending riddles |
+| `GET` | `/api/players/unsolved_riddles/:player_id?difficulty=:level` | Filter unsolved by difficulty |
 
 ---
 
-## Installation & Setup
+## Example Gameplay Flow
 
-1. **Clone the repository**
+1. **Game Initialization:**
+   - Server starts and connects to databases
+   - Client launches terminal interface
+
+2. **Player Setup:**
+   - Enter username (auto-creates if new)
+   - Choose difficulty level
+
+3. **Gameplay Loop:**
+   - System fetches unsolved riddles
+   - Present riddle with timer
+   - Accept answer or hint request
+   - Calculate final time (including penalties)
+   - Record progress and update leaderboard
+
+4. **Completion:**
+   - View personal statistics
+   - Check leaderboard rankings
+   - Option to try different difficulty
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas)
+- Supabase account
+
+### Installation Steps
+
+1. **Clone repository:**
+   ```bash
+   git clone <repository-url>
+   cd RiddleGame
+   ```
+
 2. **Install dependencies:**
    ```bash
    npm install
    ```
-3. **Set up environment variables** (see Environment Setup section)
-4. **Start the server:**
+
+3. **Configure environment:**
+   - Copy `.env.example` to `.env`
+   - Fill in your database credentials
+
+4. **Initialize data (optional):**
    ```bash
+   # Start server first
    npm run startServer
+   
+   # In another terminal, load sample riddles
+   curl -X POST http://localhost:3000/api/riddles/load_initial_riddles
    ```
-5. **In a new terminal, start the client:**
+
+5. **Play the game:**
    ```bash
    npm run startApp
    ```
 
 ---
 
-## Notes
+## Development Scripts
 
-- The client and server must both be running for the game to work
-- Player progress is automatically tracked - players only see unsolved riddles
-- The project uses a hybrid database approach: MongoDB for riddles, Supabase for players
-- All riddle and player data is persisted across sessions
-- The project is modular and can be extended with additional features or swapped out
+```bash
+# Start server in development mode
+npm run startServer
+
+# Start client application
+npm run startApp
+
+# Run both simultaneously (if using concurrently)
+npm run dev
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+**Server won't start:**
+- Check `.env` file exists and has correct values
+- Verify MongoDB connection string
+- Ensure port 3000 is available
+
+**Database connection errors:**
+- Confirm MongoDB is running
+- Test Supabase credentials
+- Check network connectivity
+
+**Client can't connect to server:**
+- Verify server is running on correct port
+- Check firewall settings
+- Ensure both processes are running
+
+### Debug Mode
+Set `NODE_ENV=development` in your `.env` file for verbose logging.
+
+---
+
+## Future Enhancements
+
+- Web-based interface
+- User authentication and profiles
+- Mobile application
+- Custom riddle categories
+- Achievement system
+- Multiplayer challenges
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request

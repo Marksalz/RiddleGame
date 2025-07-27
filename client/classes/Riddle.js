@@ -1,9 +1,26 @@
+/**
+ * @fileoverview Base Riddle class for text-based riddles with user interaction.
+ * Handles riddle presentation, answer validation, and hint functionality.
+ * @author RiddleGame Team
+ */
+
 import readline from 'readline-sync';
 
 /**
- * Represents a riddle with a question, answer, and related metadata.
+ * Represents a text-based riddle with answer validation and hint system
+ * @class
  */
 export class Riddle {
+    /**
+     * Creates a new Riddle instance
+     * @param {string} id - MongoDB ObjectId of the riddle
+     * @param {string} name - Display name/title of the riddle
+     * @param {string} taskDescription - The riddle question or task
+     * @param {string|number} correctAnswer - The correct answer
+     * @param {string} difficulty - Difficulty level (easy, medium, hard)
+     * @param {number} timeLimit - Time limit in seconds
+     * @param {string} hint - Hint text to help solve the riddle
+     */
     constructor(id, name, taskDescription, correctAnswer, difficulty, timeLimit, hint) {
         this.id = id;
         this.name = name;
@@ -15,27 +32,38 @@ export class Riddle {
     }
 
     /**
-     * Asks the riddle to the user and checks their answer.
-     * @returns {boolean} Whether the hint was used.
+     * Presents the riddle to the user and handles answer validation
+     * @returns {boolean} True if the user requested a hint, false otherwise
+     * @description
+     * Interactive flow:
+     * 1. Displays riddle information
+     * 2. Prompts for answer or hint request
+     * 3. Validates answer with type-appropriate comparison
+     * 4. Continues until correct answer is provided
+     * 5. Tracks hint usage for penalty calculation
      */
     ask() {
         this.printRiddle();
         let flag = false;
         let usedHint = false;
+
         while (!flag) {
             const answer = readline.question('What is your answer? (type "hint" to get a hint!): ');
+
             if (answer.trim().toLowerCase() === "hint") {
                 console.log(this.hint);
                 console.log();
                 usedHint = true;
             }
             else {
+                // Handle both numeric and string answers with appropriate comparison
                 let isCorrect = false;
                 if (typeof this.correctAnswer === 'number') {
                     isCorrect = Number(answer.trim()) === this.correctAnswer;
                 } else {
                     isCorrect = answer.trim().toLowerCase() === String(this.correctAnswer).trim().toLowerCase();
                 }
+
                 if (isCorrect) {
                     console.log("Correct!!\n");
                     flag = true;
@@ -48,7 +76,8 @@ export class Riddle {
     }
 
     /**
-     * Prints the riddle's details to the console.
+     * Displays the riddle's information to the console
+     * @description Formats and prints riddle details including name, task, and time limit
      */
     printRiddle() {
         console.log(`Riddle: `);

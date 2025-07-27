@@ -1,9 +1,23 @@
+/**
+ * @fileoverview Service layer for player-related API operations.
+ * Handles authentication, player management, scoring, and game progress.
+ * Integrates with token service for secure API communication.
+ * @author RiddleGame Team
+ */
+
 import "dotenv/config";
 import * as tokenService from './tokenService.js';
 
 const PORT = process.env.PORT || 3000;
 const BASE_URL = `http://localhost:${PORT}/api/players`;
 
+/**
+ * Handles API response parsing and error extraction
+ * @param {Response} res - Fetch API response object
+ * @param {string} action - Description of the action for error messages
+ * @returns {Object} Parsed response data or error object
+ * @private
+ */
 async function handleResponse(res, action) {
     try {
         const data = await res.json();
@@ -16,17 +30,27 @@ async function handleResponse(res, action) {
     }
 }
 
+/**
+ * Adds artificial delay for better UX
+ * @param {number} ms - Milliseconds to delay
+ * @private
+ */
 function delay(ms) {
     return new Promise((res) => { setTimeout(res, ms) });
 }
 
-export async function getOrCreatePlayer(name) {
+/**
+ * Creates or retrieves a player
+ * @param {string} name - Player username
+ * @returns {Promise<Object>} Player object or error details
+ */
+export async function getOrCreatePlayerGuestMode(name) {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/create_player`, {
             method: "POST",
             headers: tokenService.getHeaders(null, false),
-            body: JSON.stringify({ name })
+            body: JSON.stringify({ name, role: "guest" })
         });
         return await handleResponse(res, "create or get player");
     } catch (err) {
@@ -34,6 +58,13 @@ export async function getOrCreatePlayer(name) {
     }
 }
 
+/**
+ * Updates a player's best completion time
+ * @param {number} id - Player ID
+ * @param {number} time - New completion time in seconds
+ * @param {string} username - Username for authentication
+ * @returns {Promise<Object>} Success message or error details
+ */
 export async function updatePlayerTime(id, time, username) {
     try {
         await delay(1000);
@@ -48,6 +79,15 @@ export async function updatePlayerTime(id, time, username) {
     }
 }
 
+/**
+ * Retrieves the game leaderboard sorted by best times
+ * @returns {Promise<Array|Object>} Array of top players or error object
+ * @example
+ * const leaderboard = await getLeaderboard();
+ * leaderboard.forEach((player, index) => {
+ *   console.log(`${index + 1}. ${player.username}: ${player.lowestTime}s`);
+ * });
+ */
 export async function getLeaderboard() {
     try {
         await delay(1000);
@@ -60,6 +100,14 @@ export async function getLeaderboard() {
     }
 }
 
+/**
+ * Records when a player solves a riddle with their completion time
+ * @param {number} player_id - ID of the player
+ * @param {string} riddle_id - MongoDB ObjectId of the solved riddle
+ * @param {number} time_to_solve - Time taken to solve in seconds
+ * @param {string} username - Username for authentication
+ * @returns {Promise<Object>} Created score record or error details
+ */
 export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve, username) {
     try {
         const res = await fetch(`${BASE_URL}/record_solved_riddle`, {
@@ -73,6 +121,13 @@ export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve, us
     }
 }
 
+/**
+ * Retrieves riddles that a player hasn't solved yet
+ * @param {number} player_id - Player ID
+ * @param {string} [difficulty] - Optional difficulty filter
+ * @param {string} username - Username for authentication
+ * @returns {Promise<Array|Object>} Array of unsolved riddles or error object
+ */
 export async function getUnsolvedRiddles(player_id, difficulty, username) {
     try {
         let url = `${BASE_URL}/unsolved_riddles/${player_id}`;
@@ -86,6 +141,11 @@ export async function getUnsolvedRiddles(player_id, difficulty, username) {
     }
 }
 
+/**
+ * Checks if a user exists and validates their authentication status
+ * @param {string} username - Username to check
+ * @returns {Promise<Object>} Authentication status and user information
+ */
 export async function checkUser(username) {
     try {
         await delay(1000);
@@ -101,17 +161,24 @@ export async function checkUser(username) {
     }
 }
 
-export async function loginWithName(username, password) {
+/**
+ * Authenticates a user with username and password
+ * @param {string} username - Player username
+ * @param {string} password - Player password
+ * @returns {Promise<Object} Authentication result with token and user data
+ */
+export async function loginWithPassword(username, password) {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/login-with-name`, {
             method: "POST",
-            headers: tokenService.getHeaders(null, false),
+            headers: tokenService.getHeaders(null, false), // No token needed for login
             body: JSON.stringify({ username, password })
         });
 
         const result = await handleResponse(res, "login");
 
+        // Store token on successful login
         if (result && result.token && !result.error) {
             tokenService.setToken(username, result.token);
             console.log(`Login successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
@@ -123,17 +190,25 @@ export async function loginWithName(username, password) {
     }
 }
 
+/**
+ * Creates a new user account with authentication
+ * @param {string} username - Desired username
+ * @param {string} password - Account password
+ * @param {string} [role='user'] - User role (guest, user, admin)
+ * @returns {Promise<Object>} Created user data with authentication token
+ */
 export async function signup(username, password, role = 'user') {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/signup`, {
             method: "POST",
-            headers: tokenService.getHeaders(null, false),
+            headers: tokenService.getHeaders(null, false), // No token needed for signup
             body: JSON.stringify({ username, password, role })
         });
 
         const result = await handleResponse(res, "signup");
 
+        // Store token on successful signup
         if (result && result.token && !result.error) {
             tokenService.setToken(username, result.token);
             console.log(`Signup successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
@@ -145,15 +220,20 @@ export async function signup(username, password, role = 'user') {
     }
 }
 
+/**
+ * Logs out a user and clears their authentication token
+ * @param {string} username - Username to log out
+ * @returns {Promise<Object>} Logout confirmation or error details
+ */
 export async function logout(username) {
     try {
         await delay(1000);
         const res = await fetch(`${BASE_URL}/logout`, {
             method: "POST",
-            headers: tokenService.getHeaders(username)
+            headers: tokenService.getHeaders(username) // Include token for logout
         });
 
-        // Clear user's token
+        // Clear user's token locally regardless of server response
         tokenService.clearToken(username);
         console.log(`Logged out successfully. Token removed for ${username}.`);
 
@@ -163,6 +243,11 @@ export async function logout(username) {
     }
 }
 
+/**
+ * Checks if a user has a valid authentication token stored locally
+ * @param {string} username - Username to check
+ * @returns {boolean} True if user has a stored tokens
+ */
 export function hasToken(username) {
     return tokenService.hasValidToken(username);
 }

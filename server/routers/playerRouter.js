@@ -3,7 +3,7 @@
  * Includes authentication, player management, scores, and leaderboard functionality.
  * @author RiddleGame Team
  */
-
+// @ts-nocheck
 import express from "express";
 import { playerCtrl } from "../controllers/playerController.js";
 import { verifyToken, checkUserExists } from "../middleware/auth.js";

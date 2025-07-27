@@ -141,6 +141,103 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
 }
 
 /**
+ * Handles guest role direct login without token
+ * @param {Object} req - Express request object
+ * @returns {Object|null} Guest authentication result or null
+ * @private
+ */
+function handleGuestLogin(req) {
+    if (req.guestLogin && req.user && req.user.role === 'guest') {
+        return {
+            authenticated: true,
+            user: {
+                id: req.user.id,
+                username: req.user.username,
+                role: req.user.role,
+                lowestTime: req.user.lowestTime
+            },
+            guestLogin: true,
+            message: 'Guest user authenticated without token'
+        };
+    }
+    return null;
+}
+
+/**
+ * Handles authenticated user with valid token
+ * @param {string} username - Username to verify
+ * @param {Object} req - Express request object
+ * @returns {Object|null} Token authentication result or null
+ * @private
+ */
+function handleTokenAuthentication(username, req) {
+    if (req.authenticated && req.user && req.user.username === username) {
+        return {
+            authenticated: true,
+            user: {
+                id: req.user.id,
+                username: req.user.username,
+                role: req.user.role || 'guest',
+                lowestTime: req.user.lowestTime
+            },
+            message: 'User authenticated with existing token'
+        };
+    }
+    return null;
+}
+
+/**
+ * Handles token-related errors (expired or invalid)
+ * @param {Object} req - Express request object
+ * @returns {Object|null} Token error result or null
+ * @private
+ */
+function handleTokenErrors(req) {
+    if (req.tokenExpired) {
+        return {
+            authenticated: false,
+            tokenExpired: true,
+            userExists: req.userExists,
+            tokenError: req.tokenError,
+            message: 'Token expired, please log in again'
+        };
+    }
+
+    if (req.tokenError) {
+        return {
+            authenticated: false,
+            tokenExpired: false,
+            userExists: req.userExists,
+            tokenError: req.tokenError,
+            message: 'Invalid token, please log in again'
+        };
+    }
+    return null;
+}
+
+/**
+ * Handles existing user scenarios
+ * @param {Object} req - Express request object
+ * @returns {Object} User existence result
+ * @private
+ */
+function handleUserExistence(req) {
+    if (req.userExists) {
+        return {
+            authenticated: false,
+            userExists: true,
+            message: 'User exists, password required'
+        };
+    }
+
+    return {
+        authenticated: false,
+        userExists: false,
+        message: 'User not found, signup required'
+    };
+}
+
+/**
  * Checks user authentication status and token validity
  * @param {string} username - Username to check
  * @param {Object} req - Express request object with auth middleware data
@@ -149,67 +246,17 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
  */
 export async function checkUserAuthentication(username, req) {
     try {
-        // Handle guest role direct login
-        if (req.guestLogin && req.user && req.user.role === 'guest') {
-            return {
-                authenticated: true,
-                user: {
-                    id: req.user.id,
-                    username: req.user.username,
-                    role: req.user.role,
-                    lowestTime: req.user.lowestTime
-                },
-                guestLogin: true,
-                message: 'Guest user authenticated without token'
-            };
-        }
+        // Check authentication scenarios in priority order
+        const guestResult = handleGuestLogin(req);
+        if (guestResult) return guestResult;
 
-        if (req.authenticated && req.user && req.user.username === username) {
-            return {
-                authenticated: true,
-                user: {
-                    id: req.user.id,
-                    username: req.user.username,
-                    role: req.user.role || 'guest',
-                    lowestTime: req.user.lowestTime
-                },
-                message: 'User authenticated with existing token'
-            };
-        }
+        const tokenResult = handleTokenAuthentication(username, req);
+        if (tokenResult) return tokenResult;
 
-        if (req.tokenExpired) {
-            return {
-                authenticated: false,
-                tokenExpired: true,
-                userExists: req.userExists,
-                tokenError: req.tokenError,
-                message: 'Token expired, please log in again'
-            };
-        }
+        const errorResult = handleTokenErrors(req);
+        if (errorResult) return errorResult;
 
-        if (req.tokenError) {
-            return {
-                authenticated: false,
-                tokenExpired: false,
-                userExists: req.userExists,
-                tokenError: req.tokenError,
-                message: 'Invalid token, please log in again'
-            };
-        }
-
-        if (req.userExists) {
-            return {
-                authenticated: false,
-                userExists: true,
-                message: 'User exists, password required'
-            };
-        }
-
-        return {
-            authenticated: false,
-            userExists: false,
-            message: 'User not found, signup required'
-        };
+        return handleUserExistence(req);
     } catch (err) {
         throw new Error("Could not check user authentication: " + err.message);
     }

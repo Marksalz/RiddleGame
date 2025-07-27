@@ -196,13 +196,6 @@ export async function loginWithPassword(username, password) {
  * @param {string} password - Account password
  * @param {string} [role='user'] - User role (guest, user, admin)
  * @returns {Promise<Object>} Created user data with authentication token
- * @example
- * const result = await signup('new_user', 'secure_password', 'user');
- * if (result.error) {
- *   console.log('Signup failed:', result.error);
- * } else {
- *   console.log('Account created for:', result.username);
- * }
  */
 export async function signup(username, password, role = 'user') {
     try {
@@ -231,9 +224,6 @@ export async function signup(username, password, role = 'user') {
  * Logs out a user and clears their authentication token
  * @param {string} username - Username to log out
  * @returns {Promise<Object>} Logout confirmation or error details
- * @example
- * const result = await logout('john_doe');
- * console.log('Logout result:', result.message);
  */
 export async function logout(username) {
     try {
@@ -256,13 +246,7 @@ export async function logout(username) {
 /**
  * Checks if a user has a valid authentication token stored locally
  * @param {string} username - Username to check
- * @returns {boolean} True if user has a stored token
- * @example
- * if (hasToken('john_doe')) {
- *   // User is likely authenticated
- * } else {
- *   // User needs to log in
- * }
+ * @returns {boolean} True if user has a stored tokens
  */
 export function hasToken(username) {
     return tokenService.hasValidToken(username);

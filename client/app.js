@@ -20,8 +20,6 @@ import readline from 'readline-sync';
  * 3. Role-based menu display and navigation
  * 4. Feature access control based on user permissions
  * 5. logout and exit handling
- * @example
- * runGame(); // Starts the complete game experience
  */
 export async function runGame() {
     console.log("Welcome to the Riddle game! ");
@@ -37,15 +35,13 @@ export async function runGame() {
             continue;
         }
 
-        console.log("Checking authentication...");
+        console.log("Checking authentication...\n");
         player = await playerManager.authenticatePlayer(username.trim());
 
         if (!player) {
             console.log("Authentication failed. Please try again.\n");
         }
     }
-
-    console.log();
 
     // Main Game Loop - continue until user exits
     let exit = false;

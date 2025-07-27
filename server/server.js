@@ -10,6 +10,7 @@ import router from "./router.js";
 import cookieParser from 'cookie-parser';
 import "dotenv/config";
 import { connectToMongo } from "./lib/riddles/riddleDb.js";
+import { connectToSupabase } from "./lib/players/playerDb.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -31,14 +32,15 @@ server.use("/api", router); // Mount API routes
 
 /**
  * Server startup sequence
- * Connects to MongoDB and starts the Express server
+ * Connects to MongoDB and Supabase, then starts the Express server
  */
 try {
   await connectToMongo();
+  await connectToSupabase();
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
 } catch (err) {
-  console.error("Failed to connect to DB:", err);
+  console.error("Failed to connect to databases:", err);
   process.exit(1);
 }

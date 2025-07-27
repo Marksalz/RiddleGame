@@ -1,8 +1,8 @@
-# RiddleGame 🧩
+# RiddleGame
 
 A terminal-based riddle game built with modern JavaScript, featuring a REST API backend and interactive CLI frontend.
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **Clone and install:**
    ```bash
@@ -23,7 +23,7 @@ A terminal-based riddle game built with modern JavaScript, featuring a REST API 
    npm run startApp
    ```
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Backend:** Node.js, Express.js, JavaScript (ES Modules)
 - **Databases:** 
@@ -34,7 +34,7 @@ A terminal-based riddle game built with modern JavaScript, featuring a REST API 
 
 ---
 
-## 📋 Project Overview
+## Project Overview
 
 This project demonstrates a full-stack JavaScript application with clear separation of concerns:
 
@@ -45,51 +45,51 @@ The architecture showcases modern JavaScript patterns, database integration, and
 
 ---
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```
 RiddleGame/
-├── 📁 client/                    # Terminal game application
-│   ├── 📄 app.js                 # Main game entry point
-│   ├── 📁 classes/               # Game entities
-│   │   ├── 📄 Riddle.js
-│   │   ├── 📄 Player.js
-│   │   └── 📄 MultipleChoiceRiddle.js
-│   ├── 📁 managers/              # Game flow controllers
-│   │   ├── 📄 gameManager.js
-│   │   └── 📄 playerManager.js
-│   └── 📁 services/              # API communication
-│       ├── 📄 playerService.js
-│       └── 📄 riddleService.js
-├── 📁 server/                    # REST API server
-│   ├── 📄 server.js              # Express server setup
-│   ├── 📄 router.js              # Main API router
-│   ├── 📁 controllers/           # Request handlers
-│   │   ├── 📄 playerController.js
-│   │   └── 📄 riddleController.js
-│   ├── 📁 routers/               # Route definitions
-│   │   ├── 📄 playerRouter.js
-│   │   └── 📄 riddleRouter.js
-│   ├── 📁 DAL/                   # Data Access Layer
-│   │   ├── 📄 riddleCrud.js
-│   │   ├── 📄 playerCrud.js
-│   │   └── 📄 playerScoreCrud.js
-│   └── 📁 lib/                   # Database configurations
-│       ├── 📁 riddles/
-│       │   ├── 📄 riddleDb.js
-│       │   └── 📄 randomRiddles.json
-│       └── 📁 players/
-│           ├── 📄 playerDb.js
-│           └── 📄 playerExampleData.txt
-├── 📄 .env                       # Environment variables
-├── 📄 .gitignore
-├── 📄 package.json
-└── 📄 README.md
+├── client/                    # Terminal game application
+│   ├── app.js                 # Main game entry point
+│   ├── classes/               # Game entities
+│   │   ├── Riddle.js
+│   │   ├── Player.js
+│   │   └── MultipleChoiceRiddle.js
+│   ├── managers/              # Game flow controllers
+│   │   ├── gameManager.js
+│   │   └── playerManager.js
+│   └── services/              # API communication
+│       ├── playerService.js
+│       └── riddleService.js
+├── server/                    # REST API server
+│   ├── server.js              # Express server setup
+│   ├── router.js              # Main API router
+│   ├── controllers/           # Request handlers
+│   │   ├── playerController.js
+│   │   └── riddleController.js
+│   ├── routers/               # Route definitions
+│   │   ├── playerRouter.js
+│   │   └── riddleRouter.js
+│   ├── DAL/                   # Data Access Layer
+│   │   ├── riddleCrud.js
+│   │   ├── playerCrud.js
+│   │   └── playerScoreCrud.js
+│   └── lib/                   # Database configurations
+│       ├── riddles/
+│       │   ├── riddleDb.js
+│       │   └── randomRiddles.json
+│       └── players/
+│           ├── playerDb.js
+│           └── playerExampleData.txt
+├── .env                       # Environment variables
+├── .gitignore
+├── package.json
+└── README.md
 ```
 
 ---
 
-## ⚙️ Environment Setup
+## Environment Setup
 
 Create a `.env` file in the project root:
 
@@ -97,20 +97,22 @@ Create a `.env` file in the project root:
 # Server Configuration
 PORT=3000
 
-# MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/riddle_game
-# Or for MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/riddle_game
+# MongoDB Atlas Configuration
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/riddle_game
 
 # Supabase Configuration
 PUBLIC_PROJECT_URL=https://your-project.supabase.co
 PUBLIC_ANON_API_KEY=your_supabase_anon_key
 ```
 
-### 🔧 Database Setup
+### Database Setup
 
-**MongoDB:**
-- Install MongoDB locally or use MongoDB Atlas
+**MongoDB Atlas:**
+- Create a MongoDB Atlas account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+- Create a new cluster
+- Create a database user with read/write permissions
+- Whitelist your IP address or use 0.0.0.0/0 for development
+- Get your connection string and replace `<username>`, `<password>`, and `<cluster>` with your actual values
 - Database: `riddle_game`
 - Collection: `riddles`
 
@@ -139,29 +141,29 @@ CREATE TABLE player_scores (
 
 ---
 
-## 🎮 Game Features
+## Game Features
 
 ### Core Gameplay
-- **🧩 Multiple Riddle Types:** Standard and multiple-choice riddles
-- **⭐ Difficulty Levels:** Easy, Medium, Hard
-- **⏱️ Time Challenges:** Each riddle has configurable time limits
-- **💡 Smart Hint System:** Get help when stuck (with time penalty)
-- **📊 Progress Tracking:** Only unsolved riddles are presented
-- **🏆 Leaderboard:** Compete for the fastest solving times
+- **Multiple Riddle Types:** Standard and multiple-choice riddles
+- **Difficulty Levels:** Easy, Medium, Hard
+- **Time Challenges:** Each riddle has configurable time limits
+- **Smart Hint System:** Get help when stuck (with time penalty)
+- **Progress Tracking:** Only unsolved riddles are presented
+- **Leaderboard:** Compete for the fastest solving times
 
 ### Penalty System
-- **⏰ Time Limit Exceeded:** +5 seconds penalty
-- **💡 Hint Usage:** +10 seconds penalty
-- **🎯 Strategic Gameplay:** Balance speed vs. accuracy
+- **Time Limit Exceeded:** +5 seconds penalty
+- **Hint Usage:** +10 seconds penalty
+- **Strategic Gameplay:** Balance speed vs. accuracy
 
 ### Administrative Features
-- **📝 CRUD Operations:** Full riddle management
-- **📂 Bulk Import:** Load riddles from JSON files
-- **👤 Player Management:** Automatic registration and tracking
+- **CRUD Operations:** Full riddle management
+- **Bulk Import:** Load riddles from JSON files
+- **Player Management:** Automatic registration and tracking
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### MongoDB Collections
 
@@ -200,9 +202,9 @@ created_at    TIMESTAMP DEFAULT NOW()
 
 ---
 
-## 🔗 API Endpoints
+## API Endpoints
 
-### 🧩 Riddle Management
+### Riddle Management
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/api/riddles/create_riddle` | Create a new riddle |
@@ -212,7 +214,7 @@ created_at    TIMESTAMP DEFAULT NOW()
 | `DELETE` | `/api/riddles/delete_riddle/:id` | Delete riddle |
 | `POST` | `/api/riddles/load_initial_riddles` | Bulk import from JSON |
 
-### 👤 Player Management
+### Player Management
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/api/players/create_player` | Register or retrieve player |
@@ -224,31 +226,31 @@ created_at    TIMESTAMP DEFAULT NOW()
 
 ---
 
-## 🎯 Example Gameplay Flow
+## Example Gameplay Flow
 
-1. **🏁 Game Initialization:**
+1. **Game Initialization:**
    - Server starts and connects to databases
    - Client launches terminal interface
 
-2. **👤 Player Setup:**
+2. **Player Setup:**
    - Enter username (auto-creates if new)
    - Choose difficulty level
 
-3. **🎮 Gameplay Loop:**
+3. **Gameplay Loop:**
    - System fetches unsolved riddles
    - Present riddle with timer
    - Accept answer or hint request
    - Calculate final time (including penalties)
    - Record progress and update leaderboard
 
-4. **🏆 Completion:**
+4. **Completion:**
    - View personal statistics
    - Check leaderboard rankings
    - Option to try different difficulty
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
@@ -288,7 +290,7 @@ created_at    TIMESTAMP DEFAULT NOW()
 
 ---
 
-## 🔧 Development Scripts
+## Development Scripts
 
 ```bash
 # Start server in development mode
@@ -303,55 +305,45 @@ npm run dev
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
 **Server won't start:**
-- ✅ Check `.env` file exists and has correct values
-- ✅ Verify MongoDB connection string
-- ✅ Ensure port 3000 is available
+- Check `.env` file exists and has correct values
+- Verify MongoDB connection string
+- Ensure port 3000 is available
 
 **Database connection errors:**
-- ✅ Confirm MongoDB is running
-- ✅ Test Supabase credentials
-- ✅ Check network connectivity
+- Confirm MongoDB is running
+- Test Supabase credentials
+- Check network connectivity
 
 **Client can't connect to server:**
-- ✅ Verify server is running on correct port
-- ✅ Check firewall settings
-- ✅ Ensure both processes are running
+- Verify server is running on correct port
+- Check firewall settings
+- Ensure both processes are running
 
 ### Debug Mode
 Set `NODE_ENV=development` in your `.env` file for verbose logging.
 
 ---
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
-- 🌐 Web-based interface
-- 🔐 User authentication and profiles
-- 📱 Mobile application
-- 🎨 Custom riddle categories
-- 🏅 Achievement system
-- 👥 Multiplayer challenges
-
----
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
+- Web-based interface
+- User authentication and profiles
+- Mobile application
+- Custom riddle categories
+- Achievement system
+- Multiplayer challenges
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
-
----
-
-*Built with ❤️ using modern JavaScript and best practices*

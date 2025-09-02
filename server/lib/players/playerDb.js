@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import 'dotenv/config';
+import "dotenv/config";
 
 /**
  * Supabase client instance for player-related database operations
@@ -7,8 +7,8 @@ import 'dotenv/config';
  * @type {import('@supabase/supabase-js').SupabaseClient}
  */
 const playerSupabase = createClient(
-    process.env.PUBLIC_PROJECT_URL,
-    process.env.PUBLIC_ANON_API_KEY
+  process.env.PUBLIC_PROJECT_URL,
+  process.env.PUBLIC_ANON_API_KEY
 );
 
 /**
@@ -18,20 +18,20 @@ const playerSupabase = createClient(
  * @throws {Error} If connection or authentication fails
  */
 export async function connectToSupabase() {
-    try {
-        const { data, error } = await playerSupabase
-            .from('players')
-            .select('count', { count: 'exact', head: true });
+  try {
+    const { data, error } = await playerSupabase
+      .from("players")
+      .select("count", { count: "exact", head: true });
 
-        if (error) {
-            throw new Error(`Supabase connection failed: ${error.message}`);
-        }
-
-        console.log("Connected to Supabase");
-    } catch (error) {
-        console.error("Supabase connection error:", error.message);
-        throw error;
+    if (error) {
+      throw new Error(`Supabase connection failed: ${error.message}`);
     }
+
+    console.log("Connected to Supabase");
+  } catch (error) {
+    console.error("Supabase connection error:", error.message);
+    throw error;
+  }
 }
 
 export { playerSupabase };

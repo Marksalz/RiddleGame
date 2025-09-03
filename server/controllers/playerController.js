@@ -18,17 +18,17 @@ import jwt from "jsonwebtoken";
  * @throws {Error} If validation or database operation fails
  */
 export async function getOrCreatePlayerGuest(username, role) {
-    try {
-        validatePlayerName(username);
-        let player = await crud.readByUsername(username);
-        if (!player) {
-            player = { username, role, lowestTime: null };
-            player = await crud.create(player);
-        }
-        return player;
-    } catch (err) {
-        throw new Error("Could not get or create player: " + err.message);
+  try {
+    validatePlayerName(username);
+    let player = await crud.readByUsername(username);
+    if (!player) {
+      player = { username, role, lowestTime: null };
+      player = await crud.create(player);
     }
+    return player;
+  } catch (err) {
+    throw new Error("Could not get or create player: " + err.message);
+  }
 }
 
 /**
@@ -39,15 +39,15 @@ export async function getOrCreatePlayerGuest(username, role) {
  * @returns {Object} Created player object
  * @throws {Error} If validation or creation fails
  */
-export async function createPlayer(username, hashedPassword, role = 'user') {
-    try {
-        validatePlayerName(username);
-        let player = { username, password: hashedPassword, role, lowestTime: null };
-        player = await crud.create(player);
-        return player;
-    } catch (err) {
-        throw new Error("Could not get or create player: " + err.message);
-    }
+export async function createPlayer(username, hashedPassword, role = "user") {
+  try {
+    validatePlayerName(username);
+    let player = { username, password: hashedPassword, role, lowestTime: null };
+    player = await crud.create(player);
+    return player;
+  } catch (err) {
+    throw new Error("Could not get or create player: " + err.message);
+  }
 }
 
 /**
@@ -56,14 +56,14 @@ export async function createPlayer(username, hashedPassword, role = 'user') {
  * @throws {Error} If database operation fails
  */
 export async function getLeaderboard() {
-    try {
-        const players = await crud.read();
-        return players
-            .filter(p => typeof p.lowestTime === "number")
-            .sort((a, b) => a.lowestTime - b.lowestTime);
-    } catch (err) {
-        throw new Error("Could not get leaderboard: " + err.message);
-    }
+  try {
+    const players = await crud.read();
+    return players
+      .filter((p) => typeof p.lowestTime === "number")
+      .sort((a, b) => a.lowestTime - b.lowestTime);
+  } catch (err) {
+    throw new Error("Could not get leaderboard: " + err.message);
+  }
 }
 
 /**
@@ -73,9 +73,9 @@ export async function getLeaderboard() {
  * @private
  */
 function validatePlayerName(name) {
-    if (!name || typeof name !== "string" || name.trim().length === 0) {
-        throw new Error("Invalid player name.");
-    }
+  if (!name || typeof name !== "string" || name.trim().length === 0) {
+    throw new Error("Invalid player name.");
+  }
 }
 
 /**
@@ -85,17 +85,17 @@ function validatePlayerName(name) {
  * @throws {Error} If player not found or update fails
  */
 export async function updatePlayerTime(id, time) {
-    try {
-        const player = await crud.readById(id);
-        if (!player) throw new Error("Player not found");
-        if (player.lowestTime === null || time < player.lowestTime) {
-            await crud.update(id, { lowestTime: time });
-        }
-    } catch (err) {
-        console.log(err.message);
-
-        throw new Error("Could not update player time: " + err.message);
+  try {
+    const player = await crud.readById(id);
+    if (!player) throw new Error("Player not found");
+    if (player.lowestTime === null || time < player.lowestTime) {
+      await crud.update(id, { lowestTime: time });
     }
+  } catch (err) {
+    console.log(err.message);
+
+    throw new Error("Could not update player time: " + err.message);
+  }
 }
 
 /**
@@ -107,11 +107,11 @@ export async function updatePlayerTime(id, time) {
  * @throws {Error} If recording fails
  */
 export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
-    try {
-        return await scoreCrud.createScore({ player_id, riddle_id, time_to_solve });
-    } catch (err) {
-        throw new Error("Could not record solved riddle: " + err.message);
-    }
+  try {
+    return await scoreCrud.createScore({ player_id, riddle_id, time_to_solve });
+  } catch (err) {
+    throw new Error("Could not record solved riddle: " + err.message);
+  }
 }
 
 /**
@@ -122,22 +122,21 @@ export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve) {
  * @throws {Error} If database operations fail
  */
 export async function getUnsolvedRiddles(player_id, difficulty) {
-    try {
-        // Get list of riddle IDs the player has already solved
-        const solvedIds = await scoreCrud.getSolvedRiddleIds(player_id);
-        console.log(solvedIds);
+  try {
+    // Get list of riddle IDs the player has already solved
+    const solvedIds = await scoreCrud.getSolvedRiddleIds(player_id);
 
-        // Get all riddles, optionally filtered by difficulty
-        let riddles = await riddleCrud.getRiddles();
-        if (difficulty) {
-            riddles = riddles.filter(r => r.difficulty === difficulty);
-        }
-
-        // Filter out already solved riddles
-        return riddles.filter(r => !solvedIds.includes(String(r._id)));
-    } catch (err) {
-        throw new Error("Could not get unsolved riddles: " + err.message);
+    // Get all riddles, optionally filtered by difficulty
+    let riddles = await riddleCrud.getRiddles();
+    if (difficulty) {
+      riddles = riddles.filter((r) => r.difficulty === difficulty);
     }
+
+    // Filter out already solved riddles
+    return riddles.filter((r) => !solvedIds.includes(String(r._id)));
+  } catch (err) {
+    throw new Error("Could not get unsolved riddles: " + err.message);
+  }
 }
 
 /**
@@ -147,20 +146,20 @@ export async function getUnsolvedRiddles(player_id, difficulty) {
  * @private
  */
 function handleGuestLogin(req) {
-    if (req.guestLogin && req.user && req.user.role === 'guest') {
-        return {
-            authenticated: true,
-            user: {
-                id: req.user.id,
-                username: req.user.username,
-                role: req.user.role,
-                lowestTime: req.user.lowestTime
-            },
-            guestLogin: true,
-            message: 'Guest user authenticated without token'
-        };
-    }
-    return null;
+  if (req.guestLogin && req.user && req.user.role === "guest") {
+    return {
+      authenticated: true,
+      user: {
+        id: req.user.id,
+        username: req.user.username,
+        role: req.user.role,
+        lowestTime: req.user.lowestTime,
+      },
+      guestLogin: true,
+      message: "Guest user authenticated without token",
+    };
+  }
+  return null;
 }
 
 /**
@@ -171,19 +170,19 @@ function handleGuestLogin(req) {
  * @private
  */
 function handleTokenAuthentication(username, req) {
-    if (req.authenticated && req.user && req.user.username === username) {
-        return {
-            authenticated: true,
-            user: {
-                id: req.user.id,
-                username: req.user.username,
-                role: req.user.role || 'guest',
-                lowestTime: req.user.lowestTime
-            },
-            message: 'User authenticated with existing token'
-        };
-    }
-    return null;
+  if (req.authenticated && req.user && req.user.username === username) {
+    return {
+      authenticated: true,
+      user: {
+        id: req.user.id,
+        username: req.user.username,
+        role: req.user.role || "guest",
+        lowestTime: req.user.lowestTime,
+      },
+      message: "User authenticated with existing token",
+    };
+  }
+  return null;
 }
 
 /**
@@ -193,26 +192,26 @@ function handleTokenAuthentication(username, req) {
  * @private
  */
 function handleTokenErrors(req) {
-    if (req.tokenExpired) {
-        return {
-            authenticated: false,
-            tokenExpired: true,
-            userExists: req.userExists,
-            tokenError: req.tokenError,
-            message: 'Token expired, please log in again'
-        };
-    }
+  if (req.tokenExpired) {
+    return {
+      authenticated: false,
+      tokenExpired: true,
+      userExists: req.userExists,
+      tokenError: req.tokenError,
+      message: "Token expired, please log in again",
+    };
+  }
 
-    if (req.tokenError) {
-        return {
-            authenticated: false,
-            tokenExpired: false,
-            userExists: req.userExists,
-            tokenError: req.tokenError,
-            message: 'Invalid token, please log in again'
-        };
-    }
-    return null;
+  if (req.tokenError) {
+    return {
+      authenticated: false,
+      tokenExpired: false,
+      userExists: req.userExists,
+      tokenError: req.tokenError,
+      message: "Invalid token, please log in again",
+    };
+  }
+  return null;
 }
 
 /**
@@ -222,19 +221,19 @@ function handleTokenErrors(req) {
  * @private
  */
 function handleUserExistence(req) {
-    if (req.userExists) {
-        return {
-            authenticated: false,
-            userExists: true,
-            message: 'User exists, password required'
-        };
-    }
-
+  if (req.userExists) {
     return {
-        authenticated: false,
-        userExists: false,
-        message: 'User not found, signup required'
+      authenticated: false,
+      userExists: true,
+      message: "User exists, password required",
     };
+  }
+
+  return {
+    authenticated: false,
+    userExists: false,
+    message: "User not found, signup required",
+  };
 }
 
 /**
@@ -245,21 +244,24 @@ function handleUserExistence(req) {
  * @throws {Error} If authentication check fails
  */
 export async function checkUserAuthentication(username, req) {
-    try {
-        // Check authentication scenarios in priority order
-        const guestResult = handleGuestLogin(req);
-        if (guestResult) return guestResult;
+  try {
+    // // log with the req
+    // console.log(req);
 
-        const tokenResult = handleTokenAuthentication(username, req);
-        if (tokenResult) return tokenResult;
+    // Check authentication scenarios in priority order
+    const guestResult = handleGuestLogin(req);
+    if (guestResult) return guestResult;
 
-        const errorResult = handleTokenErrors(req);
-        if (errorResult) return errorResult;
+    const tokenResult = handleTokenAuthentication(username, req);
+    if (tokenResult) return tokenResult;
 
-        return handleUserExistence(req);
-    } catch (err) {
-        throw new Error("Could not check user authentication: " + err.message);
-    }
+    const errorResult = handleTokenErrors(req);
+    if (errorResult) return errorResult;
+
+    return handleUserExistence(req);
+  } catch (err) {
+    throw new Error("Could not check user authentication: " + err.message);
+  }
 }
 
 /**
@@ -269,15 +271,15 @@ export async function checkUserAuthentication(username, req) {
  * @private
  */
 function generateToken(user) {
-    return jwt.sign(
-        {
-            id: user.id,
-            username: user.username,
-            role: user.role || 'user'
-        },
-        process.env.SECRET,
-        { expiresIn: '7d' }
-    );
+  return jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+      role: user.role || "user",
+    },
+    process.env.SECRET,
+    { expiresIn: "7d" }
+  );
 }
 
 /**
@@ -288,29 +290,29 @@ function generateToken(user) {
  * @returns {Object} Player data and JWT token
  * @throws {Error} If signup fails or role is invalid
  */
-export async function signupPlayer(username, password, role = 'user') {
-    try {
-        // Validate role
-        const validRoles = ['guest', 'user', 'admin'];
-        if (!validRoles.includes(role)) {
-            throw new Error('Invalid role specified');
-        }
-
-        // Hash password with 12 salt rounds for security
-        const hashedPassword = await bcrypt.hash(password, 12);
-        const player = await createPlayer(username, hashedPassword, role);
-
-        // Generate JWT token with 7-day expiration
-        const token = generateToken(player);
-
-        return {
-            player: player,
-            token: token,
-            expiresIn: '7d'
-        };
-    } catch (err) {
-        throw new Error("Could not signup player: " + err.message);
+export async function signupPlayer(username, password, role = "user") {
+  try {
+    // Validate role
+    const validRoles = ["guest", "user", "admin"];
+    if (!validRoles.includes(role)) {
+      throw new Error("Invalid role specified");
     }
+
+    // Hash password with 12 salt rounds for security
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const player = await createPlayer(username, hashedPassword, role);
+
+    // Generate JWT token with 7-day expiration
+    const token = generateToken(player);
+
+    return {
+      player: player,
+      token: token,
+      expiresIn: "7d",
+    };
+  } catch (err) {
+    throw new Error("Could not signup player: " + err.message);
+  }
 }
 
 /**
@@ -320,52 +322,56 @@ export async function signupPlayer(username, password, role = 'user') {
  * @returns {Object} Authentication result with token and user data
  * @throws {Error} If login credentials are invalid
  */
-export async function loginPlayer(username, password) {
-    try {
-        // Find user by username
-        const { data: user, error } = await playerSupabase
-            .from('players')
-            .select('*')
-            .eq('username', username)
-            .single();
+export async function loginPlayer(username, password, checkToken) {
+  try {
+    // Find user by username
+    const { data: user, error } = await playerSupabase
+      .from("players")
+      .select("*")
+      .eq("username", username)
+      .single();
 
-        if (error || !user) {
-            throw new Error('User not found');
-        }
-
-        // Verify password against stored hash
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            throw new Error('Invalid password');
-        }
-
-        // Generate new JWT token
-        const token = generateToken(user);
-
-        return {
-            message: 'Login successful!',
-            token: token,
-            user: {
-                id: user.id,
-                username: user.username,
-                role: user.role || 'guest',
-                lowestTime: user.lowestTime
-            },
-            expiresIn: '7d'
-        };
-    } catch (err) {
-        throw new Error("Could not login player: " + err.message);
+    if (error || !user) {
+      throw new Error("User not found");
     }
+
+    // Verify password against stored hash
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new Error("Invalid password");
+    }
+    let token = undefined;
+    if (!checkToken) {
+      // Generate new JWT token
+      token = generateToken(user);
+    } else {
+      token = checkToken;
+    }
+
+    return {
+      message: "Login successful!",
+      token: token,
+      user: {
+        id: user.id,
+        username: user.username,
+        role: user.role || "guest",
+        lowestTime: user.lowestTime,
+      },
+      expiresIn: "7d",
+    };
+  } catch (err) {
+    throw new Error("Could not login player: " + err.message);
+  }
 }
 
 export const playerCtrl = {
-    getOrCreatePlayerGuest,
-    createPlayer,
-    getLeaderboard,
-    updatePlayerTime,
-    recordSolvedRiddle,
-    getUnsolvedRiddles,
-    checkUserAuthentication,
-    signupPlayer,
-    loginPlayer
+  getOrCreatePlayerGuest,
+  createPlayer,
+  getLeaderboard,
+  updatePlayerTime,
+  recordSolvedRiddle,
+  getUnsolvedRiddles,
+  checkUserAuthentication,
+  signupPlayer,
+  loginPlayer,
 };

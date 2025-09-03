@@ -6,7 +6,7 @@
  */
 
 import "dotenv/config";
-import * as tokenService from './tokenService.js';
+import * as tokenService from "./tokenService.js";
 
 const PORT = process.env.PORT || 3000;
 const BASE_URL = `http://localhost:${PORT}/api/players`;
@@ -19,15 +19,32 @@ const BASE_URL = `http://localhost:${PORT}/api/players`;
  * @private
  */
 async function handleResponse(res, action) {
-    try {
-        const data = await res.json();
-        if (!res.ok) {
-            return { error: `Failed to ${action}.`, details: data.error || data };
-        }
+  try {
+    const data = await res.json();
+    // Always return the parsed body, even for non-OK status
+    if (!res.ok) {
+      // If tokenExpired or tokenError is present, return the body directly
+      if (
+        data.tokenExpired ||
+        data.tokenError ||
+        data.authenticated === false
+      ) {
         return data;
-    } catch (err) {
-        return { error: `Failed to ${action}.`, details: "Invalid server response." };
+      }
+      // Otherwise, wrap as error
+      let details = data.error || data;
+      if (typeof details === "object") {
+        details = JSON.stringify(details);
+      }
+      return { error: `Failed to ${action}.`, details };
     }
+    return data;
+  } catch (err) {
+    return {
+      error: `Failed to ${action}.`,
+      details: "Invalid server response.",
+    };
+  }
 }
 
 /**
@@ -36,7 +53,9 @@ async function handleResponse(res, action) {
  * @private
  */
 function delay(ms) {
-    return new Promise((res) => { setTimeout(res, ms) });
+  return new Promise((res) => {
+    setTimeout(res, ms);
+  });
 }
 
 /**
@@ -45,17 +64,20 @@ function delay(ms) {
  * @returns {Promise<Object>} Player object or error details
  */
 export async function getOrCreatePlayerGuestMode(name) {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/create_player`, {
-            method: "POST",
-            headers: tokenService.getHeaders(null, false),
-            body: JSON.stringify({ name, role: "guest" })
-        });
-        return await handleResponse(res, "create or get player");
-    } catch (err) {
-        return { error: "Network error: Failed to create or get player.", details: err.message };
-    }
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/create_player`, {
+      method: "POST",
+      headers: tokenService.getHeaders(null, false),
+      body: JSON.stringify({ name, role: "guest" }),
+    });
+    return await handleResponse(res, "create or get player");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to create or get player.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -66,17 +88,20 @@ export async function getOrCreatePlayerGuestMode(name) {
  * @returns {Promise<Object>} Success message or error details
  */
 export async function updatePlayerTime(id, time, username) {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/update_time/${id}`, {
-            method: "PUT",
-            headers: tokenService.getHeaders(username),
-            body: JSON.stringify({ time })
-        });
-        return await handleResponse(res, "update player time");
-    } catch (err) {
-        return { error: "Network error: Failed to update player time.", details: err.message };
-    }
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/update_time/${id}`, {
+      method: "PUT",
+      headers: tokenService.getHeaders(username),
+      body: JSON.stringify({ time }),
+    });
+    return await handleResponse(res, "update player time");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to update player time.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -89,15 +114,18 @@ export async function updatePlayerTime(id, time, username) {
  * });
  */
 export async function getLeaderboard() {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/leaderboard`, {
-            headers: tokenService.getHeaders(null, false) // Leaderboard doesn't need auth
-        });
-        return await handleResponse(res, "fetch leaderboard");
-    } catch (err) {
-        return { error: "Network error: Failed to fetch leaderboard.", details: err.message };
-    }
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/leaderboard`, {
+      headers: tokenService.getHeaders(null, false), // Leaderboard doesn't need auth
+    });
+    return await handleResponse(res, "fetch leaderboard");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to fetch leaderboard.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -108,17 +136,25 @@ export async function getLeaderboard() {
  * @param {string} username - Username for authentication
  * @returns {Promise<Object>} Created score record or error details
  */
-export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve, username) {
-    try {
-        const res = await fetch(`${BASE_URL}/record_solved_riddle`, {
-            method: "POST",
-            headers: tokenService.getHeaders(username),
-            body: JSON.stringify({ player_id, riddle_id, time_to_solve })
-        });
-        return await handleResponse(res, "record solved riddle");
-    } catch (err) {
-        return { error: "Network error: Failed to record solved riddle.", details: err.message };
-    }
+export async function recordSolvedRiddle(
+  player_id,
+  riddle_id,
+  time_to_solve,
+  username
+) {
+  try {
+    const res = await fetch(`${BASE_URL}/record_solved_riddle`, {
+      method: "POST",
+      headers: tokenService.getHeaders(username),
+      body: JSON.stringify({ player_id, riddle_id, time_to_solve }),
+    });
+    return await handleResponse(res, "record solved riddle");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to record solved riddle.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -129,16 +165,19 @@ export async function recordSolvedRiddle(player_id, riddle_id, time_to_solve, us
  * @returns {Promise<Array|Object>} Array of unsolved riddles or error object
  */
 export async function getUnsolvedRiddles(player_id, difficulty, username) {
-    try {
-        let url = `${BASE_URL}/unsolved_riddles/${player_id}`;
-        if (difficulty) url += `?difficulty=${encodeURIComponent(difficulty)}`;
-        const res = await fetch(url, {
-            headers: tokenService.getHeaders(username)
-        });
-        return await handleResponse(res, "get unsolved riddles");
-    } catch (err) {
-        return { error: "Network error: Failed to get unsolved riddles.", details: err.message };
-    }
+  try {
+    let url = `${BASE_URL}/unsolved_riddles/${player_id}`;
+    if (difficulty) url += `?difficulty=${encodeURIComponent(difficulty)}`;
+    const res = await fetch(url, {
+      headers: tokenService.getHeaders(username),
+    });
+    return await handleResponse(res, "get unsolved riddles");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to get unsolved riddles.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -147,18 +186,21 @@ export async function getUnsolvedRiddles(player_id, difficulty, username) {
  * @returns {Promise<Object>} Authentication status and user information
  */
 export async function checkUser(username) {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/check-user`, {
-            method: "POST",
-            headers: tokenService.getHeaders(username),
-            body: JSON.stringify({ username })
-        });
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/check-user`, {
+      method: "POST",
+      headers: tokenService.getHeaders(username),
+      body: JSON.stringify({ username }),
+    });
 
-        return await handleResponse(res, "check user");
-    } catch (err) {
-        return { error: "Network error: Failed to check user.", details: err.message };
-    }
+    return await handleResponse(res, "check user");
+  } catch (err) {
+    return {
+      error: "Network error: Failed to check user.",
+      details: err.message,
+    };
+  }
 }
 
 /**
@@ -168,26 +210,30 @@ export async function checkUser(username) {
  * @returns {Promise<Object} Authentication result with token and user data
  */
 export async function loginWithPassword(username, password) {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/login-with-name`, {
-            method: "POST",
-            headers: tokenService.getHeaders(null, false), // No token needed for login
-            body: JSON.stringify({ username, password })
-        });
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/login-with-name`, {
+      method: "POST",
+      headers: tokenService.getHeaders(null, false), // No token needed for login
+      body: JSON.stringify({ username, password }),
+    });
 
-        const result = await handleResponse(res, "login");
+    const result = await handleResponse(res, "login");
 
-        // Store token on successful login
-        if (result && result.token && !result.error) {
-            tokenService.setToken(username, result.token);
-            console.log(`Login successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
-        }
-
-        return result;
-    } catch (err) {
-        return { error: "Network error: Failed to login.", details: err.message };
+    // Store token on successful login
+    if (result && result.token && !result.error) {
+      tokenService.setToken(username, result.token);
+      console.log(
+        `Login successful! Token saved for ${username}. Expires in ${
+          result.expiresIn || "1 week"
+        }.`
+      );
     }
+
+    return result;
+  } catch (err) {
+    return { error: "Network error: Failed to login.", details: err.message };
+  }
 }
 
 /**
@@ -197,27 +243,31 @@ export async function loginWithPassword(username, password) {
  * @param {string} [role='user'] - User role (guest, user, admin)
  * @returns {Promise<Object>} Created user data with authentication token
  */
-export async function signup(username, password, role = 'user') {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/signup`, {
-            method: "POST",
-            headers: tokenService.getHeaders(null, false), // No token needed for signup
-            body: JSON.stringify({ username, password, role })
-        });
+export async function signup(username, password, role = "user") {
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/signup`, {
+      method: "POST",
+      headers: tokenService.getHeaders(null, false), // No token needed for signup
+      body: JSON.stringify({ username, password, role }),
+    });
 
-        const result = await handleResponse(res, "signup");
+    const result = await handleResponse(res, "signup");
 
-        // Store token on successful signup
-        if (result && result.token && !result.error) {
-            tokenService.setToken(username, result.token);
-            console.log(`Signup successful! Token saved for ${username}. Expires in ${result.expiresIn || '1 week'}.`);
-        }
-
-        return result;
-    } catch (err) {
-        return { error: "Network error: Failed to signup.", details: err.message };
+    // Store token on successful signup
+    if (result && result.token && !result.error) {
+      tokenService.setToken(username, result.token);
+      console.log(
+        `Signup successful! Token saved for ${username}. Expires in ${
+          result.expiresIn || "1 week"
+        }.`
+      );
     }
+
+    return result;
+  } catch (err) {
+    return { error: "Network error: Failed to signup.", details: err.message };
+  }
 }
 
 /**
@@ -226,21 +276,21 @@ export async function signup(username, password, role = 'user') {
  * @returns {Promise<Object>} Logout confirmation or error details
  */
 export async function logout(username) {
-    try {
-        await delay(1000);
-        const res = await fetch(`${BASE_URL}/logout`, {
-            method: "POST",
-            headers: tokenService.getHeaders(username) // Include token for logout
-        });
+  try {
+    await delay(1000);
+    const res = await fetch(`${BASE_URL}/logout`, {
+      method: "POST",
+      headers: tokenService.getHeaders(username), // Include token for logout
+    });
 
-        // Clear user's token locally regardless of server response
-        tokenService.clearToken(username);
-        console.log(`Logged out successfully. Token removed for ${username}.`);
+    // Clear user's token locally regardless of server response
+    tokenService.clearToken(username);
+    console.log(`Logged out successfully. Token removed for ${username}.`);
 
-        return await handleResponse(res, "logout");
-    } catch (err) {
-        return { error: "Network error: Failed to logout.", details: err.message };
-    }
+    return await handleResponse(res, "logout");
+  } catch (err) {
+    return { error: "Network error: Failed to logout.", details: err.message };
+  }
 }
 
 /**
@@ -249,5 +299,5 @@ export async function logout(username) {
  * @returns {boolean} True if user has a stored tokens
  */
 export function hasToken(username) {
-    return tokenService.hasValidToken(username);
+  return tokenService.hasValidToken(username);
 }

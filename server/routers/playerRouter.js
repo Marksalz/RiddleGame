@@ -18,15 +18,17 @@ const playerRouter = express.Router();
  * @returns {Object} Player object
  */
 playerRouter.post("/create_player", async (req, res) => {
-    try {
-        const { name, role } = req.body;
-        const player = await playerCtrl.getOrCreatePlayerGuest(name, role);
-        console.log("Player created or fetched:", player);
-        res.json(player);
-    } catch (err) {
-        console.error("Failed to create or get player:", err);
-        res.status(400).json({ error: "Failed to create or get player.", details: err.message });
-    }
+  try {
+    const { name, role } = req.body;
+    const player = await playerCtrl.getOrCreatePlayerGuest(name, role);
+    console.log("Player created or fetched:", player);
+    res.json(player);
+  } catch (err) {
+    console.error("Failed to create or get player:", err);
+    res
+      .status(400)
+      .json({ error: "Failed to create or get player.", details: err.message });
+  }
 });
 
 /**
@@ -39,30 +41,33 @@ playerRouter.post("/create_player", async (req, res) => {
  * @param {string} [req.body.role='user'] - User role (guest, user, admin)
  * @returns {Object} Player data with authentication token
  */
-playerRouter.post('/signup', async (req, res) => {
-    try {
-        const { username, password, role = 'user' } = req.body;
+playerRouter.post("/signup", async (req, res) => {
+  try {
+    const { username, password, role = "user" } = req.body;
 
-        const result = await playerCtrl.signupPlayer(username, password, role);
+    const result = await playerCtrl.signupPlayer(username, password, role);
 
-        // Set HTTP-only cookie with JWT token (7-day expiration)
-        res.cookie("token", result.token, {
-            httpOnly: false,
-            sameSite: "lax",
-            secure: false,
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-            path: '/'
-        });
+    //Log for result
+    console.log(`Result: `, result);
 
-        res.status(201).json({
-            ...result.player,
-            token: result.token,
-            expiresIn: result.expiresIn
-        });
-    } catch (err) {
-        console.error("Failed to create player:", err);
-        res.status(500).json({ error: err.message || 'Server internal error' });
-    }
+    // Set HTTP-only cookie with JWT token (7-day expiration)
+    res.cookie("token", result.token, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
+    });
+
+    res.status(201).json({
+      ...result.player,
+      token: result.token,
+      expiresIn: result.expiresIn,
+    });
+  } catch (err) {
+    console.error("Failed to create player:", err);
+    res.status(500).json({ error: err.message || "Server internal error" });
+  }
 });
 
 /**
@@ -75,34 +80,39 @@ playerRouter.post('/signup', async (req, res) => {
  * @param {string} req.body.username - Username to check
  * @returns {Object} Authentication status and user information
  */
-playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) => {
+playerRouter.post(
+  "/check-user",
+  checkUserExists,
+  verifyToken,
+  async (req, res) => {
     try {
-        const { username } = req.body;
+      const { username } = req.body;
 
-        const result = await playerCtrl.checkUserAuthentication(username, req);
+      const result = await playerCtrl.checkUserAuthentication(username, req);
 
-        // Handle token expiration specifically
-        if (req.tokenExpired) {
-            return res.status(401).json({
-                ...result,
-                tokenExpired: true,
-                tokenError: req.tokenError
-            });
-        }
+      // Handle token expiration specifically
+      if (req.tokenExpired) {
+        return res.status(401).json({
+          ...result,
+          tokenExpired: true,
+          tokenError: req.tokenError,
+        });
+      }
 
-        // Handle other token errors
-        if (req.tokenError && !req.authenticated) {
-            return res.status(401).json({
-                ...result,
-                tokenError: req.tokenError
-            });
-        }
+      // Handle other token errors
+      if (req.tokenError && !req.authenticated) {
+        return res.status(401).json({
+          ...result,
+          tokenError: req.tokenError,
+        });
+      }
 
-        res.json(result);
+      res.json(result);
     } catch (err) {
-        res.status(500).json({ error: 'Server error', details: err.message });
+      res.status(500).json({ error: "Server error", details: err.message });
     }
-});
+  }
+);
 
 /**
  * POST /api/players/login-with-name
@@ -113,24 +123,26 @@ playerRouter.post('/check-user', checkUserExists, verifyToken, async (req, res) 
  * @param {string} req.body.password - Player password
  * @returns {Object} Authentication result with token and user data
  */
-playerRouter.post('/login-with-name', async (req, res) => {
-    try {
-        const { username, password } = req.body;
+playerRouter.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-        const result = await playerCtrl.loginPlayer(username, password);
+    let token = req.cookies.token;
 
-        res.cookie("token", result.token, {
-            httpOnly: false,
-            sameSite: "lax",
-            secure: false,
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
-            path: '/'
-        });
+    const result = await playerCtrl.loginPlayer(username, password, token);
 
-        res.json(result);
-    } catch (err) {
-        res.status(403).json({ error: err.message });
-    }
+    res.cookie("token", result.token, {
+      httpOnly: false,
+      sameSite: "lax",
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+      path: "/",
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(403).json({ error: err.message });
+  }
 });
 
 /**
@@ -140,13 +152,15 @@ playerRouter.post('/login-with-name', async (req, res) => {
  * @returns {Array} Array of players ordered by performance
  */
 playerRouter.get("/leaderboard", async (req, res) => {
-    try {
-        const leaderboard = await playerCtrl.getLeaderboard();
-        res.json(leaderboard);
-    } catch (err) {
-        console.error("Failed to fetch leaderboard:", err);
-        res.status(500).json({ error: "Failed to fetch leaderboard.", details: err.message });
-    }
+  try {
+    const leaderboard = await playerCtrl.getLeaderboard();
+    res.json(leaderboard);
+  } catch (err) {
+    console.error("Failed to fetch leaderboard:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch leaderboard.", details: err.message });
+  }
 });
 
 /**
@@ -159,16 +173,18 @@ playerRouter.get("/leaderboard", async (req, res) => {
  * @returns {Object} Success message or error details
  */
 playerRouter.put("/update_time/:id", async (req, res) => {
-    try {
-        const id = Number(req.params.id);
-        const { time } = req.body;
+  try {
+    const id = Number(req.params.id);
+    const { time } = req.body;
 
-        await playerCtrl.updatePlayerTime(id, time);
-        res.json({ message: "Player time updated successfully" });
-    } catch (err) {
-        console.error("Failed to update player time:", err);
-        res.status(400).json({ error: "Failed to update player time.", details: err.message });
-    }
+    await playerCtrl.updatePlayerTime(id, time);
+    res.json({ message: "Player time updated successfully" });
+  } catch (err) {
+    console.error("Failed to update player time:", err);
+    res
+      .status(400)
+      .json({ error: "Failed to update player time.", details: err.message });
+  }
 });
 
 /**
@@ -182,13 +198,19 @@ playerRouter.put("/update_time/:id", async (req, res) => {
  * @returns {Object} Created score record
  */
 playerRouter.post("/record_solved_riddle", async (req, res) => {
-    try {
-        const { player_id, riddle_id, time_to_solve } = req.body;
-        const score = await playerCtrl.recordSolvedRiddle(player_id, riddle_id, time_to_solve);
-        res.json(score);
-    } catch (err) {
-        res.status(400).json({ error: "Failed to record solved riddle.", details: err.message });
-    }
+  try {
+    const { player_id, riddle_id, time_to_solve } = req.body;
+    const score = await playerCtrl.recordSolvedRiddle(
+      player_id,
+      riddle_id,
+      time_to_solve
+    );
+    res.json(score);
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: "Failed to record solved riddle.", details: err.message });
+  }
 });
 
 /**
@@ -200,14 +222,16 @@ playerRouter.post("/record_solved_riddle", async (req, res) => {
  * @returns {Array} Array of unsolved riddles for the player
  */
 playerRouter.get("/unsolved_riddles/:player_id", async (req, res) => {
-    try {
-        const player_id = Number(req.params.player_id);
-        const difficulty = req.query.difficulty;
-        const riddles = await playerCtrl.getUnsolvedRiddles(player_id, difficulty);
-        res.json(riddles);
-    } catch (err) {
-        res.status(400).json({ error: "Failed to get unsolved riddles.", details: err.message });
-    }
+  try {
+    const player_id = Number(req.params.player_id);
+    const difficulty = req.query.difficulty;
+    const riddles = await playerCtrl.getUnsolvedRiddles(player_id, difficulty);
+    res.json(riddles);
+  } catch (err) {
+    res
+      .status(400)
+      .json({ error: "Failed to get unsolved riddles.", details: err.message });
+  }
 });
 
 /**
@@ -216,12 +240,12 @@ playerRouter.get("/unsolved_riddles/:player_id", async (req, res) => {
  * @route POST /api/players/logout
  * @returns {Object} Logout confirmation message
  */
-playerRouter.post('/logout', (req, res) => {
-    // Clear token cookie from multiple possible paths
-    res.clearCookie('token');
-    res.clearCookie('token', { path: '/' });
-    res.clearCookie('token', { path: '/api/' });
-    res.json({ message: 'Logged out successfully' });
+playerRouter.post("/logout", (req, res) => {
+  // Clear token cookie from multiple possible paths
+  res.clearCookie("token");
+  res.clearCookie("token", { path: "/" });
+  res.clearCookie("token", { path: "/api/" });
+  res.json({ message: "Logged out successfully" });
 });
 
 export default playerRouter;

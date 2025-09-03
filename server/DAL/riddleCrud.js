@@ -17,9 +17,13 @@ const riddleCollection = client.collection("riddles");
  * @throws {Error} If database operation fails
  */
 export async function createRiddle(riddle) {
+  try {
     const result = await riddleCollection.insertOne(riddle);
-    console.log(`Inserted document with _id: ${result.insertedId}`);
     return result;
+  } catch (error) {
+    console.error("Error creating riddle:", error);
+    throw error;
+  }
 }
 
 /**
@@ -28,9 +32,13 @@ export async function createRiddle(riddle) {
  * @throws {Error} If database operation fails
  */
 export async function getRiddles() {
+  try {
     const allRiddles = await riddleCollection.find().toArray();
-    console.log(allRiddles);
     return allRiddles;
+  } catch (error) {
+    console.error("Error getting riddles:", error);
+    throw error;
+  }
 }
 
 /**
@@ -40,9 +48,8 @@ export async function getRiddles() {
  * @throws {Error} If database operation fails
  */
 export async function getRiddlesByDifficulty(difficulty) {
-    const riddles = await riddleCollection.find({ difficulty }).toArray();
-    console.log(riddles);
-    return riddles;
+  const riddles = await riddleCollection.find({ difficulty }).toArray();
+  return riddles;
 }
 
 /**
@@ -53,12 +60,16 @@ export async function getRiddlesByDifficulty(difficulty) {
  * @throws {Error} If database operation fails or invalid ObjectId
  */
 export async function updateRiddle(id, newData) {
+  try {
     const updateResult = await riddleCollection.updateOne(
-        { _id: new ObjectId(id) },
-        { $set: newData }
+      { _id: new ObjectId(id) },
+      { $set: newData }
     );
-    console.log(`${updateResult.modifiedCount} document(s) updated`);
     return updateResult;
+  } catch (error) {
+    console.error("Error updating riddle:", error);
+    throw error;
+  }
 }
 
 /**
@@ -68,7 +79,13 @@ export async function updateRiddle(id, newData) {
  * @throws {Error} If database operation fails or invalid ObjectId
  */
 export async function deleteRiddle(id) {
-    const deleteResult = await riddleCollection.deleteOne({ _id: new ObjectId(id) });
-    console.log(`${deleteResult.deletedCount} document(s) deleted`);
+  try {
+    const deleteResult = await riddleCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
     return deleteResult;
+  } catch (error) {
+    console.error("Error deleting riddle:", error);
+    throw error;
+  }
 }

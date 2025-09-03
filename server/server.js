@@ -27,28 +27,26 @@ server.use((req, res, next) => {
 
 server.use((req, res, next) => {
   const origin = req.headers.origin;
-  if (origin && /^http:\/\/localhost:\d+$/.test(origin)) {
+  const allowedOrigins = [
+    "http://localhost:3000",
+    "https://riddle-game2001.netlify.app",
+  ];
+  if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
     res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
     res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, OPTIONS"
     );
-    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
   }
+
   // Handle preflight requests
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
   next();
 });
-
-// server.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   next();
-// });
 
 // Middleware setup
 server.use(express.json()); // Parse JSON request bodies

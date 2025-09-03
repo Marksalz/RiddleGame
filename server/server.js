@@ -7,7 +7,7 @@
 
 import express from "express";
 import router from "./router.js";
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 import "dotenv/config";
 import { connectToMongo } from "./lib/riddles/riddleDb.js";
 import { connectToSupabase } from "./lib/players/playerDb.js";
@@ -24,6 +24,31 @@ server.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
+
+server.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && /^http:\/\/localhost:\d+$/.test(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept"
+    );
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  }
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// server.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+//   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   next();
+// });
 
 // Middleware setup
 server.use(express.json()); // Parse JSON request bodies

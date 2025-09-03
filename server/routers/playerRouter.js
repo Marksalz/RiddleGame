@@ -47,6 +47,9 @@ playerRouter.post("/signup", async (req, res) => {
 
     const result = await playerCtrl.signupPlayer(username, password, role);
 
+    //Log for result
+    console.log(`Result: `, result);
+
     // Set HTTP-only cookie with JWT token (7-day expiration)
     res.cookie("token", result.token, {
       httpOnly: false,
@@ -120,11 +123,13 @@ playerRouter.post(
  * @param {string} req.body.password - Player password
  * @returns {Object} Authentication result with token and user data
  */
-playerRouter.post("/login-with-name", async (req, res) => {
+playerRouter.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const result = await playerCtrl.loginPlayer(username, password);
+    let token = req.cookies.token;
+
+    const result = await playerCtrl.loginPlayer(username, password, token);
 
     res.cookie("token", result.token, {
       httpOnly: false,

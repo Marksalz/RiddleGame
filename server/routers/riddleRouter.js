@@ -17,16 +17,18 @@ const riddleRouter = express.Router();
  * @returns {Object} Success message or error details
  */
 riddleRouter.post("/create_riddle", async (req, res) => {
-    //console.log("[POST] /riddles/create_riddle", req.body);
-    try {
-        const riddle = req.body;
-        await riddleCtrl.createRiddle(riddle);
-        console.log("Riddle created:", riddle);
-        res.json({ message: "Riddle created successfully" });
-    } catch (err) {
-        console.error("Failed to create riddle:", err);
-        res.status(400).json({ error: "Failed to create riddle.", details: err.message });
-    }
+  //console.log("[POST] /riddles/create_riddle", req.body);
+  try {
+    const riddle = req.body;
+    await riddleCtrl.createRiddle(riddle);
+    console.log("Riddle created:", riddle);
+    res.json({ message: "Riddle created successfully" });
+  } catch (err) {
+    console.error("Failed to create riddle:", err);
+    res
+      .status(400)
+      .json({ error: "Failed to create riddle.", details: err.message });
+  }
 });
 
 /**
@@ -36,15 +38,17 @@ riddleRouter.post("/create_riddle", async (req, res) => {
  * @returns {Array} Array of all riddle objects
  */
 riddleRouter.get("/read_all_riddles", async (req, res) => {
-    //console.log("[GET] /riddles/read_all_riddles");
-    try {
-        const riddles = await riddleCtrl.readAllRiddles();
-        console.log("All riddles fetched:", riddles.length);
-        res.json(riddles);
-    } catch (err) {
-        console.error("Failed to fetch riddles:", err);
-        res.status(500).json({ error: "Failed to fetch riddles.", details: err.message });
-    }
+  //console.log("[GET] /riddles/read_all_riddles");
+  try {
+    const riddles = await riddleCtrl.readAllRiddles();
+    console.log("All riddles fetched:", riddles.length);
+    res.json(riddles);
+  } catch (err) {
+    console.error("Failed to fetch riddles:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch riddles.", details: err.message });
+  }
 });
 
 /**
@@ -55,40 +59,45 @@ riddleRouter.get("/read_all_riddles", async (req, res) => {
  * @returns {Array} Array of riddles matching the difficulty
  */
 riddleRouter.get("/read_all_riddles/:difficulty", async (req, res) => {
-    //console.log(`[GET] /riddles/read_all_riddles/${req.params.difficulty}`);
-    try {
-        const { difficulty } = req.params;
-        const riddles = await riddleCtrl.readAllRiddles(difficulty);
-        console.log(`Riddles fetched for difficulty "${difficulty}":`, riddles.length);
-        res.json(riddles);
-    } catch (err) {
-        console.error("Failed to fetch riddles by difficulty:", err);
-        res.status(500).json({ error: "Failed to fetch riddles.", details: err.message });
-    }
+  //console.log(`[GET] /riddles/read_all_riddles/${req.params.difficulty}`);
+  try {
+    const { difficulty } = req.params;
+    const riddles = await riddleCtrl.readAllRiddles(difficulty);
+    console.log(
+      `Riddles fetched for difficulty "${difficulty}":`,
+      riddles.length
+    );
+    res.json(riddles);
+  } catch (err) {
+    console.error("Failed to fetch riddles by difficulty:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to fetch riddles.", details: err.message });
+  }
 });
 
 /**
  * PUT /api/riddles/update_riddle/:id
- * Updates a specific field of a riddle
+ * Updates a riddle with new data
  * @route PUT /api/riddles/update_riddle/:id
  * @param {string} req.params.id - MongoDB ObjectId of the riddle
- * @param {Object} req.body - Object containing field and value to update
- * @param {string} req.body.field - Field name to update
- * @param {*} req.body.value - New value for the field
+ * @param {Object} req.body - Object containing all updated riddle fields
  * @returns {Object} Success message or error details
  */
 riddleRouter.put("/update_riddle/:id", async (req, res) => {
-    //console.log(`[PUT] /riddles/update_riddle/${req.params.id}`, req.body);
-    try {
-        const { field, value } = req.body;
-        const id = req.params.id;
-        await riddleCtrl.updateRiddle(id, field, value);
-        console.log(`Riddle ${id} updated: ${field} = ${value}`);
-        res.json({ message: "Riddle updated successfully" });
-    } catch (err) {
-        console.error("Failed to update riddle:", err);
-        res.status(400).json({ error: "Failed to update riddle.", details: err.message });
-    }
+  //console.log(`[PUT] /riddles/update_riddle/${req.params.id}`, req.body);
+  try {
+    const updatedRiddle = req.body;
+    const id = req.params.id;
+    await riddleCtrl.updateRiddle(id, updatedRiddle);
+    console.log(`Riddle ${id} updated`);
+    res.json({ message: "Riddle updated successfully" });
+  } catch (err) {
+    console.error("Failed to update riddle:", err);
+    res
+      .status(400)
+      .json({ error: "Failed to update riddle.", details: err.message });
+  }
 });
 
 /**
@@ -99,15 +108,17 @@ riddleRouter.put("/update_riddle/:id", async (req, res) => {
  * @returns {Object} Success message or error details
  */
 riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
-    //console.log(`[DELETE] /riddles/delete_riddle/${req.params.id}`);
-    try {
-        await riddleCtrl.deleteRiddle(req.params.id);
-        console.log(`Riddle ${req.params.id} deleted`);
-        res.json({ message: "Riddle deleted successfully" });
-    } catch (err) {
-        console.error("Failed to delete riddle:", err);
-        res.status(400).json({ error: "Failed to delete riddle.", details: err.message });
-    }
+  //console.log(`[DELETE] /riddles/delete_riddle/${req.params.id}`);
+  try {
+    await riddleCtrl.deleteRiddle(req.params.id);
+    console.log(`Riddle ${req.params.id} deleted`);
+    res.json({ message: "Riddle deleted successfully" });
+  } catch (err) {
+    console.error("Failed to delete riddle:", err);
+    res
+      .status(400)
+      .json({ error: "Failed to delete riddle.", details: err.message });
+  }
 });
 
 /**
@@ -118,21 +129,27 @@ riddleRouter.delete("/delete_riddle/:id", async (req, res) => {
  * @returns {Object} Success message with count of loaded riddles or error details
  */
 riddleRouter.post("/load_initial_riddles", async (req, res) => {
-    try {
-        // Path to the JSON file containing initial riddles
-        const riddlesPath = "C:\\JSProjects\\RiddleGame\\server\\lib\\riddles\\randomRiddles.json";
-        const data = await fs.readFile(riddlesPath, "utf-8");
-        const riddles = JSON.parse(data);
+  try {
+    // Path to the JSON file containing initial riddles
+    const riddlesPath =
+      "C:\\JSProjects\\RiddleGame\\server\\lib\\riddles\\randomRiddles.json";
+    const data = await fs.readFile(riddlesPath, "utf-8");
+    const riddles = JSON.parse(data);
 
-        for (const riddle of riddles) {
-            await riddleCtrl.createRiddle(riddle);
-        }
-
-        res.json({ message: "Initial riddles loaded successfully", count: riddles.length });
-    } catch (err) {
-        console.error("Failed to load initial riddles:", err);
-        res.status(500).json({ error: "Failed to load initial riddles.", details: err.message });
+    for (const riddle of riddles) {
+      await riddleCtrl.createRiddle(riddle);
     }
+
+    res.json({
+      message: "Initial riddles loaded successfully",
+      count: riddles.length,
+    });
+  } catch (err) {
+    console.error("Failed to load initial riddles:", err);
+    res
+      .status(500)
+      .json({ error: "Failed to load initial riddles.", details: err.message });
+  }
 });
 
 export default riddleRouter;

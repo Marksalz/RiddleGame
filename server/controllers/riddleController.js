@@ -4,7 +4,7 @@
  * @author RiddleGame Team
  */
 
-import * as crud from "../DAL/riddleCrud.js"
+import * as crud from "../DAL/riddleCrud.js";
 
 /**
  * Creates a new riddle after validation
@@ -19,12 +19,12 @@ import * as crud from "../DAL/riddleCrud.js"
  * @throws {Error} If validation fails or database operation fails
  */
 export async function createRiddle(riddle) {
-    try {
-        validateRiddle(riddle);
-        await crud.createRiddle(riddle);
-    } catch (err) {
-        throw new Error("Could not create riddle: " + err.message);
-    }
+  try {
+    validateRiddle(riddle);
+    await crud.createRiddle(riddle);
+  } catch (err) {
+    throw new Error("Could not create riddle: " + err.message);
+  }
 }
 
 /**
@@ -34,33 +34,32 @@ export async function createRiddle(riddle) {
  * @throws {Error} If database operation fails
  */
 export async function readAllRiddles(difficulty) {
-    try {
-        let riddles = null;
-        if (difficulty) {
-            riddles = await crud.getRiddlesByDifficulty(difficulty);
-        }
-        else {
-            riddles = await crud.getRiddles();
-        }
-        return riddles;
-    } catch (err) {
-        throw new Error("Could not read riddles: " + err.message);
+  try {
+    let riddles = null;
+    if (difficulty) {
+      riddles = await crud.getRiddlesByDifficulty(difficulty);
+    } else {
+      riddles = await crud.getRiddles();
     }
+    return riddles;
+  } catch (err) {
+    throw new Error("Could not read riddles: " + err.message);
+  }
 }
 
 /**
- * Updates a specific field of a riddle
+ * Updates a riddle with new data
  * @param {string} id - MongoDB ObjectId of the riddle
- * @param {string} field - Field name to update
- * @param {*} value - New value for the field
+ * @param {Object} updatedRiddle - Object containing all updated riddle fields
  * @throws {Error} If update operation fails
  */
-export async function updateRiddle(id, field, value) {
-    try {
-        await crud.updateRiddle(id, { [field]: value });
-    } catch (err) {
-        throw new Error("Could not update riddle: " + err.message);
-    }
+export async function updateRiddle(id, updatedRiddle) {
+  try {
+    validateRiddle(updatedRiddle);
+    await crud.updateRiddle(id, updatedRiddle);
+  } catch (err) {
+    throw new Error("Could not update riddle: " + err.message);
+  }
 }
 
 /**
@@ -69,11 +68,11 @@ export async function updateRiddle(id, field, value) {
  * @throws {Error} If delete operation fails
  */
 export async function deleteRiddle(id) {
-    try {
-        await crud.deleteRiddle(id);
-    } catch (err) {
-        throw new Error("Could not delete riddle: " + err.message);
-    }
+  try {
+    await crud.deleteRiddle(id);
+  } catch (err) {
+    throw new Error("Could not delete riddle: " + err.message);
+  }
 }
 
 /**
@@ -83,32 +82,42 @@ export async function deleteRiddle(id) {
  * @private
  */
 function validateRiddle(riddle) {
-    // Check required fields
-    if (!riddle.name || !riddle.taskDescription || !riddle.correctAnswer || !riddle.difficulty || !riddle.timeLimit || !riddle.hint) {
-        throw new Error("Missing required riddle fields.");
-    }
+  // Check required fields
+  if (
+    !riddle.name ||
+    !riddle.taskDescription ||
+    !riddle.correctAnswer ||
+    !riddle.difficulty ||
+    !riddle.timeLimit ||
+    !riddle.hint
+  ) {
+    throw new Error("Missing required riddle fields.");
+  }
 
-    // Validate time limit
-    if (typeof riddle.timeLimit !== "number" || riddle.timeLimit <= 0) {
-        throw new Error("Invalid time limit.");
-    }
+  // Validate time limit
+  if (typeof riddle.timeLimit !== "number" || riddle.timeLimit <= 0) {
+    throw new Error("Invalid time limit.");
+  }
 
-    // Validate difficulty level
-    if (!["easy", "medium", "hard"].includes(riddle.difficulty.toLowerCase().trim())) {
-        throw new Error("Invalid difficulty.");
-    }
+  // Validate difficulty level
+  if (
+    !["easy", "medium", "hard"].includes(riddle.difficulty.toLowerCase().trim())
+  ) {
+    throw new Error("Invalid difficulty.");
+  }
 
-    // Validate multiple choice options if present
-    if (riddle.choices && (!Array.isArray(riddle.choices) || riddle.choices.length < 2)) {
-        throw new Error("Multiple choice riddles must have at least 2 choices.");
-    }
+  // Validate multiple choice options if present
+  if (
+    riddle.choices &&
+    (!Array.isArray(riddle.choices) || riddle.choices.length < 2)
+  ) {
+    throw new Error("Multiple choice riddles must have at least 2 choices.");
+  }
 }
 
 export const riddleCtrl = {
-    createRiddle,
-    readAllRiddles,
-    updateRiddle,
-    deleteRiddle
+  createRiddle,
+  readAllRiddles,
+  updateRiddle,
+  deleteRiddle,
 };
-
-

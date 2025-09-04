@@ -30,6 +30,7 @@ server.use((req, res, next) => {
   const allowedOrigins = [
     "http://localhost:3000",
     "https://riddle-game2001.netlify.app",
+    "http://localhost:5173",
   ];
   if (origin && allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);

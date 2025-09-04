@@ -47,15 +47,20 @@ playerRouter.post("/signup", async (req, res) => {
 
     const result = await playerCtrl.signupPlayer(username, password, role);
 
-    //Log for result
-    console.log(`Result: `, result);
-
     // Set HTTP-only cookie with JWT token (7-day expiration)
+    // res.cookie("token", result.token, {
+    //   httpOnly: false,
+    //   sameSite: "lax",
+    //   secure: false,
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    //   path: "/",
+    // });
+
     res.cookie("token", result.token, {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
       path: "/",
     });
 
@@ -131,11 +136,19 @@ playerRouter.post("/login", async (req, res) => {
 
     const result = await playerCtrl.loginPlayer(username, password, token);
 
+    // res.cookie("token", result.token, {
+    //   httpOnly: false,
+    //   sameSite: "lax",
+    //   secure: false,
+    //   maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+    //   path: "/",
+    // });
+
     res.cookie("token", result.token, {
-      httpOnly: false,
-      sameSite: "lax",
-      secure: false,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
       path: "/",
     });
 

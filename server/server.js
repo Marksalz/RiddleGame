@@ -59,11 +59,15 @@ server.use("/api", router); // Mount API routes
  * Connects to MongoDB and Supabase, then starts the Express server
  */
 try {
-  await connectToMongo();
-  await connectToSupabase();
   server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
+  server.get("/health", (req, res) => {
+    res.status(200).send("OK");
+  });
+
+  await connectToMongo();
+  await connectToSupabase();
 } catch (err) {
   console.error("Failed to connect to databases:", err);
   process.exit(1);

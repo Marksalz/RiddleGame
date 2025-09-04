@@ -61,9 +61,10 @@ export async function getRiddlesByDifficulty(difficulty) {
  */
 export async function updateRiddle(id, newData) {
   try {
+    const { _id, ...fieldsToUpdate } = newData;
     const updateResult = await riddleCollection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: newData }
+      { _id: new ObjectId(_id) },
+      { $set: fieldsToUpdate }
     );
     return updateResult;
   } catch (error) {
